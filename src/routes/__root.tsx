@@ -78,28 +78,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Bleach Draft — Forge Your Gotei" },
+      { title: "Bleach Draft — Forge Your team" },
       {
         name: "description",
         content:
           "Draft a 5-slot Bleach dream team. One card at a time, three skips, weighted rarity. Bilingual (EN / AR).",
       },
       { name: "theme-color", content: "#f68a3b" },
-      { property: "og:title", content: "Bleach Draft — Forge Your Gotei" },
+      { property: "og:title", content: "Bleach Draft — Forge Your team" },
       {
         property: "og:description",
-        content: "Bleach-inspired draft experience. Answer the call of Reiatsu.",
+        content: "Draft a 5-slot Bleach dream team. One card at a time, three skips, weighted rarity. Bilingual (EN / AR).",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Bleach Draft — Forge Your team" },
+      { name: "twitter:description", content: "Draft a 5-slot Bleach dream team. One card at a time, three skips, weighted rarity. Bilingual (EN / AR)." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/ca06c988-e804-47b9-825e-0b45dd4caae0" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/ca06c988-e804-47b9-825e-0b45dd4caae0" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
