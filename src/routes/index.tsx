@@ -1,24 +1,73 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { BleachLogo } from "@/components/BleachLogo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { useI18n } from "@/lib/i18n";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Home() {
+  const { t } = useI18n();
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <>
+      <ReiatsuBackground count={34} />
+      <header className="relative z-10 mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        <BleachLogo size="sm" />
+        <LanguageSwitcher />
+      </header>
+
+      <main className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col items-center justify-center px-4 pb-16 text-center">
+        <div
+          className="mb-6 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] uppercase tracking-[0.4em] text-muted-foreground backdrop-blur-md"
+          style={{ animation: "card-in 0.6s ease-out both" }}
+        >
+          Senkaimon · Reiatsu · Thousand-Year Blood War
+        </div>
+
+        <div style={{ animation: "card-in 0.7s ease-out both" }}>
+          <BleachLogo size="lg" />
+        </div>
+
+        <p
+          className="mt-6 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg"
+          style={{ animation: "card-in 0.8s 0.1s ease-out both" }}
+        >
+          {t("tagline")}
+        </p>
+
+        <Link
+          to="/draft"
+          className="glow-orange group mt-10 inline-flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 font-display text-base font-black uppercase tracking-[0.25em] text-primary-foreground transition-transform hover:scale-[1.03] active:scale-[0.98] sm:text-lg"
+          style={{ animation: "pulse-glow 2.8s ease-in-out infinite, card-in 0.9s 0.2s ease-out both" }}
+        >
+          <span aria-hidden>卍</span>
+          {t("startDraft")}
+          <span aria-hidden className="transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1">→</span>
+        </Link>
+
+        <section
+          className="mt-16 grid w-full max-w-3xl grid-cols-1 gap-3 text-start sm:grid-cols-3"
+          style={{ animation: "card-in 1s 0.3s ease-out both" }}
+        >
+          {[
+            { n: "01", k: "step1" as const },
+            { n: "02", k: "step2" as const },
+            { n: "03", k: "step3" as const },
+          ].map((s) => (
+            <div
+              key={s.n}
+              className="rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur-md"
+            >
+              <span className="font-display text-xs font-bold tracking-widest text-accent">
+                {s.n}
+              </span>
+              <p className="mt-2 text-sm text-foreground/90">{t(s.k)}</p>
+            </div>
+          ))}
+        </section>
+      </main>
+    </>
   );
 }
