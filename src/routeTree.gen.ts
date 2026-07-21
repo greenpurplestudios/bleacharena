@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as FollowRouteImport } from './routes/follow'
 import { Route as DraftRouteImport } from './routes/draft'
 import { Route as IndexRouteImport } from './routes/index'
 
+const FollowRoute = FollowRouteImport.update({
+  id: '/follow',
+  path: '/follow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DraftRoute = DraftRouteImport.update({
   id: '/draft',
   path: '/draft',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/draft': typeof DraftRoute
+  '/follow': typeof FollowRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/draft': typeof DraftRoute
+  '/follow': typeof FollowRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/draft': typeof DraftRoute
+  '/follow': typeof FollowRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/draft'
+  fullPaths: '/' | '/draft' | '/follow'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/draft'
-  id: '__root__' | '/' | '/draft'
+  to: '/' | '/draft' | '/follow'
+  id: '__root__' | '/' | '/draft' | '/follow'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DraftRoute: typeof DraftRoute
+  FollowRoute: typeof FollowRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/follow': {
+      id: '/follow'
+      path: '/follow'
+      fullPath: '/follow'
+      preLoaderRoute: typeof FollowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/draft': {
       id: '/draft'
       path: '/draft'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DraftRoute: DraftRoute,
+  FollowRoute: FollowRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
