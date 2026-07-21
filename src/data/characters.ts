@@ -1,4 +1,14 @@
 import type { Character } from "@/types/character";
+import ichigoImg from "@/assets/characters/ichigo.jpeg.asset.json";
+import uraharaImg from "@/assets/characters/urahara.jpeg.asset.json";
+import kyorakuImg from "@/assets/characters/kyoraku.jpeg.asset.json";
+import ulquiorraImg from "@/assets/characters/ulquiorra.jpeg.asset.json";
+import yamadaImg from "@/assets/characters/yamada.jpeg.asset.json";
+import ikkakuImg from "@/assets/characters/ikkaku.jpeg.asset.json";
+import orihimeImg from "@/assets/characters/orihime.jpeg.asset.json";
+import sadoImg from "@/assets/characters/sado.jpeg.asset.json";
+import yhwachImg from "@/assets/characters/yhwach.jpeg.asset.json";
+import aizenImg from "@/assets/characters/aizen.jpeg.asset.json";
 
 // Temporary mock data. Images intentionally left null — only official art
 // will be added in a later phase. Cards render a stylized fallback.
@@ -10,7 +20,7 @@ export const characters: Character[] = [
     name: { en: "Ichigo Kurosaki", ar: "إتشيغو كوروساكي" },
     race: "Human / Substitute Shinigami", faction: "Allies", division: null, rank: "Substitute",
     arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
-    image: null, rarity: "ultra",
+    image: ichigoImg.url, rarity: "ultra",
     stats: { attack: 96, defense: 82, speed: 92, reiatsu: 99, intelligence: 78, technique: 88, potential: 99 },
     overall: 96, tags: ["hero", "hybrid"],
   },
@@ -82,7 +92,7 @@ export const characters: Character[] = [
     name: { en: "Kisuke Urahara", ar: "كيسوكي أوراهارا" },
     race: "Shinigami", faction: "Allies", division: null, rank: "Former Captain",
     arc: "Thousand-Year Blood War", shikai: "Benihime", bankai: "Kannonbiraki Benihime Aratame",
-    image: null, rarity: "legendary",
+    image: uraharaImg.url, rarity: "legendary",
     stats: { attack: 86, defense: 82, speed: 88, reiatsu: 88, intelligence: 99, technique: 96, potential: 92 },
     overall: 91,
   },
@@ -91,7 +101,7 @@ export const characters: Character[] = [
     name: { en: "Shunsui Kyōraku", ar: "شونسوي كيوراكو" },
     race: "Shinigami", faction: "Gotei 13", division: "1st", rank: "Captain-Commander",
     arc: "Thousand-Year Blood War", shikai: "Katen Kyōkotsu", bankai: "Katen Kyōkotsu: Karamatsu Shinjū",
-    image: null, rarity: "ultra",
+    image: kyorakuImg.url, rarity: "ultra",
     stats: { attack: 94, defense: 88, speed: 90, reiatsu: 96, intelligence: 96, technique: 96, potential: 92 },
     overall: 94,
   },
@@ -109,7 +119,7 @@ export const characters: Character[] = [
     name: { en: "Ulquiorra Cifer", ar: "أولكيورا سيفر" },
     race: "Arrancar", faction: "Espada", division: "4", rank: "Cuarta Espada",
     arc: "Arrancar", shikai: "Murciélago", bankai: null,
-    image: null, rarity: "legendary",
+    image: ulquiorraImg.url, rarity: "legendary",
     stats: { attack: 92, defense: 92, speed: 90, reiatsu: 94, intelligence: 90, technique: 88, potential: 90 },
     overall: 92,
   },
@@ -118,7 +128,7 @@ export const characters: Character[] = [
     name: { en: "Hanatarō Yamada", ar: "هاناتارو يامادا" },
     race: "Shinigami", faction: "Gotei 13", division: "4th", rank: "7th Seat",
     arc: "Soul Society", shikai: "Hisagomaru", bankai: null,
-    image: null, rarity: "common",
+    image: yamadaImg.url, rarity: "common",
     stats: { attack: 40, defense: 55, speed: 60, reiatsu: 55, intelligence: 78, technique: 80, potential: 70 },
     overall: 62,
   },
@@ -127,7 +137,7 @@ export const characters: Character[] = [
     name: { en: "Ikkaku Madarame", ar: "إكاكو مادارامي" },
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "3rd Seat",
     arc: "Soul Society", shikai: "Hōzukimaru", bankai: "Ryūmon Hōzukimaru",
-    image: null, rarity: "rare",
+    image: ikkakuImg.url, rarity: "rare",
     stats: { attack: 82, defense: 74, speed: 78, reiatsu: 72, intelligence: 66, technique: 78, potential: 78 },
     overall: 76,
   },
@@ -136,7 +146,7 @@ export const characters: Character[] = [
     name: { en: "Orihime Inoue", ar: "أوريهيمي إينوي" },
     race: "Human / Fullbringer", faction: "Allies", division: null, rank: null,
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null, rarity: "rare",
+    image: orihimeImg.url, rarity: "rare",
     stats: { attack: 50, defense: 88, speed: 60, reiatsu: 80, intelligence: 78, technique: 74, potential: 96 },
     overall: 74,
   },
@@ -145,7 +155,7 @@ export const characters: Character[] = [
     name: { en: "Yasutora Sado", ar: "ياسوترا سادو" },
     race: "Human / Fullbringer", faction: "Allies", division: null, rank: null,
     arc: "Hueco Mundo", shikai: null, bankai: null,
-    image: null, rarity: "rare",
+    image: sadoImg.url, rarity: "rare",
     stats: { attack: 82, defense: 84, speed: 66, reiatsu: 74, intelligence: 62, technique: 68, potential: 84 },
     overall: 74,
   },
@@ -154,7 +164,7 @@ export const characters: Character[] = [
     name: { en: "Yhwach", ar: "يوهاباخ" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Emperor",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null, rarity: "ultra",
+    image: yhwachImg.url, rarity: "ultra",
     stats: { attack: 98, defense: 96, speed: 92, reiatsu: 99, intelligence: 98, technique: 96, potential: 99 },
     overall: 98,
   },
@@ -163,7 +173,7 @@ export const characters: Character[] = [
     name: { en: "Sōsuke Aizen", ar: "سوسكي آيزن" },
     race: "Shinigami / Hōgyoku", faction: "Antagonist", division: "5th", rank: "Former Captain",
     arc: "Fake Karakura", shikai: "Kyōka Suigetsu", bankai: "Unnamed",
-    image: null, rarity: "ultra",
+    image: aizenImg.url, rarity: "ultra",
     stats: { attack: 96, defense: 94, speed: 94, reiatsu: 99, intelligence: 99, technique: 98, potential: 99 },
     overall: 97,
   },
