@@ -9,6 +9,14 @@ import orihimeImg from "@/assets/characters/orihime.jpeg.asset.json";
 import sadoImg from "@/assets/characters/sado.jpeg.asset.json";
 import yhwachImg from "@/assets/characters/yhwach.jpeg.asset.json";
 import aizenImg from "@/assets/characters/aizen.jpeg.asset.json";
+import zarakiImg from "@/assets/characters/zaraki.jpeg.asset.json";
+import ishidaImg from "@/assets/characters/ishida.jpeg.asset.json";
+import grimjowImg from "@/assets/characters/grimjow.jpeg.asset.json";
+import byakuyaImg from "@/assets/characters/byakuya.jpeg.asset.json";
+import toshiroImg from "@/assets/characters/toshiro.jpeg.asset.json";
+import yoruichiImg from "@/assets/characters/yoruichi.jpeg.asset.json";
+import rukiaImg from "@/assets/characters/rukia.jpeg.asset.json";
+import renjiImg from "@/assets/characters/renji.jpeg.asset.json";
 
 // Temporary mock data. Images intentionally left null — only official art
 // will be added in a later phase. Cards render a stylized fallback.
@@ -29,7 +37,7 @@ export const characters: Character[] = [
     name: { en: "Rukia Kuchiki", ar: "روكيا كوتشيكي" },
     race: "Shinigami", faction: "Gotei 13", division: "13th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Sode no Shirayuki", bankai: "Hakka no Togame",
-    image: null, rarity: "legendary",
+    image: rukiaImg.url, rarity: "legendary",
     stats: { attack: 84, defense: 78, speed: 88, reiatsu: 86, intelligence: 88, technique: 92, potential: 90 },
     overall: 88,
   },
@@ -38,7 +46,7 @@ export const characters: Character[] = [
     name: { en: "Byakuya Kuchiki", ar: "بياكويا كوتشيكي" },
     race: "Shinigami", faction: "Gotei 13", division: "6th", rank: "Captain",
     arc: "Soul Society", shikai: "Senbonzakura", bankai: "Senbonzakura Kageyoshi",
-    image: null, rarity: "legendary",
+    image: byakuyaImg.url, rarity: "legendary",
     stats: { attack: 90, defense: 84, speed: 90, reiatsu: 92, intelligence: 88, technique: 96, potential: 90 },
     overall: 92,
   },
@@ -47,7 +55,7 @@ export const characters: Character[] = [
     name: { en: "Kenpachi Zaraki", ar: "كينباتشي زاراكي" },
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Nozarashi", bankai: "Unnamed",
-    image: null, rarity: "legendary",
+    image: zarakiImg.url, rarity: "legendary",
     stats: { attack: 99, defense: 82, speed: 84, reiatsu: 96, intelligence: 60, technique: 74, potential: 96 },
     overall: 93,
   },
@@ -56,7 +64,7 @@ export const characters: Character[] = [
     name: { en: "Tōshirō Hitsugaya", ar: "توشيرو هيتسوغايا" },
     race: "Shinigami", faction: "Gotei 13", division: "10th", rank: "Captain",
     arc: "Arrancar", shikai: "Hyōrinmaru", bankai: "Daiguren Hyōrinmaru",
-    image: null, rarity: "epic",
+    image: toshiroImg.url, rarity: "epic",
     stats: { attack: 86, defense: 80, speed: 90, reiatsu: 88, intelligence: 90, technique: 90, potential: 95 },
     overall: 89,
   },
@@ -65,7 +73,7 @@ export const characters: Character[] = [
     name: { en: "Renji Abarai", ar: "رينجي أباراي" },
     race: "Shinigami", faction: "Gotei 13", division: "6th", rank: "Lieutenant",
     arc: "Thousand-Year Blood War", shikai: "Zabimaru", bankai: "Sōō Zabimaru",
-    image: null, rarity: "epic",
+    image: renjiImg.url, rarity: "epic",
     stats: { attack: 88, defense: 78, speed: 82, reiatsu: 84, intelligence: 76, technique: 82, potential: 86 },
     overall: 84,
   },
@@ -74,7 +82,7 @@ export const characters: Character[] = [
     name: { en: "Uryū Ishida", ar: "أوريو إيشيدا" },
     race: "Quincy", faction: "Allies / Wandenreich", division: null, rank: "Sternritter A",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null, rarity: "epic",
+    image: ishidaImg.url, rarity: "epic",
     stats: { attack: 84, defense: 74, speed: 86, reiatsu: 82, intelligence: 96, technique: 94, potential: 90 },
     overall: 87,
   },
@@ -83,7 +91,7 @@ export const characters: Character[] = [
     name: { en: "Yoruichi Shihōin", ar: "يوروئتشي شيهوئين" },
     race: "Shinigami", faction: "Allies", division: null, rank: "Former Captain",
     arc: "Soul Society", shikai: null, bankai: null,
-    image: null, rarity: "legendary",
+    image: yoruichiImg.url, rarity: "legendary",
     stats: { attack: 88, defense: 78, speed: 99, reiatsu: 86, intelligence: 92, technique: 94, potential: 88 },
     overall: 90,
   },
@@ -110,7 +118,7 @@ export const characters: Character[] = [
     name: { en: "Grimmjow Jaegerjaquez", ar: "غريمجو ياغرياكيز" },
     race: "Arrancar", faction: "Espada", division: "6", rank: "Sexta Espada",
     arc: "Arrancar", shikai: "Pantera", bankai: null,
-    image: null, rarity: "epic",
+    image: grimjowImg.url, rarity: "epic",
     stats: { attack: 94, defense: 78, speed: 92, reiatsu: 88, intelligence: 70, technique: 80, potential: 88 },
     overall: 88,
   },
@@ -147,8 +155,8 @@ export const characters: Character[] = [
     race: "Human / Fullbringer", faction: "Allies", division: null, rank: null,
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: orihimeImg.url, rarity: "rare",
-    stats: { attack: 50, defense: 88, speed: 60, reiatsu: 80, intelligence: 78, technique: 74, potential: 96 },
-    overall: 74,
+    stats: { attack: 78, defense: 94, speed: 82, reiatsu: 94, intelligence: 92, technique: 90, potential: 99 },
+    overall: 90,
   },
   {
     id: "c-016", slug: "chad-yasutora",
