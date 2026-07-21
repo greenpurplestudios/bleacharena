@@ -45,6 +45,15 @@ export const dict = {
   shikai: { en: "Shikai", ar: "الشيكاي" },
   bankai: { en: "Bankai", ar: "البانكاي" },
   language: { en: "Language", ar: "اللغة" },
+  followUs: { en: "Follow Us", ar: "تابعنا" },
+  madeBy: { en: "Made by GreenPurpleStudios", ar: "من صنع GreenPurpleStudios" },
+  studioAccount: { en: "Studio Instagram", ar: "إنستغرام الاستوديو" },
+  personalAccount: { en: "Personal Instagram", ar: "إنستغرام شخصي" },
+  emailUs: { en: "Email Us", ar: "راسلنا" },
+  followTagline: {
+    en: "Follow GreenPurpleStudios for more Bleach and anime projects.",
+    ar: "تابع GreenPurpleStudios لمزيد من مشاريع بليتش والأنمي.",
+  },
 };
 
 export type TKey = keyof typeof dict;
