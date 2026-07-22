@@ -17,7 +17,6 @@ import toshiroImg from "@/assets/characters/toshiro.jpeg.asset.json";
 import yoruichiImg from "@/assets/characters/yoruichi.jpeg.asset.json";
 import rukiaImg from "@/assets/characters/rukia.jpeg.asset.json";
 import renjiImg from "@/assets/characters/renji.jpeg.asset.json";
-import yamamotoImg from "@/assets/characters/ichebei.jpeg.asset.json";
 import askinImg from "@/assets/characters/askin.jpeg.asset.json";
 import ichibeiImg from "@/assets/characters/ichebei.jpeg.asset.json";
 import lilleImg from "@/assets/characters/lille_baro.jpeg.asset.json";
