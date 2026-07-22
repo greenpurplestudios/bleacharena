@@ -23,11 +23,6 @@ export const quotes: Quote[] = [
   { id: "q16", text: { en: "Fear is not evil. It tells you what your weakness is. And once you know your weakness, you can become stronger.", ar: "الخوف ليس شراً. إنه يخبرك بنقطة ضعفك. وبمعرفتها يمكنك أن تصبح أقوى." }, speaker: { en: "Gildarts Clive… I mean, Ichigo Kurosaki", ar: "إتشيغو كوروساكي" } },
   { id: "q17", text: { en: "It's because we can't see anything that we run desperately after our dreams.", ar: "لأننا لا نرى شيئاً، نركض يائسين خلف أحلامنا." }, speaker: { en: "Rukia Kuchiki", ar: "روكيا كوتشيكي" } },
   { id: "q18", text: { en: "A wound born of a blade may heal, but a wound born of words will fester forever.", ar: "جرح النصل يُشفى، لكن جرح الكلمات يبقى إلى الأبد." }, speaker: { en: "Ichibē Hyōsube", ar: "إيتشيبي هيوسوبي" } },
-  { en: "", ar: "" } as unknown as Quote, // placeholder removed below
-].filter((q) => !!q.id);
-
-// Additional quotes appended to keep patch tidy
-quotes.push(
   { id: "q19", text: { en: "The pride you take in your abilities will decide the shape of your Zanpakutō.", ar: "الفخر الذي تحمله بقدراتك سيحدد شكل زانباكتوك." }, speaker: { en: "Ōetsu Nimaiya", ar: "أويتسو نيمايا" } },
   { id: "q20", text: { en: "I have to become stronger. I have to protect my friends.", ar: "يجب أن أصبح أقوى. يجب أن أحمي أصدقائي." }, speaker: { en: "Ichigo Kurosaki", ar: "إتشيغو كوروساكي" } },
   { id: "q21", text: { en: "You should not fear me. You should fear the man behind me.", ar: "لا يجب أن تخافني. يجب أن تخاف الرجل الذي خلفي." }, speaker: { en: "Jugram Haschwalth", ar: "يوغرام هاشفالت" } },
@@ -40,4 +35,4 @@ quotes.push(
   { id: "q28", text: { en: "A queen bee ain't attractive because it can win a fight. It's attractive because it's a queen.", ar: "ملكة النحل ليست جذابة لأنها تربح المعارك، بل لأنها ملكة." }, speaker: { en: "Yumichika Ayasegawa", ar: "يوميتشيكا أياسيغاوا" } },
   { id: "q29", text: { en: "Everything in this world exists to wear you down.", ar: "كل شيء في هذا العالم موجود لإنهاكك." }, speaker: { en: "Shunsui Kyōraku", ar: "شونسوي كيوراكو" } },
   { id: "q30", text: { en: "Being the best doesn't mean you have to look down on others.", ar: "أن تكون الأفضل لا يعني أن تنظر إلى الآخرين من علٍ." }, speaker: { en: "Kisuke Urahara", ar: "كيسوكي أوراهارا" } },
-);
+];
