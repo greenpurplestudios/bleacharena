@@ -31,7 +31,7 @@ export const Route = createFileRoute("/draft")({
 });
 
 const TEAM_SIZE = 5;
-const MAX_SKIPS = 3;
+const MAX_SKIPS = 5;
 
 type Phase = "drafting" | "result";
 

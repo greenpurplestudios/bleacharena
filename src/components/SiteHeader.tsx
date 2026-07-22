@@ -18,6 +18,9 @@ export function SiteHeader() {
           <Link to="/draft" className="text-muted-foreground transition-colors hover:text-foreground">
             {t("draft")}
           </Link>
+          <Link to="/quotes" className="text-muted-foreground transition-colors hover:text-foreground">
+            {t("quotes")}
+          </Link>
           <Link to="/follow" className="text-muted-foreground transition-colors hover:text-foreground">
             {t("followUs")}
           </Link>
