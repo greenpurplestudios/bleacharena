@@ -17,6 +17,16 @@ import toshiroImg from "@/assets/characters/toshiro.jpeg.asset.json";
 import yoruichiImg from "@/assets/characters/yoruichi.jpeg.asset.json";
 import rukiaImg from "@/assets/characters/rukia.jpeg.asset.json";
 import renjiImg from "@/assets/characters/renji.jpeg.asset.json";
+import askinImg from "@/assets/characters/askin.jpeg.asset.json";
+import ichibeiImg from "@/assets/characters/ichebei.jpeg.asset.json";
+import lilleImg from "@/assets/characters/lille_baro.jpeg.asset.json";
+import shinjiImg from "@/assets/characters/shinji.jpeg.asset.json";
+import starkImg from "@/assets/characters/stark.jpeg.asset.json";
+import mayuriImg from "@/assets/characters/mayuri.jpeg.asset.json";
+import konImg from "@/assets/characters/kon.jpeg.asset.json";
+import jugramImg from "@/assets/characters/jugram.jpeg.asset.json";
+import hisagiImg from "@/assets/characters/hisagi.jpeg.asset.json";
+import nimayaImg from "@/assets/characters/nimaya.jpeg.asset.json";
 
 // Data-driven roster. New characters can be added freely — game logic
 // reads from this list only. Images may be null until official art is
@@ -207,7 +217,7 @@ export const characters: Character[] = [
     name: { en: "Coyote Starrk", ar: "كويوتي ستارك" },
     race: "Arrancar", faction: "Espada", division: "1", rank: "Primera Espada",
     arc: "Fake Karakura", shikai: "Los Lobos", bankai: null,
-    image: null, rarity: "epic",
+    image: starkImg.url, rarity: "epic",
     stats: { attack: 90, defense: 82, speed: 88, reiatsu: 92, intelligence: 78, technique: 82, potential: 88 },
     overall: 87,
   },
@@ -216,7 +226,7 @@ export const characters: Character[] = [
     name: { en: "Shinji Hirako", ar: "شينجي هيراكو" },
     race: "Shinigami / Visored", faction: "Gotei 13", division: "5th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Sakanade", bankai: "Sakashima Yokoshima Happōfusagari",
-    image: null, rarity: "epic",
+    image: shinjiImg.url, rarity: "epic",
     stats: { attack: 84, defense: 80, speed: 86, reiatsu: 84, intelligence: 90, technique: 88, potential: 86 },
     overall: 85,
   },
@@ -225,7 +235,7 @@ export const characters: Character[] = [
     name: { en: "Lille Barro", ar: "ليلي بارو" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter X",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null, rarity: "legendary",
+    image: lilleImg.url, rarity: "legendary",
     stats: { attack: 94, defense: 92, speed: 88, reiatsu: 92, intelligence: 88, technique: 94, potential: 92 },
     overall: 93,
   },
@@ -234,7 +244,7 @@ export const characters: Character[] = [
     name: { en: "Askin Nakk Le Vaar", ar: "أسكين ناك لي فار" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter D",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null, rarity: "legendary",
+    image: askinImg.url, rarity: "legendary",
     stats: { attack: 88, defense: 92, speed: 86, reiatsu: 90, intelligence: 96, technique: 94, potential: 90 },
     overall: 91,
   },
@@ -243,7 +253,7 @@ export const characters: Character[] = [
     name: { en: "Jugram Haschwalth", ar: "يوغرام هاشفالت" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter B / Grandmaster",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null, rarity: "legendary",
+    image: jugramImg.url, rarity: "legendary",
     stats: { attack: 94, defense: 92, speed: 90, reiatsu: 94, intelligence: 92, technique: 96, potential: 94 },
     overall: 94,
   },
@@ -252,7 +262,7 @@ export const characters: Character[] = [
     name: { en: "Shūhei Hisagi", ar: "شوهي هيساغي" },
     race: "Shinigami", faction: "Gotei 13", division: "9th", rank: "Lieutenant",
     arc: "Thousand-Year Blood War", shikai: "Kazeshini", bankai: "Fushi no Kōjō",
-    image: null, rarity: "rare",
+    image: hisagiImg.url, rarity: "rare",
     stats: { attack: 82, defense: 78, speed: 82, reiatsu: 80, intelligence: 82, technique: 84, potential: 82 },
     overall: 83,
   },
@@ -261,7 +271,7 @@ export const characters: Character[] = [
     name: { en: "Ōetsu Nimaiya", ar: "أويتسو نيمايا" },
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
     arc: "Thousand-Year Blood War", shikai: "Sayafushi", bankai: null,
-    image: null, rarity: "legendary",
+    image: nimayaImg.url, rarity: "legendary",
     stats: { attack: 92, defense: 88, speed: 96, reiatsu: 92, intelligence: 92, technique: 96, potential: 92 },
     overall: 92,
   },
@@ -270,7 +280,7 @@ export const characters: Character[] = [
     name: { en: "Ichibē Hyōsube", ar: "إيتشيبي هيوسوبي" },
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Monk of the Zero Division",
     arc: "Thousand-Year Blood War", shikai: "Ichimonji", bankai: "Shirafude Ichimonji",
-    image: null, rarity: "ultra",
+    image: ichibeiImg.url, rarity: "ultra",
     stats: { attack: 96, defense: 94, speed: 92, reiatsu: 98, intelligence: 96, technique: 98, potential: 94 },
     overall: 95,
   },
@@ -279,7 +289,7 @@ export const characters: Character[] = [
     name: { en: "Kon", ar: "كون" },
     race: "Modified Soul", faction: "Allies", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: null, rarity: "common",
+    image: konImg.url, rarity: "common",
     stats: { attack: 10, defense: 12, speed: 40, reiatsu: 4, intelligence: 30, technique: 14, potential: 20 },
     overall: 18,
   },
@@ -288,7 +298,7 @@ export const characters: Character[] = [
     name: { en: "Mayuri Kurotsuchi", ar: "مايوري كوروتسوتشي" },
     race: "Shinigami", faction: "Gotei 13", division: "12th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Ashisogi Jizō", bankai: "Konjiki Ashisogi Jizō",
-    image: null, rarity: "legendary",
+    image: mayuriImg.url, rarity: "legendary",
     stats: { attack: 86, defense: 84, speed: 82, reiatsu: 86, intelligence: 99, technique: 96, potential: 90 },
     overall: 92,
   },
@@ -312,8 +322,8 @@ export const characters: Character[] = [
   },
   {
     id: "c-033", slug: "tite-kubo",
-    name: { en: "Tite Kubo — The Creator", ar: "تايتي كوبو — الخالق" },
-    race: "Mangaka / God", faction: "Beyond the Story", division: null, rank: "The Author",
+    name: { en: "Tite Kubo — The Writer", ar: "تايتي كوبو — الكاتب" },
+    race: "Mangaka / Writer", faction: "Beyond the Story", division: null, rank: "The Author",
     arc: "All Arcs", shikai: "Pen of Creation", bankai: "Final Chapter",
     image: null, rarity: "ultra",
     stats: { attack: 100, defense: 100, speed: 100, reiatsu: 100, intelligence: 100, technique: 100, potential: 100 },

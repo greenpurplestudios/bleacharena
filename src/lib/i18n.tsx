@@ -10,10 +10,11 @@ export const dict = {
   startDraft: { en: "Start Draft", ar: "ابدأ الاختيار" },
   howItWorks: { en: "How it works", ar: "كيف يعمل" },
   step1: { en: "One character appears at a time.", ar: "تظهر شخصية واحدة في كل مرة." },
-  step2: { en: "Add to team or skip — you get 3 skips.", ar: "أضف إلى الفريق أو تخطَّ — لديك ٣ تخطيات." },
+  step2: { en: "Add to team or skip — you get 5 skips.", ar: "أضف إلى الفريق أو تخطَّ — لديك ٥ تخطيات." },
   step3: { en: "Fill 5 slots to reveal your team score.", ar: "املأ ٥ خانات لتكشف عن تقييم فريقك." },
   home: { en: "Home", ar: "الرئيسية" },
   draft: { en: "Draft", ar: "الاختيار" },
+  quotes: { en: "Who Said That", ar: "من قال ذلك" },
   team: { en: "Team", ar: "الفريق" },
   slot: { en: "Slot", ar: "خانة" },
   empty: { en: "Empty", ar: "فارغة" },
@@ -54,6 +55,20 @@ export const dict = {
     en: "Follow GreenPurpleStudios for more Bleach and anime projects.",
     ar: "تابع GreenPurpleStudios لمزيد من مشاريع بليتش والأنمي.",
   },
+  quotesTitle: { en: "Who Said That?", ar: "من قال ذلك؟" },
+  quotesTagline: {
+    en: "Three quotes. Five choices each. Prove you know Bleach.",
+    ar: "ثلاث اقتباسات. خمسة خيارات لكل واحد. أثبت أنك تعرف بليتش.",
+  },
+  startQuiz: { en: "Start Quiz", ar: "ابدأ اللعبة" },
+  question: { en: "Question", ar: "سؤال" },
+  correct: { en: "Correct!", ar: "صحيح!" },
+  wrong: { en: "Wrong", ar: "خطأ" },
+  answerWas: { en: "Answer:", ar: "الإجابة:" },
+  next: { en: "Next", ar: "التالي" },
+  finish: { en: "See Result", ar: "شاهد النتيجة" },
+  yourScore: { en: "Your Score", ar: "نتيجتك" },
+  tryAgain: { en: "Try Again", ar: "حاول مجدداً" },
 };
 
 export type TKey = keyof typeof dict;
