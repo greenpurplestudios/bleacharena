@@ -17,6 +17,17 @@ import toshiroImg from "@/assets/characters/toshiro.jpeg.asset.json";
 import yoruichiImg from "@/assets/characters/yoruichi.jpeg.asset.json";
 import rukiaImg from "@/assets/characters/rukia.jpeg.asset.json";
 import renjiImg from "@/assets/characters/renji.jpeg.asset.json";
+import yamamotoImg from "@/assets/characters/ichebei.jpeg.asset.json";
+import askinImg from "@/assets/characters/askin.jpeg.asset.json";
+import ichibeiImg from "@/assets/characters/ichebei.jpeg.asset.json";
+import lilleImg from "@/assets/characters/lille_baro.jpeg.asset.json";
+import shinjiImg from "@/assets/characters/shinji.jpeg.asset.json";
+import starkImg from "@/assets/characters/stark.jpeg.asset.json";
+import mayuriImg from "@/assets/characters/mayuri.jpeg.asset.json";
+import konImg from "@/assets/characters/kon.jpeg.asset.json";
+import jugramImg from "@/assets/characters/jugram.jpeg.asset.json";
+import hisagiImg from "@/assets/characters/hisagi.jpeg.asset.json";
+import nimayaImg from "@/assets/characters/nimaya.jpeg.asset.json";
 
 // Data-driven roster. New characters can be added freely — game logic
 // reads from this list only. Images may be null until official art is
