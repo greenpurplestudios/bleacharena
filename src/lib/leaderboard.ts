@@ -75,8 +75,12 @@ export async function setUsername(name: string): Promise<UsernameResult> {
   if (error) return { ok: false, error: "unknown" };
   const payload = (data ?? {}) as { ok: boolean; username?: string; error?: string };
   if (payload.ok && payload.username) return { ok: true, username: payload.username };
-  const err = (payload.error as UsernameResult extends { error: infer E } ? E : never) ?? "unknown";
-  return { ok: false, error: err };
+  const known = ["taken", "invalid_length", "invalid_chars"] as const;
+  type Known = (typeof known)[number];
+  const err = payload.error ?? "";
+  const mapped: Known | "unknown" =
+    (known as readonly string[]).includes(err) ? (err as Known) : "unknown";
+  return { ok: false, error: mapped };
 }
 
 export interface LeaderboardRow {
