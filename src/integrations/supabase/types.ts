@@ -14,13 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leaderboard_scores: {
+        Row: {
+          id: string
+          score: number
+          season_key: string
+          submitted_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          score: number
+          season_key: string
+          submitted_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          score?: number
+          season_key?: string
+          submitted_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_season_key: { Args: never; Returns: string }
+      get_leaderboard: {
+        Args: { p_limit?: number; p_season?: string }
+        Returns: {
+          rank: number
+          score: number
+          user_id: string
+          username: string
+        }[]
+      }
+      set_username: { Args: { p_username: string }; Returns: Json }
+      submit_score: { Args: { p_score: number }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
