@@ -24,6 +24,13 @@ export const Route = createFileRoute("/follow")({
 
 const LINKS = [
   {
+    kind: "web" as const,
+    labelKey: "website" as const,
+    handle: "greenpurplestudios.github.io",
+    href: "https://greenpurplestudios.github.io",
+    accent: "oklch(0.72 0.18 260)",
+  },
+  {
     kind: "instagram" as const,
     labelKey: "studioAccount" as const,
     handle: "@greenpurplestudios",
