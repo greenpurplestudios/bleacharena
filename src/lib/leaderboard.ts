@@ -93,7 +93,6 @@ export interface LeaderboardRow {
 export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
   await ensureAnonSession();
   const { data, error } = await supabase.rpc("get_leaderboard", {
-    p_season: null,
     p_limit: limit,
   });
   if (error || !data) return [];
