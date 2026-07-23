@@ -24,6 +24,13 @@ export const Route = createFileRoute("/follow")({
 
 const LINKS = [
   {
+    kind: "web" as const,
+    labelKey: "website" as const,
+    handle: "greenpurplestudios.github.io",
+    href: "https://greenpurplestudios.github.io",
+    accent: "oklch(0.72 0.18 260)",
+  },
+  {
     kind: "instagram" as const,
     labelKey: "studioAccount" as const,
     handle: "@greenpurplestudios",
@@ -84,7 +91,7 @@ function FollowPage() {
                     border: `1px solid ${l.accent.replace(")", " / 0.4)")}`,
                   }}
                 >
-                  {l.kind === "email" ? "@" : "IG"}
+                  {l.kind === "email" ? "@" : l.kind === "web" ? "★" : "IG"}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[10px] uppercase tracking-widest text-muted-foreground">

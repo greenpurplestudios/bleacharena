@@ -13,6 +13,9 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/lib/i18n";
 import { SiteFooter } from "@/components/SiteFooter";
+import { MobileNav } from "@/components/MobileNav";
+import { EasterEggHeart } from "@/components/EasterEggHeart";
+import { ensureAnonSession } from "@/lib/leaderboard";
 
 function NotFoundComponent() {
   return (
@@ -135,6 +138,8 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => { ensureAnonSession(); }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
@@ -142,6 +147,8 @@ function RootComponent() {
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
           <SiteFooter />
+          <MobileNav />
+          <EasterEggHeart />
         </div>
       </I18nProvider>
     </QueryClientProvider>
