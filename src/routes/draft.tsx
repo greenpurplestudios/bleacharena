@@ -10,6 +10,10 @@ import { StatBar } from "@/components/StatBar";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
+import { submitScore, getMyProfile } from "@/lib/leaderboard";
+import { UsernamePrompt } from "@/components/UsernamePrompt";
+import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/draft")({
   head: () => ({
@@ -167,6 +171,25 @@ function ResultScreen({
   const { t } = useI18n();
   const score = useMemo(() => scoreTeam(team), [team]);
   const [copied, setCopied] = useState(false);
+  const [submitState, setSubmitState] = useState<"idle" | "done" | "not-improved">("idle");
+  const [needsUsername, setNeedsUsername] = useState(false);
+
+  const doSubmit = useCallback(async () => {
+    const res = await submitScore(score.overall);
+    if (!res.ok) {
+      if (res.needsUsername) setNeedsUsername(true);
+      return;
+    }
+    setSubmitState(res.improved ? "done" : "not-improved");
+  }, [score.overall]);
+
+  useEffect(() => {
+    (async () => {
+      const p = await getMyProfile();
+      if (!p?.username) { setNeedsUsername(true); return; }
+      doSubmit();
+    })();
+  }, [doSubmit]);
 
   const share = async () => {
     const names = team.filter(Boolean).map((c) => c!.name.en).join(", ");
@@ -184,6 +207,12 @@ function ResultScreen({
 
   return (
     <section className="flex flex-col items-center gap-8" style={{ animation: "card-in 0.6s ease-out both" }}>
+      <UsernamePrompt
+        open={needsUsername}
+        onClose={() => setNeedsUsername(false)}
+        dismissible={false}
+        onSaved={() => { setNeedsUsername(false); doSubmit(); }}
+      />
       <div className="text-center">
         <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">{t("result")}</p>
         <h1 className="mt-2 font-display text-4xl font-black text-glow-orange sm:text-5xl">
@@ -241,6 +270,12 @@ function ResultScreen({
         >
           {t("playAgain")}
         </button>
+        <Link
+          to="/leaderboard"
+          className="rounded-xl border border-white/15 bg-white/5 px-6 py-3 font-display text-sm font-bold uppercase tracking-widest text-foreground hover:bg-white/10"
+        >
+          {t("viewLeaderboard")}
+        </Link>
         <button
           onClick={share}
           className="rounded-xl border border-white/15 bg-white/5 px-6 py-3 font-display text-sm font-bold uppercase tracking-widest text-foreground hover:bg-white/10"
@@ -248,6 +283,8 @@ function ResultScreen({
           {copied ? t("shared") : t("share")}
         </button>
       </div>
+      {submitState === "done" && <p className="text-sm text-accent">{t("scoreSubmitted")}</p>}
+      {submitState === "not-improved" && <p className="text-sm text-muted-foreground">{t("scoreNotImproved")}</p>}
     </section>
   );
 }
