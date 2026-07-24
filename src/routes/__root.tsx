@@ -15,6 +15,8 @@ import { I18nProvider } from "@/lib/i18n";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileNav } from "@/components/MobileNav";
 import { EasterEggHeart } from "@/components/EasterEggHeart";
+import { PWAUpdateToast } from "@/components/PWAUpdateToast";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { ensureAnonSession } from "@/lib/leaderboard";
 
 function NotFoundComponent() {
@@ -82,6 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" },
       { title: "Bleach Draft — Forge Your team" },
       {
         name: "description",
@@ -89,6 +92,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Draft a 5-slot Bleach dream team. One card at a time, three skips, weighted rarity. Bilingual (EN / AR).",
       },
       { name: "theme-color", content: "#f68a3b" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Bleach Arena" },
       { property: "og:title", content: "Bleach Draft — Forge Your team" },
       {
         property: "og:description",
@@ -107,6 +114,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -149,6 +160,8 @@ function RootComponent() {
           <SiteFooter />
           <MobileNav />
           <EasterEggHeart />
+          <PWAUpdateToast />
+          <InstallPrompt />
         </div>
       </I18nProvider>
     </QueryClientProvider>
