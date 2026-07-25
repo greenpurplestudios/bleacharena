@@ -313,7 +313,7 @@ export const characters: Character[] = [
     name: { en: "Tite Kubo — The Writer", ar: "تايتي كوبو — الكاتب" },
     race: "Mangaka / Writer", faction: "Beyond the Story", division: null, rank: "The Author",
     arc: "All Arcs", shikai: "Pen of Creation", bankai: "Final Chapter",
-    image: null, rarity: "ultra",
+    image: kuboImg.url, rarity: "ultra",
     overall: 100,
     tags: ["creator", "secret"],
   },
@@ -338,7 +338,7 @@ export const characters: Character[] = [
     name: { en: "Ururu Tsumugiya", ar: "أوروارو تسوموغيا" },
     race: "Human", faction: "Urahara Shop", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: null /* image pending */, rarity: "common",
+    image: ururuImg.url, rarity: "common",
     overall: 52,
   },
   {
@@ -346,7 +346,7 @@ export const characters: Character[] = [
     name: { en: "Keigo Asano", ar: "كيغو أسانو" },
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: null, rarity: "common",
+    image: keigoImg.url, rarity: "common",
     overall: 20,
   },
   {
@@ -354,7 +354,7 @@ export const characters: Character[] = [
     name: { en: "Mizuiro Kojima", ar: "ميزويرو كوجيما" },
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: null /* image pending */, rarity: "common",
+    image: mizuiroImg.url, rarity: "common",
     overall: 24,
   },
   {
