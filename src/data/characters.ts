@@ -37,6 +37,16 @@ import soiFonImg from "@/assets/characters/soi_fon.jpeg.asset.json";
 import rangikuImg from "@/assets/characters/rangiku.jpeg.asset.json";
 import tatsukiImg from "@/assets/characters/tatsuki_arisawa.jpeg.asset.json";
 import gintaImg from "@/assets/characters/ginta.jpeg.asset.json";
+import keigoImg from "@/assets/characters/keigo.jpeg.asset.json";
+import mizuiroImg from "@/assets/characters/mizuiro_kojima.jpeg.asset.json";
+import ururuImg from "@/assets/characters/ururu.jpeg.asset.json";
+import kuboImg from "@/assets/characters/tite_kubo.jpeg.asset.json";
+import gerardImg from "@/assets/characters/gerard.jpeg.asset.json";
+import pernidaImg from "@/assets/characters/pernida.jpeg.asset.json";
+import tokinadaImg from "@/assets/characters/tokinada.jpeg.asset.json";
+import harribelImg from "@/assets/characters/harribel.jpeg.asset.json";
+import komamuraImg from "@/assets/characters/komamura.jpeg.asset.json";
+import kiraImg from "@/assets/characters/kira.jpeg.asset.json";
 
 // Data-driven roster. New characters can be added freely — game logic
 // reads from this list only. Images may be null until official art is
