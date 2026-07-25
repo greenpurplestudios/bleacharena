@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as QuotesRouteImport } from './routes/quotes'
+import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as FollowRouteImport } from './routes/follow'
 import { Route as DraftRouteImport } from './routes/draft'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const QuotesRoute = QuotesRouteImport.update({
   id: '/quotes',
   path: '/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuizRoute = QuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/quiz': typeof QuizRoute
   '/quotes': typeof QuotesRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/quiz': typeof QuizRoute
   '/quotes': typeof QuotesRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,22 @@ export interface FileRoutesById {
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/quiz': typeof QuizRoute
   '/quotes': typeof QuotesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/draft' | '/follow' | '/leaderboard' | '/quotes'
+  fullPaths: '/' | '/draft' | '/follow' | '/leaderboard' | '/quiz' | '/quotes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/draft' | '/follow' | '/leaderboard' | '/quotes'
-  id: '__root__' | '/' | '/draft' | '/follow' | '/leaderboard' | '/quotes'
+  to: '/' | '/draft' | '/follow' | '/leaderboard' | '/quiz' | '/quotes'
+  id:
+    | '__root__'
+    | '/'
+    | '/draft'
+    | '/follow'
+    | '/leaderboard'
+    | '/quiz'
+    | '/quotes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +92,7 @@ export interface RootRouteChildren {
   DraftRoute: typeof DraftRoute
   FollowRoute: typeof FollowRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  QuizRoute: typeof QuizRoute
   QuotesRoute: typeof QuotesRoute
 }
 
@@ -86,6 +103,13 @@ declare module '@tanstack/react-router' {
       path: '/quotes'
       fullPath: '/quotes'
       preLoaderRoute: typeof QuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quiz': {
+      id: '/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof QuizRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -124,6 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   DraftRoute: DraftRoute,
   FollowRoute: FollowRoute,
   LeaderboardRoute: LeaderboardRoute,
+  QuizRoute: QuizRoute,
   QuotesRoute: QuotesRoute,
 }
 export const routeTree = rootRouteImport
