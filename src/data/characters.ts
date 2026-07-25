@@ -48,7 +48,6 @@ export const characters: Character[] = [
     race: "Human / Substitute Shinigami", faction: "Allies", division: null, rank: "Substitute",
     arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
     image: ichigoImg.url, rarity: "ultra",
-    stats: { attack: 96, defense: 82, speed: 92, reiatsu: 99, intelligence: 78, technique: 88, potential: 99 },
     overall: 96, tags: ["hero", "hybrid"],
   },
   {
@@ -57,7 +56,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "13th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Sode no Shirayuki", bankai: "Hakka no Togame",
     image: rukiaImg.url, rarity: "legendary",
-    stats: { attack: 84, defense: 78, speed: 88, reiatsu: 86, intelligence: 88, technique: 92, potential: 90 },
     overall: 88,
   },
   {
@@ -66,7 +64,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "6th", rank: "Captain",
     arc: "Soul Society", shikai: "Senbonzakura", bankai: "Senbonzakura Kageyoshi",
     image: byakuyaImg.url, rarity: "legendary",
-    stats: { attack: 90, defense: 84, speed: 90, reiatsu: 92, intelligence: 88, technique: 96, potential: 90 },
     overall: 92,
   },
   {
@@ -75,7 +72,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Nozarashi", bankai: "Unnamed",
     image: zarakiImg.url, rarity: "legendary",
-    stats: { attack: 99, defense: 82, speed: 84, reiatsu: 96, intelligence: 60, technique: 74, potential: 96 },
     overall: 93,
   },
   {
@@ -84,7 +80,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "10th", rank: "Captain",
     arc: "Arrancar", shikai: "Hyōrinmaru", bankai: "Daiguren Hyōrinmaru",
     image: toshiroImg.url, rarity: "epic",
-    stats: { attack: 86, defense: 80, speed: 90, reiatsu: 88, intelligence: 90, technique: 90, potential: 95 },
     overall: 89,
   },
   {
@@ -93,7 +88,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "6th", rank: "Lieutenant",
     arc: "Thousand-Year Blood War", shikai: "Zabimaru", bankai: "Sōō Zabimaru",
     image: renjiImg.url, rarity: "epic",
-    stats: { attack: 88, defense: 78, speed: 82, reiatsu: 84, intelligence: 76, technique: 82, potential: 86 },
     overall: 84,
   },
   {
@@ -102,7 +96,6 @@ export const characters: Character[] = [
     race: "Quincy", faction: "Allies / Wandenreich", division: null, rank: "Sternritter A",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: ishidaImg.url, rarity: "epic",
-    stats: { attack: 84, defense: 74, speed: 86, reiatsu: 82, intelligence: 96, technique: 94, potential: 90 },
     overall: 87,
   },
   {
@@ -111,7 +104,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Allies", division: null, rank: "Former Captain",
     arc: "Soul Society", shikai: null, bankai: null,
     image: yoruichiImg.url, rarity: "legendary",
-    stats: { attack: 88, defense: 78, speed: 99, reiatsu: 86, intelligence: 92, technique: 94, potential: 88 },
     overall: 90,
   },
   {
@@ -120,7 +112,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Allies", division: null, rank: "Former Captain",
     arc: "Thousand-Year Blood War", shikai: "Benihime", bankai: "Kannonbiraki Benihime Aratame",
     image: uraharaImg.url, rarity: "legendary",
-    stats: { attack: 86, defense: 82, speed: 88, reiatsu: 88, intelligence: 99, technique: 96, potential: 92 },
     overall: 91,
   },
   {
@@ -129,7 +120,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "1st", rank: "Captain-Commander",
     arc: "Thousand-Year Blood War", shikai: "Katen Kyōkotsu", bankai: "Katen Kyōkotsu: Karamatsu Shinjū",
     image: kyorakuImg.url, rarity: "ultra",
-    stats: { attack: 94, defense: 88, speed: 90, reiatsu: 96, intelligence: 96, technique: 96, potential: 92 },
     overall: 94,
   },
   {
@@ -138,7 +128,6 @@ export const characters: Character[] = [
     race: "Arrancar", faction: "Espada", division: "6", rank: "Sexta Espada",
     arc: "Arrancar", shikai: "Pantera", bankai: null,
     image: grimjowImg.url, rarity: "epic",
-    stats: { attack: 94, defense: 78, speed: 92, reiatsu: 88, intelligence: 70, technique: 80, potential: 88 },
     overall: 88,
   },
   {
@@ -147,7 +136,6 @@ export const characters: Character[] = [
     race: "Arrancar", faction: "Espada", division: "4", rank: "Cuarta Espada",
     arc: "Arrancar", shikai: "Murciélago", bankai: null,
     image: ulquiorraImg.url, rarity: "legendary",
-    stats: { attack: 92, defense: 92, speed: 90, reiatsu: 94, intelligence: 90, technique: 88, potential: 90 },
     overall: 92,
   },
   {
@@ -156,7 +144,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "4th", rank: "7th Seat",
     arc: "Soul Society", shikai: "Hisagomaru", bankai: null,
     image: yamadaImg.url, rarity: "common",
-    stats: { attack: 40, defense: 55, speed: 60, reiatsu: 55, intelligence: 78, technique: 80, potential: 70 },
     overall: 62,
   },
   {
@@ -165,7 +152,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "3rd Seat",
     arc: "Soul Society", shikai: "Hōzukimaru", bankai: "Ryūmon Hōzukimaru",
     image: ikkakuImg.url, rarity: "rare",
-    stats: { attack: 82, defense: 74, speed: 78, reiatsu: 72, intelligence: 66, technique: 78, potential: 78 },
     overall: 76,
   },
   {
@@ -174,7 +160,6 @@ export const characters: Character[] = [
     race: "Human / Fullbringer", faction: "Allies", division: null, rank: null,
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: orihimeImg.url, rarity: "legendary",
-    stats: { attack: 78, defense: 94, speed: 82, reiatsu: 94, intelligence: 92, technique: 90, potential: 99 },
     overall: 90,
   },
   {
@@ -183,7 +168,6 @@ export const characters: Character[] = [
     race: "Human / Fullbringer", faction: "Allies", division: null, rank: null,
     arc: "Hueco Mundo", shikai: null, bankai: null,
     image: sadoImg.url, rarity: "rare",
-    stats: { attack: 82, defense: 84, speed: 66, reiatsu: 74, intelligence: 62, technique: 68, potential: 84 },
     overall: 74,
   },
   {
@@ -192,7 +176,6 @@ export const characters: Character[] = [
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Emperor",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: yhwachImg.url, rarity: "ultra",
-    stats: { attack: 98, defense: 96, speed: 92, reiatsu: 99, intelligence: 98, technique: 96, potential: 99 },
     overall: 98,
   },
   {
@@ -201,7 +184,6 @@ export const characters: Character[] = [
     race: "Shinigami / Hōgyoku", faction: "Antagonist", division: "5th", rank: "Former Captain",
     arc: "Fake Karakura", shikai: "Kyōka Suigetsu", bankai: "Unnamed",
     image: aizenImg.url, rarity: "ultra",
-    stats: { attack: 96, defense: 94, speed: 94, reiatsu: 99, intelligence: 99, technique: 98, potential: 99 },
     overall: 97,
   },
   {
@@ -210,7 +192,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "1st", rank: "Captain-Commander",
     arc: "Thousand-Year Blood War", shikai: "Ryūjin Jakka", bankai: "Zanka no Tachi",
     image: yamamotoImg.url, rarity: "ultra",
-    stats: { attack: 98, defense: 92, speed: 90, reiatsu: 99, intelligence: 94, technique: 96, potential: 92 },
     overall: 95,
   },
   {
@@ -219,7 +200,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Antagonist", division: "3rd", rank: "Former Captain",
     arc: "Fake Karakura", shikai: "Shinsō", bankai: "Kamishini no Yari",
     image: null, rarity: "epic",
-    stats: { attack: 88, defense: 78, speed: 94, reiatsu: 84, intelligence: 94, technique: 92, potential: 86 },
     overall: 89,
   },
   {
@@ -228,7 +208,6 @@ export const characters: Character[] = [
     race: "Arrancar", faction: "Espada", division: "1", rank: "Primera Espada",
     arc: "Fake Karakura", shikai: "Los Lobos", bankai: null,
     image: starkImg.url, rarity: "epic",
-    stats: { attack: 90, defense: 82, speed: 88, reiatsu: 92, intelligence: 78, technique: 82, potential: 88 },
     overall: 87,
   },
   {
@@ -237,7 +216,6 @@ export const characters: Character[] = [
     race: "Shinigami / Visored", faction: "Gotei 13", division: "5th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Sakanade", bankai: "Sakashima Yokoshima Happōfusagari",
     image: shinjiImg.url, rarity: "epic",
-    stats: { attack: 84, defense: 80, speed: 86, reiatsu: 84, intelligence: 90, technique: 88, potential: 86 },
     overall: 85,
   },
   {
@@ -246,7 +224,6 @@ export const characters: Character[] = [
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter X",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: lilleImg.url, rarity: "legendary",
-    stats: { attack: 94, defense: 92, speed: 88, reiatsu: 92, intelligence: 88, technique: 94, potential: 92 },
     overall: 93,
   },
   {
@@ -255,7 +232,6 @@ export const characters: Character[] = [
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter D",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: askinImg.url, rarity: "legendary",
-    stats: { attack: 88, defense: 92, speed: 86, reiatsu: 90, intelligence: 96, technique: 94, potential: 90 },
     overall: 91,
   },
   {
@@ -264,7 +240,6 @@ export const characters: Character[] = [
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter B / Grandmaster",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: jugramImg.url, rarity: "legendary",
-    stats: { attack: 94, defense: 92, speed: 90, reiatsu: 94, intelligence: 92, technique: 96, potential: 94 },
     overall: 94,
   },
   {
@@ -273,7 +248,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "9th", rank: "Lieutenant",
     arc: "Thousand-Year Blood War", shikai: "Kazeshini", bankai: "Fushi no Kōjō",
     image: hisagiImg.url, rarity: "rare",
-    stats: { attack: 82, defense: 78, speed: 82, reiatsu: 80, intelligence: 82, technique: 84, potential: 82 },
     overall: 83,
   },
   {
@@ -282,7 +256,6 @@ export const characters: Character[] = [
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
     arc: "Thousand-Year Blood War", shikai: "Sayafushi", bankai: null,
     image: nimayaImg.url, rarity: "legendary",
-    stats: { attack: 92, defense: 88, speed: 96, reiatsu: 92, intelligence: 92, technique: 96, potential: 92 },
     overall: 92,
   },
   {
@@ -291,7 +264,6 @@ export const characters: Character[] = [
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Monk of the Zero Division",
     arc: "Thousand-Year Blood War", shikai: "Ichimonji", bankai: "Shirafude Ichimonji",
     image: ichibeiImg.url, rarity: "ultra",
-    stats: { attack: 96, defense: 94, speed: 92, reiatsu: 98, intelligence: 96, technique: 98, potential: 94 },
     overall: 95,
   },
   {
@@ -300,7 +272,6 @@ export const characters: Character[] = [
     race: "Modified Soul", faction: "Allies", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
     image: konImg.url, rarity: "common",
-    stats: { attack: 10, defense: 12, speed: 40, reiatsu: 4, intelligence: 30, technique: 14, potential: 20 },
     overall: 18,
   },
   {
@@ -309,7 +280,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "12th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Ashisogi Jizō", bankai: "Konjiki Ashisogi Jizō",
     image: mayuriImg.url, rarity: "legendary",
-    stats: { attack: 86, defense: 84, speed: 82, reiatsu: 86, intelligence: 99, technique: 96, potential: 90 },
     overall: 92,
   },
   {
@@ -318,7 +288,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "10th", rank: "Lieutenant",
     arc: "Arrancar", shikai: "Haineko", bankai: null,
     image: rangikuImg.url, rarity: "rare",
-    stats: { attack: 76, defense: 72, speed: 82, reiatsu: 78, intelligence: 78, technique: 78, potential: 80 },
     overall: 78,
   },
   {
@@ -327,7 +296,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "5th Seat",
     arc: "Soul Society", shikai: "Ruri'iro Kujaku", bankai: null,
     image: yumechikaImg.url, rarity: "rare",
-    stats: { attack: 74, defense: 70, speed: 78, reiatsu: 76, intelligence: 74, technique: 78, potential: 74 },
     overall: 75,
   },
   {
@@ -336,7 +304,6 @@ export const characters: Character[] = [
     race: "Mangaka / Writer", faction: "Beyond the Story", division: null, rank: "The Author",
     arc: "All Arcs", shikai: "Pen of Creation", bankai: "Final Chapter",
     image: null, rarity: "ultra",
-    stats: { attack: 100, defense: 100, speed: 100, reiatsu: 100, intelligence: 100, technique: 100, potential: 100 },
     overall: 100,
     tags: ["creator", "secret"],
   },
@@ -346,7 +313,6 @@ export const characters: Character[] = [
     race: "Human / Shiba", faction: "Allies", division: null, rank: null,
     arc: "Soul Society", shikai: null, bankai: null,
     image: ganjuImg.url, rarity: "common",
-    stats: { attack: 44, defense: 46, speed: 42, reiatsu: 36, intelligence: 40, technique: 42, potential: 50 },
     overall: 42,
   },
   {
@@ -355,7 +321,6 @@ export const characters: Character[] = [
     race: "Human", faction: "Urahara Shop", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
     image: gintaImg.url, rarity: "common",
-    stats: { attack: 34, defense: 30, speed: 38, reiatsu: 20, intelligence: 30, technique: 30, potential: 40 },
     overall: 32,
   },
   {
@@ -364,7 +329,6 @@ export const characters: Character[] = [
     race: "Human", faction: "Urahara Shop", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
     image: null /* image pending */, rarity: "common",
-    stats: { attack: 62, defense: 34, speed: 60, reiatsu: 40, intelligence: 42, technique: 66, potential: 68 },
     overall: 52,
   },
   {
@@ -373,7 +337,6 @@ export const characters: Character[] = [
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
     image: null, rarity: "common",
-    stats: { attack: 14, defense: 16, speed: 30, reiatsu: 6, intelligence: 38, technique: 12, potential: 20 },
     overall: 20,
   },
   {
@@ -382,7 +345,6 @@ export const characters: Character[] = [
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
     image: null /* image pending */, rarity: "common",
-    stats: { attack: 18, defense: 20, speed: 34, reiatsu: 8, intelligence: 54, technique: 20, potential: 26 },
     overall: 24,
   },
   {
@@ -391,7 +353,6 @@ export const characters: Character[] = [
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
     image: tatsukiImg.url, rarity: "common",
-    stats: { attack: 58, defense: 46, speed: 60, reiatsu: 22, intelligence: 46, technique: 54, potential: 62 },
     overall: 50,
   },
   {
@@ -400,7 +361,6 @@ export const characters: Character[] = [
     race: "Human / Spiritualist", faction: "Comedic Relief", division: null, rank: "Karakura Superhero",
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
     image: donKanojiImg.url, rarity: "common",
-    stats: { attack: 38, defense: 30, speed: 34, reiatsu: 40, intelligence: 24, technique: 30, potential: 34 },
     overall: 33,
   },
   {
@@ -409,7 +369,6 @@ export const characters: Character[] = [
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: senjmaruImg.url, rarity: "ultra",
-    stats: { attack: 90, defense: 94, speed: 90, reiatsu: 94, intelligence: 96, technique: 96, potential: 92 },
     overall: 93,
   },
   {
@@ -418,7 +377,6 @@ export const characters: Character[] = [
     race: "Shinigami", faction: "Gotei 13", division: "2nd", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Suzumebachi", bankai: "Jakuhō Raikōben",
     image: soiFonImg.url, rarity: "epic",
-    stats: { attack: 86, defense: 80, speed: 94, reiatsu: 82, intelligence: 86, technique: 90, potential: 84 },
     overall: 86,
   },
   {
@@ -427,7 +385,6 @@ export const characters: Character[] = [
     race: "Arrancar", faction: "Espada", division: "2", rank: "Segunda Espada",
     arc: "Fake Karakura", shikai: "Arrogante", bankai: null,
     image: baraganImg.url, rarity: "legendary",
-    stats: { attack: 88, defense: 90, speed: 72, reiatsu: 92, intelligence: 82, technique: 84, potential: 86 },
     overall: 87,
   },
 ];
