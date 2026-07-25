@@ -67,6 +67,28 @@ function Home() {
             </div>
           ))}
         </section>
+
+        <section
+          className="mt-12 grid w-full max-w-4xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+          style={{ animation: "card-in 1.1s 0.4s ease-out both" }}
+        >
+          {[
+            { to: "/draft", key: "draft", desc: "bleachDraftDesc", icon: "卍" },
+            { to: "/quotes", key: "quotes", desc: "whoSaidThatDesc", icon: "?" },
+            { to: "/quiz", key: "quizShort", desc: "quizDesc", icon: "◈" },
+            { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★" },
+          ].map((m) => (
+            <Link
+              key={m.to}
+              to={m.to as "/draft"}
+              className="group rounded-2xl border border-white/10 bg-card/60 p-5 text-start backdrop-blur-md transition-all hover:border-primary/40 hover:bg-white/[0.06]"
+            >
+              <div className="mb-2 font-display text-3xl text-primary" aria-hidden>{m.icon}</div>
+              <div className="font-display text-lg font-bold">{t(m.key as "draft")}</div>
+              <p className="mt-1 text-xs text-muted-foreground">{t(m.desc as "bleachDraftDesc")}</p>
+            </Link>
+          ))}
+        </section>
       </main>
     </>
   );

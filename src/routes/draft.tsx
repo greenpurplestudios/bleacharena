@@ -6,7 +6,6 @@ import { pickWeighted } from "@/lib/rarity";
 import { scoreTeam } from "@/lib/scoring";
 import { CharacterCard } from "@/components/CharacterCard";
 import { TeamSlots } from "@/components/TeamSlots";
-import { StatBar } from "@/components/StatBar";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
@@ -235,16 +234,6 @@ function ResultScreen({
             </span>
           </div>
         ))}
-      </div>
-
-      <div className="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
-        <StatBar label={t("attack")} value={score.attack} delay={100} />
-        <StatBar label={t("defense")} value={score.defense} delay={180} accent="accent" />
-        <StatBar label={t("speed")} value={score.speed} delay={260} />
-        <StatBar label={t("reiatsu")} value={score.reiatsu} delay={340} accent="accent" />
-        <StatBar label={t("intelligence")} value={score.intelligence} delay={420} />
-        <StatBar label={t("technique")} value={score.technique} delay={500} accent="accent" />
-        <StatBar label={t("potential")} value={score.potential} delay={580} />
       </div>
 
       <div className="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-6">

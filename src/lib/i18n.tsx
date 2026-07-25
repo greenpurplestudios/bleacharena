@@ -112,6 +112,18 @@ export const dict = {
   finish: { en: "See Result", ar: "شاهد النتيجة" },
   yourScore: { en: "Your Score", ar: "نتيجتك" },
   tryAgain: { en: "Try Again", ar: "حاول مجدداً" },
+  quiz: { en: "Which Bleach Character Are You?", ar: "أي شخصية بليتش أنت؟" },
+  quizShort: { en: "Personality Quiz", ar: "اختبار الشخصية" },
+  quizDesc: {
+    en: "Answer a few questions and discover your closest Bleach match.",
+    ar: "أجب على أسئلة قليلة واكتشف أقرب شخصية بليتش لك.",
+  },
+  startQuizBtn: { en: "Start", ar: "ابدأ" },
+  yourMatch: { en: "Your Match", ar: "شخصيتك" },
+  topMatches: { en: "Top Matches", ar: "أقرب المطابقات" },
+  matchScore: { en: "Match", ar: "التطابق" },
+  retakeQuiz: { en: "Retake Quiz", ar: "أعد الاختبار" },
+  ofN: { en: "of", ar: "من" },
 };
 
 export type TKey = keyof typeof dict;
