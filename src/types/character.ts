@@ -1,15 +1,5 @@
 export type Rarity = "common" | "rare" | "epic" | "legendary" | "ultra";
 
-export interface CharacterStats {
-  attack: number;
-  defense: number;
-  speed: number;
-  reiatsu: number;
-  intelligence: number;
-  technique: number;
-  potential: number;
-}
-
 export interface Character {
   id: string;
   slug: string;
@@ -23,9 +13,19 @@ export interface Character {
   bankai?: string | null;
   image?: string | null;
   rarity: Rarity;
-  stats: CharacterStats;
   overall: number;
   tags?: string[];
+  traits?: Partial<Record<TraitKey, number>>;
 }
 
 export type Locale = "en" | "ar";
+
+export type TraitKey =
+  | "courage"
+  | "intellect"
+  | "discipline"
+  | "chaos"
+  | "compassion"
+  | "ambition"
+  | "loyalty"
+  | "humor";
