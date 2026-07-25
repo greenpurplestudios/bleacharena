@@ -13,6 +13,7 @@ export function MobileNav() {
     { to: "/" as const, key: "home" as const, icon: "⌂" },
     { to: "/draft" as const, key: "draft" as const, icon: "卍" },
     { to: "/quotes" as const, key: "quotes" as const, icon: "?" },
+    { to: "/quiz" as const, key: "quizShort" as const, icon: "◈" },
     { to: "/leaderboard" as const, key: "leaderboard" as const, icon: "★" },
     { to: "/follow" as const, key: "followUs" as const, icon: "@" },
   ];
