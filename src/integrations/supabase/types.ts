@@ -20,6 +20,7 @@ export type Database = {
           score: number
           season_key: string
           submitted_at: string
+          team: Json
           user_id: string
         }
         Insert: {
@@ -27,6 +28,7 @@ export type Database = {
           score: number
           season_key: string
           submitted_at?: string
+          team?: Json
           user_id: string
         }
         Update: {
@@ -34,6 +36,7 @@ export type Database = {
           score?: number
           season_key?: string
           submitted_at?: string
+          team?: Json
           user_id?: string
         }
         Relationships: []
@@ -70,12 +73,15 @@ export type Database = {
         Returns: {
           rank: number
           score: number
+          team: Json
           user_id: string
           username: string
         }[]
       }
       set_username: { Args: { p_username: string }; Returns: Json }
-      submit_score: { Args: { p_score: number }; Returns: Json }
+      submit_score:
+        | { Args: { p_score: number }; Returns: Json }
+        | { Args: { p_score: number; p_team?: Json }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
