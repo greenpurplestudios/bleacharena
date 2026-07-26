@@ -15,6 +15,7 @@ import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as FollowRouteImport } from './routes/follow'
 import { Route as DraftRouteImport } from './routes/draft'
+import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -47,6 +48,11 @@ const DraftRoute = DraftRouteImport.update({
   path: '/draft',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CharactersRoute = CharactersRouteImport.update({
+  id: '/characters',
+  path: '/characters',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/characters': typeof CharactersRoute
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/characters': typeof CharactersRoute
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/characters': typeof CharactersRoute
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/characters'
     | '/draft'
     | '/follow'
     | '/leaderboard'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/characters'
     | '/draft'
     | '/follow'
     | '/leaderboard'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/characters'
     | '/draft'
     | '/follow'
     | '/leaderboard'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CharactersRoute: typeof CharactersRoute
   DraftRoute: typeof DraftRoute
   FollowRoute: typeof FollowRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DraftRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/characters': {
+      id: '/characters'
+      path: '/characters'
+      fullPath: '/characters'
+      preLoaderRoute: typeof CharactersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CharactersRoute: CharactersRoute,
   DraftRoute: DraftRoute,
   FollowRoute: FollowRoute,
   LeaderboardRoute: LeaderboardRoute,
