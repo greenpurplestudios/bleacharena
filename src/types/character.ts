@@ -1,4 +1,10 @@
-export type Rarity = "common" | "rare" | "epic" | "legendary" | "ultra";
+export type Rarity =
+  | "common"
+  | "uncommon"
+  | "rare"
+  | "epic"
+  | "legendary"
+  | "mythic";
 
 export interface Character {
   id: string;
@@ -12,6 +18,7 @@ export interface Character {
   shikai?: string | null;
   bankai?: string | null;
   image?: string | null;
+  /** Derived from `overall` at data-load time. Do NOT set manually. */
   rarity: Rarity;
   overall: number;
   tags?: string[];
