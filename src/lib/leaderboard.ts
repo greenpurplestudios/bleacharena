@@ -41,10 +41,29 @@ export type SubmitResult =
   | { ok: true; improved: boolean; score: number; season: string }
   | { ok: false; needsUsername?: boolean; error?: string };
 
-export async function submitScore(rawScore: number): Promise<SubmitResult> {
+export interface TeamMemberPayload {
+  name: string;
+  image: string | null;
+  overall: number;
+}
+
+export async function submitScore(
+  rawScore: number,
+  team: TeamMemberPayload[] = [],
+): Promise<SubmitResult> {
   await ensureAnonSession();
   const clamped = Math.max(0, Math.min(100, Math.round(rawScore * 10) / 10));
-  const { data, error } = await supabase.rpc("submit_score", { p_score: clamped });
+  const cleanTeam = team
+    .slice(0, 10)
+    .map((m) => ({
+      name: String(m.name ?? "").slice(0, 60),
+      image: m.image ?? null,
+      overall: Number(m.overall) || 0,
+    }));
+  const { data, error } = await supabase.rpc("submit_score", {
+    p_score: clamped,
+    p_team: cleanTeam,
+  });
   if (error) return { ok: false, error: error.message };
   const payload = (data ?? {}) as {
     ok: boolean;
@@ -88,6 +107,7 @@ export interface LeaderboardRow {
   user_id: string;
   username: string;
   score: number;
+  team: TeamMemberPayload[];
 }
 
 export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
@@ -96,11 +116,18 @@ export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
     p_limit: limit,
   });
   if (error || !data) return [];
-  return (data as LeaderboardRow[]).map((r) => ({
+  return (data as Array<Omit<LeaderboardRow, "team"> & { team: unknown }>).map((r) => ({
     rank: Number(r.rank),
     user_id: r.user_id,
     username: r.username,
     score: Number(r.score),
+    team: Array.isArray(r.team)
+      ? (r.team as TeamMemberPayload[]).map((m) => ({
+          name: String(m?.name ?? ""),
+          image: m?.image ?? null,
+          overall: Number(m?.overall) || 0,
+        }))
+      : [],
   }));
 }
 
