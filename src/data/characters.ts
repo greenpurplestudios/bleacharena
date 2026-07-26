@@ -220,7 +220,7 @@ const raw: Omit<Character, "rarity">[] = [
     name: { en: "Gin Ichimaru", ar: "غين إيتشيمارو" },
     race: "Shinigami", faction: "Antagonist", division: "3rd", rank: "Former Captain",
     arc: "Fake Karakura", shikai: "Shinsō", bankai: "Kamishini no Yari",
-    image: null,
+    image: ginImg.url,
     overall: 89,
   },
   {
