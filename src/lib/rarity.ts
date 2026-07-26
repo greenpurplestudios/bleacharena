@@ -1,27 +1,51 @@
 import type { Character, Rarity } from "@/types/character";
 
+// Dynamic rarity purely from Overall (OVR):
+//   Mythic     95-100
+//   Legendary  90-94
+//   Epic       85-89
+//   Rare       80-84
+//   Uncommon   75-79
+//   Common     <= 74
+export function rarityFromOverall(ovr: number): Rarity {
+  if (ovr >= 95) return "mythic";
+  if (ovr >= 90) return "legendary";
+  if (ovr >= 85) return "epic";
+  if (ovr >= 80) return "rare";
+  if (ovr >= 75) return "uncommon";
+  return "common";
+}
+
+export const RARITY_ORDER: Rarity[] = [
+  "common", "uncommon", "rare", "epic", "legendary", "mythic",
+];
+
+// Weighted pull chances — weaker rarities are the most common.
 export const RARITY_WEIGHTS: Record<Rarity, number> = {
-  common: 45,
-  rare: 28,
-  epic: 15,
-  legendary: 8,
-  ultra: 4,
+  common: 50,
+  uncommon: 25,
+  rare: 13,
+  epic: 7,
+  legendary: 4,
+  mythic: 1,
 };
 
 export const RARITY_LABEL: Record<Rarity, { en: string; ar: string }> = {
   common: { en: "Common", ar: "عادي" },
+  uncommon: { en: "Uncommon", ar: "غير مألوف" },
   rare: { en: "Rare", ar: "نادر" },
   epic: { en: "Epic", ar: "ملحمي" },
   legendary: { en: "Legendary", ar: "أسطوري" },
-  ultra: { en: "Ultra Rare", ar: "نادر جداً" },
+  mythic: { en: "Mythic", ar: "أسطوري خارق" },
 };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
   common: "oklch(0.75 0.02 250)",
-  rare: "oklch(0.75 0.14 200)",
-  epic: "oklch(0.7 0.2 300)",
-  legendary: "oklch(0.8 0.18 80)",
-  ultra: "oklch(0.75 0.22 25)",
+  uncommon: "oklch(0.78 0.14 150)",
+  rare: "oklch(0.75 0.16 220)",
+  epic: "oklch(0.7 0.22 300)",
+  legendary: "oklch(0.82 0.18 80)",
+  mythic: "oklch(0.72 0.24 25)",
 };
 
 export function pickWeighted<T extends { rarity: Rarity }>(
