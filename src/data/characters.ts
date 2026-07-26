@@ -47,11 +47,22 @@ import tokinadaImg from "@/assets/characters/tokinada.jpeg.asset.json";
 import harribelImg from "@/assets/characters/harribel.jpeg.asset.json";
 import komamuraImg from "@/assets/characters/komamura.jpeg.asset.json";
 import kiraImg from "@/assets/characters/kira.jpeg.asset.json";
+import soulKingImg from "@/assets/characters/soul_king.jpeg.asset.json";
+import unohanaImg from "@/assets/characters/unohana.jpeg.asset.json";
+import ginjoImg from "@/assets/characters/ginjo.jpeg.asset.json";
+import tsukishimaImg from "@/assets/characters/tsukishima.jpeg.asset.json";
+import kirioImg from "@/assets/characters/kirio.jpeg.asset.json";
+import kirinjiImg from "@/assets/characters/kirinji.jpeg.asset.json";
+import auraImg from "@/assets/characters/aura.jpeg.asset.json";
+import nellielImg from "@/assets/characters/nelliel.jpeg.asset.json";
+import ginImg from "@/assets/characters/gin.jpeg.asset.json";
+import { rarityFromOverall } from "@/lib/rarity";
 
 // Data-driven roster. New characters can be added freely — game logic
-// reads from this list only. Images may be null until official art is
+// reads from this list only. Rarity is derived from `overall` at load
+// time (see rarityFromOverall). Images may be null until official art is
 // wired up (cards render a stylized fallback).
-export const characters: Character[] = [
+const raw: Omit<Character, "rarity">[] = [
   {
     id: "c-001", slug: "ichigo-kurosaki",
     name: { en: "Ichigo Kurosaki", ar: "إتشيغو كوروساكي" },
