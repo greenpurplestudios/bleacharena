@@ -10,6 +10,7 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { submitScore, getMyProfile } from "@/lib/leaderboard";
+import { play } from "@/lib/sound";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -48,6 +49,7 @@ function DraftPage() {
   const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
   const [phase, setPhase] = useState<Phase>("drafting");
   const [rerollKey, setRerollKey] = useState(0);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const filled = team.filter(Boolean).length;
 
@@ -64,13 +66,21 @@ function DraftPage() {
     return pickWeighted(pool);
   }, [pool, phase, filled, rerollKey]);
 
+  // Play a reveal / rare flourish whenever a new card is presented.
+  useEffect(() => {
+    if (!current) return;
+    if (current.rarity === "mythic" || current.rarity === "legendary") play("rare");
+    else play("reveal");
+  }, [current?.id, rerollKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const commitPick = useCallback(
     (c: Character) => {
+      play("pick");
       setTeam((prev) => {
         const next = [...prev];
         const idx = next.findIndex((x) => x === null);
         if (idx !== -1) next[idx] = c;
-        if (next.every(Boolean)) setPhase("result");
+        if (next.every(Boolean)) { setPhase("result"); play("success"); }
         return next;
       });
       setSeenIds((s) => new Set(s).add(c.id));
@@ -81,6 +91,7 @@ function DraftPage() {
 
   const onSkip = useCallback(() => {
     if (!current || skipsLeft <= 0) return;
+    play("skip");
     setSkippedIds((s) => new Set(s).add(current.id));
     setSkipsLeft((n) => n - 1);
     setRerollKey((k) => k + 1);
@@ -93,6 +104,7 @@ function DraftPage() {
     setSkippedIds(new Set());
     setPhase("drafting");
     setRerollKey((k) => k + 1);
+    setConfirmReset(false);
   }, []);
 
   return (
@@ -143,10 +155,45 @@ function DraftPage() {
                     {skipsLeft > 0 ? t("skip") : t("outOfSkips")}
                   </button>
                 </div>
+                {filled > 0 && (
+                  <button
+                    onClick={() => setConfirmReset(true)}
+                    className="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:bg-white/5"
+                  >
+                    {t("resetDraft")}
+                  </button>
+                )}
               </div>
             ) : (
               <div className="rounded-xl border border-white/10 bg-white/5 px-6 py-10 text-center text-sm text-muted-foreground">
                 {t("noMore")}
+              </div>
+            )}
+
+            {confirmReset && (
+              <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm" onClick={() => setConfirmReset(false)}>
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-sm rounded-2xl border border-white/10 bg-card p-6 shadow-2xl"
+                  style={{ animation: "card-in 0.25s ease-out both" }}
+                >
+                  <h3 className="font-display text-lg font-bold">{t("resetDraft")}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{t("resetDraftConfirm")}</p>
+                  <div className="mt-5 grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setConfirmReset(false)}
+                      className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-bold hover:bg-white/10"
+                    >
+                      {t("cancel")}
+                    </button>
+                    <button
+                      onClick={reset}
+                      className="glow-orange rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+                    >
+                      {t("confirm")}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </section>
@@ -174,13 +221,18 @@ function ResultScreen({
   const [needsUsername, setNeedsUsername] = useState(false);
 
   const doSubmit = useCallback(async () => {
-    const res = await submitScore(score.overall);
+    const payload = team.filter((c): c is Character => !!c).map((c) => ({
+      name: c.name.en,
+      image: c.image ?? null,
+      overall: c.overall,
+    }));
+    const res = await submitScore(score.overall, payload);
     if (!res.ok) {
       if (res.needsUsername) setNeedsUsername(true);
       return;
     }
     setSubmitState(res.improved ? "done" : "not-improved");
-  }, [score.overall]);
+  }, [score.overall, team]);
 
   useEffect(() => {
     (async () => {

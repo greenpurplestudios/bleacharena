@@ -47,17 +47,28 @@ import tokinadaImg from "@/assets/characters/tokinada.jpeg.asset.json";
 import harribelImg from "@/assets/characters/harribel.jpeg.asset.json";
 import komamuraImg from "@/assets/characters/komamura.jpeg.asset.json";
 import kiraImg from "@/assets/characters/kira.jpeg.asset.json";
+import soulKingImg from "@/assets/characters/soul_king.jpeg.asset.json";
+import unohanaImg from "@/assets/characters/unohana.jpeg.asset.json";
+import ginjoImg from "@/assets/characters/ginjo.jpeg.asset.json";
+import tsukishimaImg from "@/assets/characters/tsukishima.jpeg.asset.json";
+import kirioImg from "@/assets/characters/kirio.jpeg.asset.json";
+import kirinjiImg from "@/assets/characters/kirinji.jpeg.asset.json";
+import auraImg from "@/assets/characters/aura.jpeg.asset.json";
+import nellielImg from "@/assets/characters/nelliel.jpeg.asset.json";
+import ginImg from "@/assets/characters/gin.jpeg.asset.json";
+import { rarityFromOverall } from "@/lib/rarity";
 
 // Data-driven roster. New characters can be added freely — game logic
-// reads from this list only. Images may be null until official art is
+// reads from this list only. Rarity is derived from `overall` at load
+// time (see rarityFromOverall). Images may be null until official art is
 // wired up (cards render a stylized fallback).
-export const characters: Character[] = [
+const raw: Omit<Character, "rarity">[] = [
   {
     id: "c-001", slug: "ichigo-kurosaki",
     name: { en: "Ichigo Kurosaki", ar: "إتشيغو كوروساكي" },
     race: "Human / Substitute Shinigami", faction: "Allies", division: null, rank: "Substitute",
     arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
-    image: ichigoImg.url, rarity: "ultra",
+    image: ichigoImg.url,
     overall: 96, tags: ["hero", "hybrid"],
   },
   {
@@ -65,7 +76,7 @@ export const characters: Character[] = [
     name: { en: "Rukia Kuchiki", ar: "روكيا كوتشيكي" },
     race: "Shinigami", faction: "Gotei 13", division: "13th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Sode no Shirayuki", bankai: "Hakka no Togame",
-    image: rukiaImg.url, rarity: "legendary",
+    image: rukiaImg.url,
     overall: 88,
   },
   {
@@ -73,7 +84,7 @@ export const characters: Character[] = [
     name: { en: "Byakuya Kuchiki", ar: "بياكويا كوتشيكي" },
     race: "Shinigami", faction: "Gotei 13", division: "6th", rank: "Captain",
     arc: "Soul Society", shikai: "Senbonzakura", bankai: "Senbonzakura Kageyoshi",
-    image: byakuyaImg.url, rarity: "legendary",
+    image: byakuyaImg.url,
     overall: 92,
   },
   {
@@ -81,7 +92,7 @@ export const characters: Character[] = [
     name: { en: "Kenpachi Zaraki", ar: "كينباتشي زاراكي" },
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Nozarashi", bankai: "Unnamed",
-    image: zarakiImg.url, rarity: "legendary",
+    image: zarakiImg.url,
     overall: 93,
   },
   {
@@ -89,7 +100,7 @@ export const characters: Character[] = [
     name: { en: "Tōshirō Hitsugaya", ar: "توشيرو هيتسوغايا" },
     race: "Shinigami", faction: "Gotei 13", division: "10th", rank: "Captain",
     arc: "Arrancar", shikai: "Hyōrinmaru", bankai: "Daiguren Hyōrinmaru",
-    image: toshiroImg.url, rarity: "epic",
+    image: toshiroImg.url,
     overall: 89,
   },
   {
@@ -97,7 +108,7 @@ export const characters: Character[] = [
     name: { en: "Renji Abarai", ar: "رينجي أباراي" },
     race: "Shinigami", faction: "Gotei 13", division: "6th", rank: "Lieutenant",
     arc: "Thousand-Year Blood War", shikai: "Zabimaru", bankai: "Sōō Zabimaru",
-    image: renjiImg.url, rarity: "epic",
+    image: renjiImg.url,
     overall: 84,
   },
   {
@@ -105,7 +116,7 @@ export const characters: Character[] = [
     name: { en: "Uryū Ishida", ar: "أوريو إيشيدا" },
     race: "Quincy", faction: "Allies / Wandenreich", division: null, rank: "Sternritter A",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: ishidaImg.url, rarity: "epic",
+    image: ishidaImg.url,
     overall: 87,
   },
   {
@@ -113,7 +124,7 @@ export const characters: Character[] = [
     name: { en: "Yoruichi Shihōin", ar: "يوروئتشي شيهوئين" },
     race: "Shinigami", faction: "Allies", division: null, rank: "Former Captain",
     arc: "Soul Society", shikai: null, bankai: null,
-    image: yoruichiImg.url, rarity: "legendary",
+    image: yoruichiImg.url,
     overall: 90,
   },
   {
@@ -121,7 +132,7 @@ export const characters: Character[] = [
     name: { en: "Kisuke Urahara", ar: "كيسوكي أوراهارا" },
     race: "Shinigami", faction: "Allies", division: null, rank: "Former Captain",
     arc: "Thousand-Year Blood War", shikai: "Benihime", bankai: "Kannonbiraki Benihime Aratame",
-    image: uraharaImg.url, rarity: "legendary",
+    image: uraharaImg.url,
     overall: 91,
   },
   {
@@ -129,7 +140,7 @@ export const characters: Character[] = [
     name: { en: "Shunsui Kyōraku", ar: "شونسوي كيوراكو" },
     race: "Shinigami", faction: "Gotei 13", division: "1st", rank: "Captain-Commander",
     arc: "Thousand-Year Blood War", shikai: "Katen Kyōkotsu", bankai: "Katen Kyōkotsu: Karamatsu Shinjū",
-    image: kyorakuImg.url, rarity: "ultra",
+    image: kyorakuImg.url,
     overall: 94,
   },
   {
@@ -137,7 +148,7 @@ export const characters: Character[] = [
     name: { en: "Grimmjow Jaegerjaquez", ar: "غريمجو ياغرياكيز" },
     race: "Arrancar", faction: "Espada", division: "6", rank: "Sexta Espada",
     arc: "Arrancar", shikai: "Pantera", bankai: null,
-    image: grimjowImg.url, rarity: "epic",
+    image: grimjowImg.url,
     overall: 88,
   },
   {
@@ -145,7 +156,7 @@ export const characters: Character[] = [
     name: { en: "Ulquiorra Cifer", ar: "أولكيورا سيفر" },
     race: "Arrancar", faction: "Espada", division: "4", rank: "Cuarta Espada",
     arc: "Arrancar", shikai: "Murciélago", bankai: null,
-    image: ulquiorraImg.url, rarity: "legendary",
+    image: ulquiorraImg.url,
     overall: 92,
   },
   {
@@ -153,7 +164,7 @@ export const characters: Character[] = [
     name: { en: "Hanatarō Yamada", ar: "هاناتارو يامادا" },
     race: "Shinigami", faction: "Gotei 13", division: "4th", rank: "7th Seat",
     arc: "Soul Society", shikai: "Hisagomaru", bankai: null,
-    image: yamadaImg.url, rarity: "common",
+    image: yamadaImg.url,
     overall: 62,
   },
   {
@@ -161,7 +172,7 @@ export const characters: Character[] = [
     name: { en: "Ikkaku Madarame", ar: "إكاكو مادارامي" },
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "3rd Seat",
     arc: "Soul Society", shikai: "Hōzukimaru", bankai: "Ryūmon Hōzukimaru",
-    image: ikkakuImg.url, rarity: "rare",
+    image: ikkakuImg.url,
     overall: 76,
   },
   {
@@ -169,7 +180,7 @@ export const characters: Character[] = [
     name: { en: "Orihime Inoue", ar: "أوريهيمي إينوي" },
     race: "Human / Fullbringer", faction: "Allies", division: null, rank: null,
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: orihimeImg.url, rarity: "legendary",
+    image: orihimeImg.url,
     overall: 90,
   },
   {
@@ -177,7 +188,7 @@ export const characters: Character[] = [
     name: { en: "Yasutora Sado", ar: "ياسوترا سادو" },
     race: "Human / Fullbringer", faction: "Allies", division: null, rank: null,
     arc: "Hueco Mundo", shikai: null, bankai: null,
-    image: sadoImg.url, rarity: "rare",
+    image: sadoImg.url,
     overall: 74,
   },
   {
@@ -185,7 +196,7 @@ export const characters: Character[] = [
     name: { en: "Yhwach", ar: "يوهاباخ" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Emperor",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: yhwachImg.url, rarity: "ultra",
+    image: yhwachImg.url,
     overall: 98,
   },
   {
@@ -193,7 +204,7 @@ export const characters: Character[] = [
     name: { en: "Sōsuke Aizen", ar: "سوسكي آيزن" },
     race: "Shinigami / Hōgyoku", faction: "Antagonist", division: "5th", rank: "Former Captain",
     arc: "Fake Karakura", shikai: "Kyōka Suigetsu", bankai: "Unnamed",
-    image: aizenImg.url, rarity: "ultra",
+    image: aizenImg.url,
     overall: 97,
   },
   {
@@ -201,7 +212,7 @@ export const characters: Character[] = [
     name: { en: "Genryūsai Yamamoto", ar: "غينريوساي ياماموتو" },
     race: "Shinigami", faction: "Gotei 13", division: "1st", rank: "Captain-Commander",
     arc: "Thousand-Year Blood War", shikai: "Ryūjin Jakka", bankai: "Zanka no Tachi",
-    image: yamamotoImg.url, rarity: "ultra",
+    image: yamamotoImg.url,
     overall: 95,
   },
   {
@@ -209,7 +220,7 @@ export const characters: Character[] = [
     name: { en: "Gin Ichimaru", ar: "غين إيتشيمارو" },
     race: "Shinigami", faction: "Antagonist", division: "3rd", rank: "Former Captain",
     arc: "Fake Karakura", shikai: "Shinsō", bankai: "Kamishini no Yari",
-    image: null, rarity: "epic",
+    image: ginImg.url,
     overall: 89,
   },
   {
@@ -217,7 +228,7 @@ export const characters: Character[] = [
     name: { en: "Coyote Starrk", ar: "كويوتي ستارك" },
     race: "Arrancar", faction: "Espada", division: "1", rank: "Primera Espada",
     arc: "Fake Karakura", shikai: "Los Lobos", bankai: null,
-    image: starkImg.url, rarity: "epic",
+    image: starkImg.url,
     overall: 87,
   },
   {
@@ -225,7 +236,7 @@ export const characters: Character[] = [
     name: { en: "Shinji Hirako", ar: "شينجي هيراكو" },
     race: "Shinigami / Visored", faction: "Gotei 13", division: "5th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Sakanade", bankai: "Sakashima Yokoshima Happōfusagari",
-    image: shinjiImg.url, rarity: "epic",
+    image: shinjiImg.url,
     overall: 85,
   },
   {
@@ -233,7 +244,7 @@ export const characters: Character[] = [
     name: { en: "Lille Barro", ar: "ليلي بارو" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter X",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: lilleImg.url, rarity: "legendary",
+    image: lilleImg.url,
     overall: 93,
   },
   {
@@ -241,7 +252,7 @@ export const characters: Character[] = [
     name: { en: "Askin Nakk Le Vaar", ar: "أسكين ناك لي فار" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter D",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: askinImg.url, rarity: "legendary",
+    image: askinImg.url,
     overall: 91,
   },
   {
@@ -249,7 +260,7 @@ export const characters: Character[] = [
     name: { en: "Jugram Haschwalth", ar: "يوغرام هاشفالت" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter B / Grandmaster",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: jugramImg.url, rarity: "legendary",
+    image: jugramImg.url,
     overall: 94,
   },
   {
@@ -257,7 +268,7 @@ export const characters: Character[] = [
     name: { en: "Shūhei Hisagi", ar: "شوهي هيساغي" },
     race: "Shinigami", faction: "Gotei 13", division: "9th", rank: "Lieutenant",
     arc: "Thousand-Year Blood War", shikai: "Kazeshini", bankai: "Fushi no Kōjō",
-    image: hisagiImg.url, rarity: "rare",
+    image: hisagiImg.url,
     overall: 83,
   },
   {
@@ -265,7 +276,7 @@ export const characters: Character[] = [
     name: { en: "Ōetsu Nimaiya", ar: "أويتسو نيمايا" },
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
     arc: "Thousand-Year Blood War", shikai: "Sayafushi", bankai: null,
-    image: nimayaImg.url, rarity: "legendary",
+    image: nimayaImg.url,
     overall: 92,
   },
   {
@@ -273,7 +284,7 @@ export const characters: Character[] = [
     name: { en: "Ichibē Hyōsube", ar: "إيتشيبي هيوسوبي" },
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Monk of the Zero Division",
     arc: "Thousand-Year Blood War", shikai: "Ichimonji", bankai: "Shirafude Ichimonji",
-    image: ichibeiImg.url, rarity: "ultra",
+    image: ichibeiImg.url,
     overall: 95,
   },
   {
@@ -281,7 +292,7 @@ export const characters: Character[] = [
     name: { en: "Kon", ar: "كون" },
     race: "Modified Soul", faction: "Allies", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: konImg.url, rarity: "common",
+    image: konImg.url,
     overall: 18,
   },
   {
@@ -289,7 +300,7 @@ export const characters: Character[] = [
     name: { en: "Mayuri Kurotsuchi", ar: "مايوري كوروتسوتشي" },
     race: "Shinigami", faction: "Gotei 13", division: "12th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Ashisogi Jizō", bankai: "Konjiki Ashisogi Jizō",
-    image: mayuriImg.url, rarity: "legendary",
+    image: mayuriImg.url,
     overall: 92,
   },
   {
@@ -297,7 +308,7 @@ export const characters: Character[] = [
     name: { en: "Rangiku Matsumoto", ar: "رانغيكو ماتسوموتو" },
     race: "Shinigami", faction: "Gotei 13", division: "10th", rank: "Lieutenant",
     arc: "Arrancar", shikai: "Haineko", bankai: null,
-    image: rangikuImg.url, rarity: "rare",
+    image: rangikuImg.url,
     overall: 78,
   },
   {
@@ -305,7 +316,7 @@ export const characters: Character[] = [
     name: { en: "Yumichika Ayasegawa", ar: "يوميتشيكا أياسيغاوا" },
     race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "5th Seat",
     arc: "Soul Society", shikai: "Ruri'iro Kujaku", bankai: null,
-    image: yumechikaImg.url, rarity: "rare",
+    image: yumechikaImg.url,
     overall: 75,
   },
   {
@@ -313,7 +324,7 @@ export const characters: Character[] = [
     name: { en: "Tite Kubo — The Writer", ar: "تايتي كوبو — الكاتب" },
     race: "Mangaka / Writer", faction: "Beyond the Story", division: null, rank: "The Author",
     arc: "All Arcs", shikai: "Pen of Creation", bankai: "Final Chapter",
-    image: kuboImg.url, rarity: "ultra",
+    image: kuboImg.url,
     overall: 100,
     tags: ["creator", "secret"],
   },
@@ -322,7 +333,7 @@ export const characters: Character[] = [
     name: { en: "Ganju Shiba", ar: "غانجو شيبا" },
     race: "Human / Shiba", faction: "Allies", division: null, rank: null,
     arc: "Soul Society", shikai: null, bankai: null,
-    image: ganjuImg.url, rarity: "common",
+    image: ganjuImg.url,
     overall: 42,
   },
   {
@@ -330,7 +341,7 @@ export const characters: Character[] = [
     name: { en: "Jinta Hanakari", ar: "جينتا هاناكاري" },
     race: "Human", faction: "Urahara Shop", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: gintaImg.url, rarity: "common",
+    image: gintaImg.url,
     overall: 32,
   },
   {
@@ -338,7 +349,7 @@ export const characters: Character[] = [
     name: { en: "Ururu Tsumugiya", ar: "أوروارو تسوموغيا" },
     race: "Human", faction: "Urahara Shop", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: ururuImg.url, rarity: "common",
+    image: ururuImg.url,
     overall: 52,
   },
   {
@@ -346,7 +357,7 @@ export const characters: Character[] = [
     name: { en: "Keigo Asano", ar: "كيغو أسانو" },
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: keigoImg.url, rarity: "common",
+    image: keigoImg.url,
     overall: 20,
   },
   {
@@ -354,7 +365,7 @@ export const characters: Character[] = [
     name: { en: "Mizuiro Kojima", ar: "ميزويرو كوجيما" },
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: mizuiroImg.url, rarity: "common",
+    image: mizuiroImg.url,
     overall: 24,
   },
   {
@@ -362,7 +373,7 @@ export const characters: Character[] = [
     name: { en: "Tatsuki Arisawa", ar: "تاتسوكي أريساوا" },
     race: "Human", faction: "Karakura Friends", division: null, rank: null,
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: tatsukiImg.url, rarity: "common",
+    image: tatsukiImg.url,
     overall: 50,
   },
   {
@@ -370,7 +381,7 @@ export const characters: Character[] = [
     name: { en: "Don Kanonji", ar: "دون كانونجي" },
     race: "Human / Spiritualist", faction: "Comedic Relief", division: null, rank: "Karakura Superhero",
     arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: donKanojiImg.url, rarity: "common",
+    image: donKanojiImg.url,
     overall: 33,
   },
   {
@@ -378,7 +389,7 @@ export const characters: Character[] = [
     name: { en: "Senjumaru Shutara", ar: "سنجومارو شوتارا" },
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: senjmaruImg.url, rarity: "ultra",
+    image: senjmaruImg.url,
     overall: 93,
   },
   {
@@ -386,7 +397,7 @@ export const characters: Character[] = [
     name: { en: "Soi Fon", ar: "سوي فون" },
     race: "Shinigami", faction: "Gotei 13", division: "2nd", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Suzumebachi", bankai: "Jakuhō Raikōben",
-    image: soiFonImg.url, rarity: "epic",
+    image: soiFonImg.url,
     overall: 86,
   },
   {
@@ -394,7 +405,7 @@ export const characters: Character[] = [
     name: { en: "Baraggan Louisenbairn", ar: "براغان لويزنباين" },
     race: "Arrancar", faction: "Espada", division: "2", rank: "Segunda Espada",
     arc: "Fake Karakura", shikai: "Arrogante", bankai: null,
-    image: baraganImg.url, rarity: "legendary",
+    image: baraganImg.url,
     overall: 87,
   },
   {
@@ -402,7 +413,7 @@ export const characters: Character[] = [
     name: { en: "Gerard Valkyrie", ar: "غيرارد فالكيري" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter M",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: gerardImg.url, rarity: "legendary",
+    image: gerardImg.url,
     overall: 92,
   },
   {
@@ -410,7 +421,7 @@ export const characters: Character[] = [
     name: { en: "Pernida Parnkgjas", ar: "برنيدا بارنكياس" },
     race: "Quincy / Soul King's Left Hand", faction: "Wandenreich", division: null, rank: "Sternritter C",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: pernidaImg.url, rarity: "legendary",
+    image: pernidaImg.url,
     overall: 90,
   },
   {
@@ -418,7 +429,7 @@ export const characters: Character[] = [
     name: { en: "Tokinada Tsunayashiro", ar: "توكينادا تسوناياشيرو" },
     race: "Shinigami / Noble", faction: "Antagonist", division: null, rank: "Noble Head",
     arc: "Can't Fear Your Own World", shikai: "Nejibana", bankai: null,
-    image: tokinadaImg.url, rarity: "legendary",
+    image: tokinadaImg.url,
     overall: 90,
   },
   {
@@ -426,7 +437,7 @@ export const characters: Character[] = [
     name: { en: "Tier Harribel", ar: "تير هاريبل" },
     race: "Arrancar", faction: "Espada", division: "3", rank: "Tres Espada",
     arc: "Fake Karakura", shikai: "Tiburón", bankai: null,
-    image: harribelImg.url, rarity: "epic",
+    image: harribelImg.url,
     overall: 86,
   },
   {
@@ -434,7 +445,7 @@ export const characters: Character[] = [
     name: { en: "Sajin Komamura", ar: "ساجين كوماموارا" },
     race: "Werewolf / Shinigami", faction: "Gotei 13", division: "7th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Tenken", bankai: "Kokujō Tengen Myō'ō",
-    image: komamuraImg.url, rarity: "epic",
+    image: komamuraImg.url,
     overall: 87,
   },
   {
@@ -442,7 +453,76 @@ export const characters: Character[] = [
     name: { en: "Izuru Kira", ar: "إيزورو كيرا" },
     race: "Shinigami", faction: "Gotei 13", division: "3rd", rank: "Lieutenant",
     arc: "Thousand-Year Blood War", shikai: "Wabisuke", bankai: null,
-    image: kiraImg.url, rarity: "rare",
+    image: kiraImg.url,
     overall: 82,
   },
+  {
+    id: "c-050", slug: "soul-king",
+    name: { en: "The Soul King", ar: "ملك الأرواح" },
+    race: "Soul King", faction: "Royal Palace", division: null, rank: "Sovereign",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: soulKingImg.url,
+    overall: 99, tags: ["cosmic"],
+  },
+  {
+    id: "c-051", slug: "retsu-unohana",
+    name: { en: "Retsu Unohana", ar: "ريتسو أونوهانا" },
+    race: "Shinigami", faction: "Gotei 13", division: "4th", rank: "Captain",
+    arc: "Thousand-Year Blood War", shikai: "Minazuki", bankai: "Minazuki",
+    image: unohanaImg.url,
+    overall: 92,
+  },
+  {
+    id: "c-052", slug: "kugo-ginjo",
+    name: { en: "Kūgo Ginjō", ar: "كوغو غينجو" },
+    race: "Human / Fullbringer", faction: "Xcution", division: null, rank: "Leader",
+    arc: "Lost Substitute Shinigami", shikai: "Cross of Scaffold", bankai: null,
+    image: ginjoImg.url,
+    overall: 87,
+  },
+  {
+    id: "c-053", slug: "shukuro-tsukishima",
+    name: { en: "Shūkurō Tsukishima", ar: "شوكورو تسوكيشيما" },
+    race: "Human / Fullbringer", faction: "Xcution", division: null, rank: null,
+    arc: "Lost Substitute Shinigami", shikai: "Book of the End", bankai: null,
+    image: tsukishimaImg.url,
+    overall: 85,
+  },
+  {
+    id: "c-054", slug: "kirio-hikifune",
+    name: { en: "Kirio Hikifune", ar: "كيريو هيكيفوني" },
+    race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: kirioImg.url,
+    overall: 91,
+  },
+  {
+    id: "c-055", slug: "tenjiro-kirinji",
+    name: { en: "Tenjirō Kirinji", ar: "تنجيرو كيرينجي" },
+    race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: kirinjiImg.url,
+    overall: 91,
+  },
+  {
+    id: "c-056", slug: "aura-michibane",
+    name: { en: "Aura Michibane", ar: "أورا ميتشيباني" },
+    race: "Shinigami / Reikon Kyuuban", faction: "Antagonist", division: null, rank: null,
+    arc: "Hell Verse", shikai: null, bankai: null,
+    image: auraImg.url,
+    overall: 90,
+  },
+  {
+    id: "c-057", slug: "nelliel-tu-odelschwanck",
+    name: { en: "Nelliel Tu Odelschwanck", ar: "نيليل تو أوديلشوانك" },
+    race: "Arrancar", faction: "Espada", division: "3", rank: "Former Tres Espada",
+    arc: "Hueco Mundo", shikai: "Gamuza", bankai: null,
+    image: nellielImg.url,
+    overall: 88,
+  },
 ];
+
+export const characters: Character[] = raw.map((c) => ({
+  ...c,
+  rarity: rarityFromOverall(c.overall),
+}));

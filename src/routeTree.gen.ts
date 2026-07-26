@@ -9,13 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as QuotesRouteImport } from './routes/quotes'
 import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as FollowRouteImport } from './routes/follow'
 import { Route as DraftRouteImport } from './routes/draft'
+import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuotesRoute = QuotesRouteImport.update({
   id: '/quotes',
   path: '/quotes',
@@ -41,6 +48,11 @@ const DraftRoute = DraftRouteImport.update({
   path: '/draft',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CharactersRoute = CharactersRouteImport.update({
+  id: '/characters',
+  path: '/characters',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,55 +61,88 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/characters': typeof CharactersRoute
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
   '/quiz': typeof QuizRoute
   '/quotes': typeof QuotesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/characters': typeof CharactersRoute
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
   '/quiz': typeof QuizRoute
   '/quotes': typeof QuotesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/characters': typeof CharactersRoute
   '/draft': typeof DraftRoute
   '/follow': typeof FollowRoute
   '/leaderboard': typeof LeaderboardRoute
   '/quiz': typeof QuizRoute
   '/quotes': typeof QuotesRoute
+  '/settings': typeof SettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/draft' | '/follow' | '/leaderboard' | '/quiz' | '/quotes'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/draft' | '/follow' | '/leaderboard' | '/quiz' | '/quotes'
-  id:
-    | '__root__'
+  fullPaths:
     | '/'
+    | '/characters'
     | '/draft'
     | '/follow'
     | '/leaderboard'
     | '/quiz'
     | '/quotes'
+    | '/settings'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/characters'
+    | '/draft'
+    | '/follow'
+    | '/leaderboard'
+    | '/quiz'
+    | '/quotes'
+    | '/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/characters'
+    | '/draft'
+    | '/follow'
+    | '/leaderboard'
+    | '/quiz'
+    | '/quotes'
+    | '/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CharactersRoute: typeof CharactersRoute
   DraftRoute: typeof DraftRoute
   FollowRoute: typeof FollowRoute
   LeaderboardRoute: typeof LeaderboardRoute
   QuizRoute: typeof QuizRoute
   QuotesRoute: typeof QuotesRoute
+  SettingsRoute: typeof SettingsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quotes': {
       id: '/quotes'
       path: '/quotes'
@@ -133,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DraftRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/characters': {
+      id: '/characters'
+      path: '/characters'
+      fullPath: '/characters'
+      preLoaderRoute: typeof CharactersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -145,11 +197,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CharactersRoute: CharactersRoute,
   DraftRoute: DraftRoute,
   FollowRoute: FollowRoute,
   LeaderboardRoute: LeaderboardRoute,
   QuizRoute: QuizRoute,
   QuotesRoute: QuotesRoute,
+  SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

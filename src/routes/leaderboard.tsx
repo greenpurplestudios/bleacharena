@@ -103,6 +103,23 @@ function LeaderboardPage() {
                   {isMe && (
                     <span className="ms-2 rounded-md bg-primary/20 px-1.5 py-0.5 text-[10px] uppercase tracking-widest text-primary">{t("you")}</span>
                   )}
+                  {r.team.length > 0 && (
+                    <span className="mt-1.5 flex items-center gap-1">
+                      {r.team.slice(0, 5).map((m, mi) => (
+                        <span
+                          key={mi}
+                          title={`${m.name} · ${m.overall}`}
+                          className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/5 text-[9px] font-bold text-muted-foreground"
+                        >
+                          {m.image ? (
+                            <img src={m.image} alt="" loading="lazy" className="h-full w-full object-cover" />
+                          ) : (
+                            <span>{m.name.split(" ").slice(0, 2).map((n) => n[0]).join("")}</span>
+                          )}
+                        </span>
+                      ))}
+                    </span>
+                  )}
                 </span>
                 <span className="font-display text-lg font-black text-glow-orange">{r.score.toFixed(1)}</span>
               </li>

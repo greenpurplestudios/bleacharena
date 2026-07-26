@@ -124,6 +124,39 @@ export const dict = {
   matchScore: { en: "Match", ar: "التطابق" },
   retakeQuiz: { en: "Retake Quiz", ar: "أعد الاختبار" },
   ofN: { en: "of", ar: "من" },
+  // Rarity system
+  mythic: { en: "Mythic", ar: "أسطوري خارق" },
+  uncommon: { en: "Uncommon", ar: "غير مألوف" },
+  // Settings
+  settings: { en: "Settings", ar: "الإعدادات" },
+  settingsDesc: { en: "Audio, profile, and preferences.", ar: "الصوت والملف والتفضيلات." },
+  audio: { en: "Audio", ar: "الصوت" },
+  soundEffects: { en: "Sound Effects", ar: "المؤثرات الصوتية" },
+  music: { en: "Music", ar: "الموسيقى" },
+  volume: { en: "Volume", ar: "الصوت" },
+  profile: { en: "Profile", ar: "الملف الشخصي" },
+  on: { en: "On", ar: "تشغيل" },
+  off: { en: "Off", ar: "إيقاف" },
+  // Draft
+  resetDraft: { en: "Reset Draft", ar: "إعادة تعيين" },
+  resetDraftConfirm: {
+    en: "Reset your current draft and start over?",
+    ar: "هل تريد إعادة الاختيار من البداية؟",
+  },
+  confirm: { en: "Confirm", ar: "تأكيد" },
+  cancel: { en: "Cancel", ar: "إلغاء" },
+  // Characters gallery
+  characters: { en: "Characters", ar: "الشخصيات" },
+  charactersDesc: { en: "Browse every fighter in the roster.", ar: "تصفح كل مقاتل في القائمة." },
+  searchPlaceholder: { en: "Search by name…", ar: "ابحث بالاسم…" },
+  all: { en: "All", ar: "الكل" },
+  sortBy: { en: "Sort by", ar: "ترتيب حسب" },
+  sortRating: { en: "Rating", ar: "التقييم" },
+  sortName: { en: "Name", ar: "الاسم" },
+  noResults: { en: "No characters match your filters.", ar: "لا نتائج مطابقة." },
+  totalCount: { en: "Total", ar: "الإجمالي" },
+  // Leaderboard team
+  draftedTeam: { en: "Drafted Team", ar: "الفريق" },
 };
 
 export type TKey = keyof typeof dict;
