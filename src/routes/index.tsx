@@ -77,6 +77,8 @@ function Home() {
             { to: "/quotes", key: "quotes", desc: "whoSaidThatDesc", icon: "?" },
             { to: "/quiz", key: "quizShort", desc: "quizDesc", icon: "◈" },
             { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★" },
+            { to: "/characters", key: "characters", desc: "charactersDesc", icon: "☰" },
+            { to: "/settings", key: "settings", desc: "settingsDesc", icon: "⚙" },
           ].map((m) => (
             <Link
               key={m.to}
