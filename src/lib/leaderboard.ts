@@ -1,27 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
-let anonPromise: Promise<void> | null = null;
-
 /**
- * Ensures the visitor has a Supabase session. Creates a silent anonymous
- * account on first visit so scores can be submitted under a stable user id.
+ * No-op kept for backwards compatibility. Anonymous accounts are no longer
+ * created — users must sign in via /auth.
  */
 export function ensureAnonSession(): Promise<void> {
-  if (anonPromise) return anonPromise;
-  anonPromise = (async () => {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) return;
-    const { error } = await supabase.auth.signInAnonymously();
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.warn("[leaderboard] anon sign-in failed", error.message);
-    }
-  })();
-  return anonPromise;
+  return Promise.resolve();
 }
 
 export async function getCurrentUserId(): Promise<string | null> {
-  await ensureAnonSession();
   const { data } = await supabase.auth.getUser();
   return data.user?.id ?? null;
 }
@@ -51,7 +38,6 @@ export async function submitScore(
   rawScore: number,
   team: TeamMemberPayload[] = [],
 ): Promise<SubmitResult> {
-  await ensureAnonSession();
   const clamped = Math.max(0, Math.min(100, Math.round(rawScore * 10) / 10));
   const cleanTeam = team
     .slice(0, 10)
@@ -89,7 +75,6 @@ export type UsernameResult =
   | { ok: false; error: "taken" | "invalid_length" | "invalid_chars" | "unknown" };
 
 export async function setUsername(name: string): Promise<UsernameResult> {
-  await ensureAnonSession();
   const { data, error } = await supabase.rpc("set_username", { p_username: name });
   if (error) return { ok: false, error: "unknown" };
   const payload = (data ?? {}) as { ok: boolean; username?: string; error?: string };
@@ -111,7 +96,6 @@ export interface LeaderboardRow {
 }
 
 export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
-  await ensureAnonSession();
   const { data, error } = await supabase.rpc("get_leaderboard", {
     p_limit: limit,
   });

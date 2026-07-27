@@ -17,7 +17,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { EasterEggHeart } from "@/components/EasterEggHeart";
 import { PWAUpdateToast } from "@/components/PWAUpdateToast";
 import { InstallPrompt } from "@/components/InstallPrompt";
-import { ensureAnonSession } from "@/lib/leaderboard";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
