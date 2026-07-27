@@ -44,21 +44,33 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          email: string | null
+          souls: number
+          title: string | null
           updated_at: string
           user_id: string
           username: string | null
+          username_color: string | null
         }
         Insert: {
           created_at?: string
+          email?: string | null
+          souls?: number
+          title?: string | null
           updated_at?: string
           user_id: string
           username?: string | null
+          username_color?: string | null
         }
         Update: {
           created_at?: string
+          email?: string | null
+          souls?: number
+          title?: string | null
           updated_at?: string
           user_id?: string
           username?: string | null
+          username_color?: string | null
         }
         Relationships: []
       }
