@@ -339,6 +339,33 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_reward_claims: {
+        Row: {
+          claimed_at: string
+          pack_tier: string | null
+          rank: number
+          season_key: string
+          souls_awarded: number
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          pack_tier?: string | null
+          rank: number
+          season_key: string
+          souls_awarded?: number
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          pack_tier?: string | null
+          rank?: number
+          season_key?: string
+          souls_awarded?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -347,6 +374,7 @@ export type Database = {
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
       claim_mission: { Args: { p_mission_id: string }; Returns: Json }
+      claim_weekly_reward: { Args: never; Returns: Json }
       current_day_key: { Args: never; Returns: string }
       current_season_key: { Args: never; Returns: string }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
@@ -418,6 +446,7 @@ export type Database = {
       }
       get_my_rival_stats: { Args: never; Returns: Json }
       get_my_rival_team: { Args: never; Returns: Json }
+      get_my_weekly_reward: { Args: never; Returns: Json }
       get_rival_leaderboard: {
         Args: { p_limit?: number }
         Returns: {
@@ -446,6 +475,7 @@ export type Database = {
       }
       open_pack: { Args: { p_tier: string }; Returns: Json }
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
+      previous_season_key: { Args: never; Returns: string }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
       set_rival_team: { Args: { p_slots: Json }; Returns: Json }
       set_username: { Args: { p_username: string }; Returns: Json }
@@ -456,6 +486,7 @@ export type Database = {
         Args: { p_increment?: number; p_mission_id: string }
         Returns: Json
       }
+      weekly_reward_for_rank: { Args: { p_rank: number }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
