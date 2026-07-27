@@ -265,7 +265,8 @@ export async function bumpProfileStats(patch: Partial<{
   }
   if (patch.play_seconds) next.play_seconds = (c.play_seconds ?? 0) + patch.play_seconds;
   if (Object.keys(next).length === 0) return;
-  await supabase.from("profiles").update(next).eq("user_id", u.user.id);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase.from("profiles") as any).update(next).eq("user_id", u.user.id);
 }
 
 // Rival-rating tier helper for achievements
