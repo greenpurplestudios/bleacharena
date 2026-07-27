@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { getMyProfile } from "@/lib/leaderboard";
 import { loadPrefs, savePrefs, play, type SoundPrefs } from "@/lib/sound";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
       { title: "Settings — Bleach Arena" },

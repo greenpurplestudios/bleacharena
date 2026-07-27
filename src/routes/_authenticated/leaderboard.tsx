@@ -7,7 +7,7 @@ import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { currentWeekLabel, fetchLeaderboard, getCurrentUserId, getMyProfile } from "@/lib/leaderboard";
 
-export const Route = createFileRoute("/leaderboard")({
+export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({
     meta: [
       { title: "Weekly Leaderboard — Bleach Arena" },

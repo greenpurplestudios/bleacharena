@@ -5,7 +5,7 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 
-export const Route = createFileRoute("/quotes")({
+export const Route = createFileRoute("/_authenticated/quotes")({
   head: () => ({
     meta: [
       { title: "Who Said That? — Bleach Draft" },

@@ -7,7 +7,7 @@ import { RARITY_COLOR, RARITY_LABEL, RARITY_ORDER } from "@/lib/rarity";
 import { useI18n } from "@/lib/i18n";
 import type { Rarity } from "@/types/character";
 
-export const Route = createFileRoute("/characters")({
+export const Route = createFileRoute("/_authenticated/characters")({
   head: () => ({
     meta: [
       { title: "Characters — Bleach Arena" },
