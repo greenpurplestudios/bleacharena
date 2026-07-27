@@ -4,6 +4,7 @@ import { quotes, type Quote } from "@/data/quotes";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
+import { trackMission } from "@/lib/missions";
 
 export const Route = createFileRoute("/_authenticated/quotes")({
   head: () => ({
@@ -67,7 +68,10 @@ function QuotesPage() {
   const pick = (choice: string) => {
     if (picked || !round) return;
     setPicked(choice);
-    if (choice === round.correct) setScore((s) => s + 1);
+    if (choice === round.correct) {
+      setScore((s) => s + 1);
+      trackMission("quiz_correct", 1);
+    }
   };
 
   const next = () => {
