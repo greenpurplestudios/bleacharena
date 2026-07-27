@@ -18,6 +18,7 @@ import { characters } from "@/data/characters";
 import { RARITY_COLOR, RARITY_LABEL } from "@/lib/rarity";
 import { play } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
+import { trackMission } from "@/lib/missions";
 
 export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
@@ -65,6 +66,7 @@ function PacksPage() {
     if (res.ok) {
       if (res.rarity === "mythic" || res.rarity === "legendary") play("rare");
       else play("success");
+      trackMission("pack_open", 1);
     } else {
       play("skip");
     }
