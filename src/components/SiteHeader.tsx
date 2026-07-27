@@ -40,6 +40,9 @@ export function SiteHeader() {
           <Link to="/collection" className="text-muted-foreground transition-colors hover:text-foreground">
             {t("collection")}
           </Link>
+          <Link to="/store" className="text-muted-foreground transition-colors hover:text-foreground">
+            {t("store")}
+          </Link>
           <Link to="/quotes" className="text-muted-foreground transition-colors hover:text-foreground">
             {t("quotes")}
           </Link>
