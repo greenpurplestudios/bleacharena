@@ -18,6 +18,7 @@ import { EasterEggHeart } from "@/components/EasterEggHeart";
 import { PWAUpdateToast } from "@/components/PWAUpdateToast";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { supabase } from "@/integrations/supabase/client";
+import { ProgressionProvider } from "@/hooks/use-progression";
 
 function NotFoundComponent() {
   return (
@@ -161,7 +162,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <div className="flex min-h-screen flex-col">
+        <ProgressionProvider>
+          <div className="flex min-h-screen flex-col">
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
           <SiteFooter />
@@ -169,7 +171,8 @@ function RootComponent() {
           <EasterEggHeart />
           <PWAUpdateToast />
           <InstallPrompt />
-        </div>
+          </div>
+        </ProgressionProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

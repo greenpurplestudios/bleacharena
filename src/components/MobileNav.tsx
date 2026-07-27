@@ -29,6 +29,10 @@ export function MobileNav() {
     { to: "/missions" as const, key: "missions" as const, icon: "◎" },
     { to: "/rewards" as const, key: "weeklyRewards" as const, icon: "🏆" },
     { to: "/characters" as const, key: "characters" as const, icon: "☰" },
+    { to: "/profile" as const, key: "myProfile" as const, icon: "☯" },
+    { to: "/levels" as const, key: "levels" as const, icon: "▲" },
+    { to: "/achievements" as const, key: "achievements" as const, icon: "🏅" },
+    { to: "/daily" as const, key: "daily" as const, icon: "☀" },
     { to: "/settings" as const, key: "settings" as const, icon: "⚙" },
     { to: "/follow" as const, key: "followUs" as const, icon: "@" },
   ];
