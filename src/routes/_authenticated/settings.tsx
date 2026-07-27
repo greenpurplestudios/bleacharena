@@ -7,8 +7,13 @@ import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { getMyProfile } from "@/lib/leaderboard";
 import { loadPrefs, savePrefs, play, type SoundPrefs } from "@/lib/sound";
-import { supabase } from "@/integrations/supabase/client";
 import { equipItem, fetchMyInventory, type InventoryItem } from "@/lib/store";
+import {
+  SettingsSection,
+  SettingRow,
+  SettingToggle,
+  SettingSlider,
+} from "@/components/settings/SettingsRow";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -91,64 +96,55 @@ function SettingsPage() {
           </h1>
         </div>
 
-        <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <h2 className="font-display text-lg font-bold">{t("audio")}</h2>
-          <div className="mt-4 space-y-4">
-            <Toggle label={t("soundEffects")} value={prefs.sfx} onChange={(v) => update({ sfx: v })} />
-            <Toggle label={t("music")} value={prefs.music} onChange={(v) => update({ music: v })} />
-            <div>
-              <div className="mb-2 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{t("volume")}</span>
-                <span className="font-mono text-xs text-foreground">{Math.round(prefs.volume * 100)}%</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={Math.round(prefs.volume * 100)}
-                onChange={(e) => update({ volume: Number(e.target.value) / 100 })}
-                onMouseUp={() => play("reveal")}
-                onTouchEnd={() => play("reveal")}
-                className="w-full accent-[oklch(0.75_0.18_55)]"
-              />
-            </div>
-          </div>
-        </section>
+        <div className="mt-8 space-y-6">
+        <SettingsSection title={t("audio")}>
+          <SettingToggle label={t("soundEffects")} value={prefs.sfx} onChange={(v) => update({ sfx: v })} />
+          <SettingToggle label={t("music")} value={prefs.music} onChange={(v) => update({ music: v })} />
+          <SettingSlider
+            label={t("volume")}
+            value={Math.round(prefs.volume * 100)}
+            formatValue={(v) => `${v}%`}
+            onChange={(v) => update({ volume: v / 100 })}
+            onCommit={() => play("reveal")}
+          />
+        </SettingsSection>
 
-        <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <h2 className="font-display text-lg font-bold">{t("profile")}</h2>
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("username")}</p>
-              <p className="mt-0.5 truncate font-semibold" style={equippedColor ? { color: equippedColor } : undefined}>
+        <SettingsSection title={t("profile")}>
+          <SettingRow
+            label={<span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("username")}</span>}
+            description={
+              <span className="mt-0.5 block truncate font-semibold text-foreground" style={equippedColor ? { color: equippedColor } : undefined}>
                 {username ?? "—"}
-              </p>
-            </div>
+              </span>
+            }
+          >
             <button
               onClick={() => { setEditing(true); play("tap"); }}
               className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white/10"
             >
               {t("changeUsername")}
             </button>
-          </div>
-        </section>
+          </SettingRow>
+        </SettingsSection>
 
-        <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-display text-lg font-bold">{t("cosmetics")}</h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">{t("cosmeticsDesc")}</p>
-            </div>
+        <SettingsSection
+          title={
+            <span className="block">
+              {t("cosmetics")}
+              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">{t("cosmeticsDesc")}</span>
+            </span>
+          }
+          action={
             <Link
               to="/store"
               className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20"
             >
               {t("goToStore")}
             </Link>
-          </div>
-
-          <div className="mt-5">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("titles")}</p>
+          }
+        >
+          <div className="pt-3">
+            <p className="text-start text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("titles")}</p>
             {titles.length === 0 ? (
               <p className="mt-2 text-xs text-muted-foreground">{t("noCosmetics")}</p>
             ) : (
@@ -181,8 +177,8 @@ function SettingsPage() {
             )}
           </div>
 
-          <div className="mt-6">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("usernameColors")}</p>
+          <div className="mt-6 pt-3">
+            <p className="text-start text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("usernameColors")}</p>
             {colors.length === 0 ? (
               <p className="mt-2 text-xs text-muted-foreground">{t("noCosmetics")}</p>
             ) : (
@@ -217,32 +213,9 @@ function SettingsPage() {
               </div>
             )}
           </div>
-        </section>
+        </SettingsSection>
+        </div>
       </main>
     </>
-  );
-}
-
-function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
-  const { t } = useI18n();
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-foreground">{label}</span>
-      <button
-        type="button"
-        onClick={() => onChange(!value)}
-        aria-pressed={value}
-        className={`relative inline-flex h-7 w-14 items-center rounded-full border transition-colors ${
-          value ? "border-primary/60 bg-primary/30" : "border-white/15 bg-white/5"
-        }`}
-      >
-        <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-            value ? "translate-x-8" : "translate-x-1"
-          }`}
-        />
-        <span className="sr-only">{value ? t("on") : t("off")}</span>
-      </button>
-    </div>
   );
 }
