@@ -26,6 +26,7 @@ import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/draft'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedCharactersRouteImport } from './routes/_authenticated/characters'
+import { Route as AuthenticatedBleachdleRouteImport } from './routes/_authenticated/bleachdle'
 
 const FollowRoute = FollowRouteImport.update({
   id: '/follow',
@@ -112,11 +113,17 @@ const AuthenticatedCharactersRoute = AuthenticatedCharactersRouteImport.update({
   path: '/characters',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBleachdleRoute = AuthenticatedBleachdleRouteImport.update({
+  id: '/bleachdle',
+  path: '/bleachdle',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
+  '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/draft': typeof AuthenticatedDraftRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
+  '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/draft': typeof AuthenticatedDraftRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
+  '/_authenticated/bleachdle': typeof AuthenticatedBleachdleRoute
   '/_authenticated/characters': typeof AuthenticatedCharactersRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/draft': typeof AuthenticatedDraftRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/follow'
+    | '/bleachdle'
     | '/characters'
     | '/collection'
     | '/draft'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/follow'
+    | '/bleachdle'
     | '/characters'
     | '/collection'
     | '/draft'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/follow'
+    | '/_authenticated/bleachdle'
     | '/_authenticated/characters'
     | '/_authenticated/collection'
     | '/_authenticated/draft'
@@ -355,10 +367,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCharactersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/bleachdle': {
+      id: '/_authenticated/bleachdle'
+      path: '/bleachdle'
+      fullPath: '/bleachdle'
+      preLoaderRoute: typeof AuthenticatedBleachdleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBleachdleRoute: typeof AuthenticatedBleachdleRoute
   AuthenticatedCharactersRoute: typeof AuthenticatedCharactersRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDraftRoute: typeof AuthenticatedDraftRoute
@@ -374,6 +394,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBleachdleRoute: AuthenticatedBleachdleRoute,
   AuthenticatedCharactersRoute: AuthenticatedCharactersRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDraftRoute: AuthenticatedDraftRoute,
@@ -410,3 +431,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
