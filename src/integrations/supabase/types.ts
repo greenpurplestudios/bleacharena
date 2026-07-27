@@ -215,8 +215,10 @@ export type Database = {
           rank: number
           score: number
           team: Json
+          title: string
           user_id: string
           username: string
+          username_color: string
         }[]
       }
       get_my_collection: {
