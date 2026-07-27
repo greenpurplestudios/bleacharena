@@ -92,6 +92,7 @@ function Home() {
             { to: "/store", key: "store", desc: "storeDesc", icon: "✧" },
             { to: "/quotes", key: "quotes", desc: "whoSaidThatDesc", icon: "?" },
             { to: "/quiz", key: "quizShort", desc: "quizDesc", icon: "◈" },
+            { to: "/bleachdle", key: "bleachdle", desc: "bleachdleDesc", icon: "◇" },
             { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★" },
             { to: "/rivals", key: "rivals", desc: "rivalsDesc", icon: "⚔" },
             { to: "/missions", key: "missions", desc: "missionsDesc", icon: "◎" },
