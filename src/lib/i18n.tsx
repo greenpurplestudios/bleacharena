@@ -204,6 +204,28 @@ export const dict = {
   owned: { en: "Owned", ar: "مملوكة" },
   missing: { en: "Missing", ar: "ناقصة" },
   loading: { en: "Loading…", ar: "جاري التحميل…" },
+  // Store & cosmetics
+  store: { en: "Store", ar: "المتجر" },
+  storeTitle: { en: "Soul Store", ar: "متجر الأرواح" },
+  storeDesc: { en: "Spend Souls on titles, colors, and extra packs.", ar: "أنفق الأرواح على الألقاب والألوان والحزم." },
+  titles: { en: "Titles", ar: "الألقاب" },
+  usernameColors: { en: "Username Colors", ar: "ألوان الاسم" },
+  buy: { en: "Buy", ar: "شراء" },
+  purchased: { en: "Purchased!", ar: "تم الشراء!" },
+  insufficientSouls: { en: "Not enough Souls", ar: "أرواح غير كافية" },
+  alreadyOwned: { en: "Already owned", ar: "مملوك بالفعل" },
+  notFound: { en: "Item not found", ar: "غير موجود" },
+  openable: { en: "Openable pack", ar: "حزمة قابلة للفتح" },
+  cosmeticTitle: { en: "Profile title", ar: "لقب الملف" },
+  cosmeticColor: { en: "Name color", ar: "لون الاسم" },
+  cosmetics: { en: "Cosmetics", ar: "التجميليات" },
+  cosmeticsDesc: { en: "Equip titles and colors you own.", ar: "جهّز ما تملكه من الألقاب والألوان." },
+  equipped: { en: "Equipped", ar: "مُجهّز" },
+  equip: { en: "Equip", ar: "تجهيز" },
+  unequip: { en: "Unequip", ar: "إزالة" },
+  none: { en: "None", ar: "لا شيء" },
+  noCosmetics: { en: "Buy titles or colors in the Store to equip them.", ar: "اشترِ من المتجر لتجهيز التجميليات." },
+  goToStore: { en: "Go to Store", ar: "اذهب إلى المتجر" },
 };
 
 export type TKey = keyof typeof dict;

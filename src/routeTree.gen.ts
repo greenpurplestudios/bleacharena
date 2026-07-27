@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthResetRouteImport } from './routes/auth.reset'
+import { Route as AuthenticatedStoreRouteImport } from './routes/_authenticated/store'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedQuotesRouteImport } from './routes/_authenticated/quotes'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
@@ -46,6 +47,11 @@ const AuthResetRoute = AuthResetRouteImport.update({
   id: '/reset',
   path: '/reset',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedStoreRoute = AuthenticatedStoreRouteImport.update({
+  id: '/store',
+  path: '/store',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
 }
 export interface FileRoutesByTo {
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
 }
 export interface FileRoutesById {
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
   '/_authenticated/quotes': typeof AuthenticatedQuotesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
 }
 export interface FileRouteTypes {
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/quotes'
     | '/settings'
+    | '/store'
     | '/auth/reset'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/quotes'
     | '/settings'
+    | '/store'
     | '/auth/reset'
   id:
     | '__root__'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/_authenticated/quiz'
     | '/_authenticated/quotes'
     | '/_authenticated/settings'
+    | '/_authenticated/store'
     | '/auth/reset'
   fileRoutesById: FileRoutesById
 }
@@ -222,6 +234,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/reset'
       preLoaderRoute: typeof AuthResetRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/store': {
+      id: '/_authenticated/store'
+      path: '/store'
+      fullPath: '/store'
+      preLoaderRoute: typeof AuthenticatedStoreRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -291,6 +310,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
   AuthenticatedQuotesRoute: typeof AuthenticatedQuotesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -302,6 +322,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
   AuthenticatedQuotesRoute: AuthenticatedQuotesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedStoreRoute: AuthenticatedStoreRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
