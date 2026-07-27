@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { characters } from "@/data/characters";
 import { RARITY_COLOR } from "@/lib/rarity";
 import { fetchMyCollection } from "@/lib/packs";
+import { trackMission } from "@/lib/missions";
 import {
   battleRival,
   fetchMyRecentBattles,
