@@ -11,6 +11,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { submitScore, getMyProfile } from "@/lib/leaderboard";
 import { awardPackFromScore, PACK_LABEL, PACK_COLOR, type PackTier } from "@/lib/packs";
+import { trackMission } from "@/lib/missions";
 import { play } from "@/lib/sound";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { Link } from "@tanstack/react-router";
@@ -237,6 +238,7 @@ function ResultScreen({
     // Award pack for this draft regardless of PB — one pack per completed draft.
     const award = await awardPackFromScore(score.overall);
     if (award.awarded && award.tier) setPackAward(award.tier);
+    trackMission("draft_play", 1);
   }, [score.overall, team]);
 
   useEffect(() => {
