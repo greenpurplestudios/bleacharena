@@ -18,10 +18,10 @@ export async function getMyProfile(): Promise<{ username: string | null } | null
   if (!uid) return null;
   const { data } = await supabase
     .from("profiles")
-    .select("username")
+    .select("username, title, username_color")
     .eq("user_id", uid)
     .maybeSingle();
-  return data ?? { username: null };
+  return (data as { username: string | null; title?: string | null; username_color?: string | null } | null) ?? { username: null };
 }
 
 export type SubmitResult =
@@ -93,6 +93,8 @@ export interface LeaderboardRow {
   username: string;
   score: number;
   team: TeamMemberPayload[];
+  title: string | null;
+  username_color: string | null;
 }
 
 export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
@@ -100,7 +102,7 @@ export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
     p_limit: limit,
   });
   if (error || !data) return [];
-  return (data as Array<Omit<LeaderboardRow, "team"> & { team: unknown }>).map((r) => ({
+  return (data as Array<Omit<LeaderboardRow, "team" | "title" | "username_color"> & { team: unknown; title?: string | null; username_color?: string | null }>).map((r) => ({
     rank: Number(r.rank),
     user_id: r.user_id,
     username: r.username,
@@ -112,6 +114,8 @@ export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
           overall: Number(m?.overall) || 0,
         }))
       : [],
+    title: r.title ?? null,
+    username_color: r.username_color ?? null,
   }));
 }
 

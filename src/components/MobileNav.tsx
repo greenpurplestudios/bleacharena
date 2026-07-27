@@ -20,6 +20,7 @@ export function MobileNav() {
     { to: "/draft" as const, key: "draft" as const, icon: "卍" },
     { to: "/packs" as const, key: "packs" as const, icon: "✦" },
     { to: "/collection" as const, key: "collection" as const, icon: "▦" },
+    { to: "/store" as const, key: "store" as const, icon: "✧" },
     { to: "/quotes" as const, key: "quotes" as const, icon: "?" },
     { to: "/quiz" as const, key: "quizShort" as const, icon: "◈" },
     { to: "/leaderboard" as const, key: "leaderboard" as const, icon: "★" },
