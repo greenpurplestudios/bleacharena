@@ -18,6 +18,8 @@ export function MobileNav() {
   const items = [
     { to: "/" as const, key: "home" as const, icon: "⌂" },
     { to: "/draft" as const, key: "draft" as const, icon: "卍" },
+    { to: "/packs" as const, key: "packs" as const, icon: "✦" },
+    { to: "/collection" as const, key: "collection" as const, icon: "▦" },
     { to: "/quotes" as const, key: "quotes" as const, icon: "?" },
     { to: "/quiz" as const, key: "quizShort" as const, icon: "◈" },
     { to: "/leaderboard" as const, key: "leaderboard" as const, icon: "★" },

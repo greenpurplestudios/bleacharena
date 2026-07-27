@@ -183,6 +183,27 @@ export const dict = {
   signOut: { en: "Sign out", ar: "تسجيل الخروج" },
   account: { en: "Account", ar: "الحساب" },
   signIn: { en: "Sign in", ar: "تسجيل الدخول" },
+  // Progression: packs, collection, souls
+  souls: { en: "Souls", ar: "أرواح" },
+  packs: { en: "Packs", ar: "الحزم" },
+  packsTitle: { en: "Your Packs", ar: "حزمك" },
+  packsDesc: { en: "Open packs from drafts to grow your roster.", ar: "افتح الحزم لتوسيع تشكيلتك." },
+  packsEmpty: { en: "No packs yet. Finish a draft with 75+ to earn one.", ar: "لا حزم بعد. أنهِ درافت بـ ٧٥+ لتحصل على واحدة." },
+  packsAvailable: { en: "pack(s) ready to open", ar: "حزمة جاهزة للفتح" },
+  tapToOpen: { en: "Tap to open", ar: "اضغط للفتح" },
+  noPacks: { en: "None yet", ar: "لا يوجد بعد" },
+  packOpenError: { en: "Something went wrong opening this pack.", ar: "حدث خطأ أثناء الفتح." },
+  newCharacter: { en: "New character unlocked!", ar: "تم فتح شخصية جديدة!" },
+  duplicate: { en: "Duplicate", ar: "مكرر" },
+  keepOpening: { en: "Continue", ar: "متابعة" },
+  packEarned: { en: "You earned a pack", ar: "لقد حصلت على حزمة" },
+  openPack: { en: "Open in Packs", ar: "افتح الحزم" },
+  collection: { en: "Collection", ar: "المجموعة" },
+  collectionTitle: { en: "Your Collection", ar: "مجموعتك" },
+  collectionDesc: { en: "Every character you have ever pulled.", ar: "كل شخصية سحبتها من قبل." },
+  owned: { en: "Owned", ar: "مملوكة" },
+  missing: { en: "Missing", ar: "ناقصة" },
+  loading: { en: "Loading…", ar: "جاري التحميل…" },
 };
 
 export type TKey = keyof typeof dict;

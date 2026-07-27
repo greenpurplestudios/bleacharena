@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      characters_catalog: {
+        Row: {
+          id: string
+          overall: number
+          rarity: string
+        }
+        Insert: {
+          id: string
+          overall: number
+          rarity: string
+        }
+        Update: {
+          id?: string
+          overall?: number
+          rarity?: string
+        }
+        Relationships: []
+      }
       leaderboard_scores: {
         Row: {
           id: string
@@ -74,11 +92,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_collection: {
+        Row: {
+          character_id: string
+          count: number
+          first_obtained_at: string
+          user_id: string
+        }
+        Insert: {
+          character_id: string
+          count?: number
+          first_obtained_at?: string
+          user_id: string
+        }
+        Update: {
+          character_id?: string
+          count?: number
+          first_obtained_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_collection_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_packs: {
+        Row: {
+          count: number
+          tier: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          tier: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          tier?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       current_season_key: { Args: never; Returns: string }
       get_leaderboard: {
         Args: { p_limit?: number; p_season?: string }
@@ -90,6 +156,25 @@ export type Database = {
           username: string
         }[]
       }
+      get_my_collection: {
+        Args: never
+        Returns: {
+          character_id: string
+          count: number
+          first_obtained_at: string
+          overall: number
+          rarity: string
+        }[]
+      }
+      get_my_packs: {
+        Args: never
+        Returns: {
+          count: number
+          tier: string
+        }[]
+      }
+      open_pack: { Args: { p_tier: string }; Returns: Json }
+      pack_tier_from_score: { Args: { p_score: number }; Returns: string }
       set_username: { Args: { p_username: string }; Returns: Json }
       submit_score:
         | { Args: { p_score: number }; Returns: Json }

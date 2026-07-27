@@ -17,8 +17,10 @@ import { Route as AuthResetRouteImport } from './routes/auth.reset'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedQuotesRouteImport } from './routes/_authenticated/quotes'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
+import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/draft'
+import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedCharactersRouteImport } from './routes/_authenticated/characters'
 
 const FollowRoute = FollowRouteImport.update({
@@ -60,6 +62,11 @@ const AuthenticatedQuizRoute = AuthenticatedQuizRouteImport.update({
   path: '/quiz',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPacksRoute = AuthenticatedPacksRouteImport.update({
+  id: '/packs',
+  path: '/packs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLeaderboardRoute =
   AuthenticatedLeaderboardRouteImport.update({
     id: '/leaderboard',
@@ -69,6 +76,11 @@ const AuthenticatedLeaderboardRoute =
 const AuthenticatedDraftRoute = AuthenticatedDraftRouteImport.update({
   id: '/draft',
   path: '/draft',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCharactersRoute = AuthenticatedCharactersRouteImport.update({
@@ -82,8 +94,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/characters': typeof AuthenticatedCharactersRoute
+  '/collection': typeof AuthenticatedCollectionRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
+  '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -94,8 +108,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/characters': typeof AuthenticatedCharactersRoute
+  '/collection': typeof AuthenticatedCollectionRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
+  '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -108,8 +124,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/_authenticated/characters': typeof AuthenticatedCharactersRoute
+  '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/draft': typeof AuthenticatedDraftRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
+  '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
   '/_authenticated/quotes': typeof AuthenticatedQuotesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -122,8 +140,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/characters'
+    | '/collection'
     | '/draft'
     | '/leaderboard'
+    | '/packs'
     | '/quiz'
     | '/quotes'
     | '/settings'
@@ -134,8 +154,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/characters'
+    | '/collection'
     | '/draft'
     | '/leaderboard'
+    | '/packs'
     | '/quiz'
     | '/quotes'
     | '/settings'
@@ -147,8 +169,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/_authenticated/characters'
+    | '/_authenticated/collection'
     | '/_authenticated/draft'
     | '/_authenticated/leaderboard'
+    | '/_authenticated/packs'
     | '/_authenticated/quiz'
     | '/_authenticated/quotes'
     | '/_authenticated/settings'
@@ -220,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedQuizRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/packs': {
+      id: '/_authenticated/packs'
+      path: '/packs'
+      fullPath: '/packs'
+      preLoaderRoute: typeof AuthenticatedPacksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/leaderboard': {
       id: '/_authenticated/leaderboard'
       path: '/leaderboard'
@@ -234,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDraftRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/collection': {
+      id: '/_authenticated/collection'
+      path: '/collection'
+      fullPath: '/collection'
+      preLoaderRoute: typeof AuthenticatedCollectionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/characters': {
       id: '/_authenticated/characters'
       path: '/characters'
@@ -246,8 +284,10 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCharactersRoute: typeof AuthenticatedCharactersRoute
+  AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDraftRoute: typeof AuthenticatedDraftRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
+  AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
   AuthenticatedQuotesRoute: typeof AuthenticatedQuotesRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -255,8 +295,10 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCharactersRoute: AuthenticatedCharactersRoute,
+  AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDraftRoute: AuthenticatedDraftRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
+  AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
   AuthenticatedQuotesRoute: AuthenticatedQuotesRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
