@@ -10,6 +10,7 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { submitScore, getMyProfile } from "@/lib/leaderboard";
+import { awardPackFromScore, PACK_LABEL, PACK_COLOR, type PackTier } from "@/lib/packs";
 import { play } from "@/lib/sound";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { Link } from "@tanstack/react-router";
@@ -219,6 +220,7 @@ function ResultScreen({
   const [copied, setCopied] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "done" | "not-improved">("idle");
   const [needsUsername, setNeedsUsername] = useState(false);
+  const [packAward, setPackAward] = useState<PackTier | null>(null);
 
   const doSubmit = useCallback(async () => {
     const payload = team.filter((c): c is Character => !!c).map((c) => ({
@@ -232,6 +234,9 @@ function ResultScreen({
       return;
     }
     setSubmitState(res.improved ? "done" : "not-improved");
+    // Award pack for this draft regardless of PB — one pack per completed draft.
+    const award = await awardPackFromScore(score.overall);
+    if (award.awarded && award.tier) setPackAward(award.tier);
   }, [score.overall, team]);
 
   useEffect(() => {
@@ -326,6 +331,30 @@ function ResultScreen({
       </div>
       {submitState === "done" && <p className="text-sm text-accent">{t("scoreSubmitted")}</p>}
       {submitState === "not-improved" && <p className="text-sm text-muted-foreground">{t("scoreNotImproved")}</p>}
+      {packAward && (
+        <div
+          className="mt-2 flex flex-col items-center gap-3 rounded-2xl border px-6 py-5"
+          style={{
+            borderColor: `${PACK_COLOR[packAward]}66`,
+            background: `${PACK_COLOR[packAward]}12`,
+            boxShadow: `0 0 40px -14px ${PACK_COLOR[packAward]}`,
+            animation: "card-in 0.5s ease-out both",
+          }}
+        >
+          <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            {t("packEarned")}
+          </span>
+          <span className="font-display text-2xl font-black" style={{ color: PACK_COLOR[packAward] }}>
+            {PACK_LABEL[packAward][locale]}
+          </span>
+          <Link
+            to="/packs"
+            className="rounded-xl bg-primary px-5 py-2 font-display text-xs font-black uppercase tracking-widest text-primary-foreground"
+          >
+            {t("openPack")}
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

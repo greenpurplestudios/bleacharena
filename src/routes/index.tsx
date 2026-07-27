@@ -87,6 +87,8 @@ function Home() {
         >
           {[
             { to: "/draft", key: "draft", desc: "bleachDraftDesc", icon: "卍" },
+            { to: "/packs", key: "packs", desc: "packsDesc", icon: "✦" },
+            { to: "/collection", key: "collection", desc: "collectionDesc", icon: "▦" },
             { to: "/quotes", key: "quotes", desc: "whoSaidThatDesc", icon: "?" },
             { to: "/quiz", key: "quizShort", desc: "quizDesc", icon: "◈" },
             { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★" },

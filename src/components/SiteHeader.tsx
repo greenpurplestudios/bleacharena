@@ -5,12 +5,14 @@ import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSouls } from "@/hooks/use-souls";
 
 export function SiteHeader() {
   const { t } = useI18n();
   const { user } = useSession();
   const nav = useNavigate();
   const qc = useQueryClient();
+  const { souls } = useSouls();
 
   const signOut = async () => {
     await qc.cancelQueries();
@@ -32,6 +34,12 @@ export function SiteHeader() {
           <Link to="/draft" className="text-muted-foreground transition-colors hover:text-foreground">
             {t("draft")}
           </Link>
+          <Link to="/packs" className="text-muted-foreground transition-colors hover:text-foreground">
+            {t("packs")}
+          </Link>
+          <Link to="/collection" className="text-muted-foreground transition-colors hover:text-foreground">
+            {t("collection")}
+          </Link>
           <Link to="/quotes" className="text-muted-foreground transition-colors hover:text-foreground">
             {t("quotes")}
           </Link>
@@ -52,6 +60,15 @@ export function SiteHeader() {
           </Link>
         </nav>
         <div className="flex items-center gap-2">
+          {user && souls !== null && (
+            <span
+              className="hidden items-center gap-1 rounded-lg border border-accent/40 bg-accent/10 px-2.5 py-1 font-display text-xs font-black text-accent sm:inline-flex"
+              title={t("souls")}
+            >
+              <span aria-hidden>✦</span>
+              {souls}
+            </span>
+          )}
           {user ? (
             <button
               onClick={signOut}
