@@ -19,6 +19,8 @@ import { RARITY_COLOR, RARITY_LABEL } from "@/lib/rarity";
 import { play } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
 import { trackMission } from "@/lib/missions";
+import { addXp, bumpProfileStats, trackAchievement, XP } from "@/lib/progression";
+import { fetchMyCollection } from "@/lib/packs";
 
 export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
@@ -67,6 +69,27 @@ function PacksPage() {
       if (res.rarity === "mythic" || res.rarity === "legendary") play("rare");
       else play("success");
       trackMission("pack_open", 1);
+      // Progression
+      await Promise.all([
+        addXp(XP.packOpen, "pack"),
+        bumpProfileStats({ packs_opened: 1 }),
+        trackAchievement("pack_10", 1),
+        trackAchievement("pack_100", 1),
+        trackAchievement("pack_500", 1),
+        res.rarity === "mythic" ? trackAchievement("pack_first_mythic", 1) : Promise.resolve(),
+        res.rarity === "mythic" ? trackAchievement("pack_25_mythic", 1) : Promise.resolve(),
+      ]);
+      // Collection milestones (absolute count)
+      try {
+        const coll = await fetchMyCollection();
+        const owned = coll.length;
+        await Promise.all([
+          trackAchievement("col_10", owned, true),
+          trackAchievement("col_25", owned, true),
+          trackAchievement("col_50", owned, true),
+          trackAchievement("col_complete", owned >= characters.length ? 1 : 0, true),
+        ]);
+      } catch { /* silent */ }
     } else {
       play("skip");
     }

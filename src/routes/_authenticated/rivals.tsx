@@ -8,6 +8,7 @@ import { characters } from "@/data/characters";
 import { RARITY_COLOR } from "@/lib/rarity";
 import { fetchMyCollection } from "@/lib/packs";
 import { trackMission } from "@/lib/missions";
+import { addXp, bumpProfileStats, ratingTierUnlocks, trackAchievement, XP } from "@/lib/progression";
 import {
   battleRival,
   fetchMyRecentBattles,
@@ -118,9 +119,24 @@ function RivalsPage() {
       return;
     }
     setBattle(res);
-    if (res.winnerId === myId) { playSound("rare"); trackMission("rival_win", 1); }
-    else if (res.winnerId === null) playSound("reveal");
+    const won = res.winnerId === myId;
+    const draw = res.winnerId === null;
+    if (won) { playSound("rare"); trackMission("rival_win", 1); }
+    else if (draw) playSound("reveal");
     else playSound("error");
+    // Progression
+    const xp = won ? XP.rivalWin : draw ? XP.rivalDraw : XP.rivalLoss;
+    const newRating = res.newRating ?? 1000;
+    const tierIds = ratingTierUnlocks(newRating);
+    await Promise.all([
+      addXp(xp, "rival"),
+      bumpProfileStats({ highest_rival_rating: newRating }),
+      won ? trackAchievement("rival_first", 1) : Promise.resolve(),
+      won ? trackAchievement("rival_10", 1) : Promise.resolve(),
+      won ? trackAchievement("rival_100", 1) : Promise.resolve(),
+      won ? trackAchievement("rival_500", 1) : Promise.resolve(),
+      ...tierIds.map((id) => trackAchievement(id, 1)),
+    ]);
     qc.invalidateQueries({ queryKey: ["rival-stats"] });
     qc.invalidateQueries({ queryKey: ["rival-board"] });
     qc.invalidateQueries({ queryKey: ["rival-recent"] });

@@ -20,6 +20,7 @@ import {
 } from "@/lib/bleachdle";
 import { play } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
+import { addXp, trackAchievement, XP } from "@/lib/progression";
 
 export const Route = createFileRoute("/_authenticated/bleachdle")({
   head: () => ({
@@ -163,6 +164,15 @@ function BleachdlePage() {
       if ((res.souls ?? 0) > 0) refreshSouls();
       const s = await fetchMyBleachdleStats();
       setStats(s);
+      // Progression
+      const xp = didWin ? XP.bleachdleWin(finalRows.length) : XP.bleachdleLose;
+      await Promise.all([
+        addXp(xp, "bleachdle"),
+        didWin ? trackAchievement("bd_first", 1) : Promise.resolve(),
+        didWin ? trackAchievement("bd_100", 1) : Promise.resolve(),
+        s?.best_streak ? trackAchievement("bd_streak_7", s.best_streak, true) : Promise.resolve(),
+        s?.best_streak ? trackAchievement("bd_streak_30", s.best_streak, true) : Promise.resolve(),
+      ]);
     }
   };
 

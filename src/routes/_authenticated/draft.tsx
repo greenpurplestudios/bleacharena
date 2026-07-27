@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/i18n";
 import { submitScore, getMyProfile } from "@/lib/leaderboard";
 import { awardPackFromScore, PACK_LABEL, PACK_COLOR, type PackTier } from "@/lib/packs";
 import { trackMission } from "@/lib/missions";
+import { addXp, bumpProfileStats, trackAchievement, XP } from "@/lib/progression";
 import { play } from "@/lib/sound";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { Link } from "@tanstack/react-router";
@@ -239,6 +240,17 @@ function ResultScreen({
     const award = await awardPackFromScore(score.overall);
     if (award.awarded && award.tier) setPackAward(award.tier);
     trackMission("draft_play", 1);
+    // Progression
+    await Promise.all([
+      addXp(XP.draft(score.overall), "draft"),
+      bumpProfileStats({ drafts_played: 1, best_draft_score: score.overall }),
+      trackAchievement("draft_first", 1),
+      trackAchievement("draft_100", 1),
+      trackAchievement("draft_500", 1),
+      score.overall >= 90 ? trackAchievement("draft_90", 1) : Promise.resolve(),
+      score.overall >= 95 ? trackAchievement("draft_95", 1) : Promise.resolve(),
+      score.overall >= 100 ? trackAchievement("draft_perfect", 1) : Promise.resolve(),
+    ]);
   }, [score.overall, team]);
 
   useEffect(() => {
