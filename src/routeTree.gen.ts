@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthResetRouteImport } from './routes/auth.reset'
 import { Route as AuthenticatedStoreRouteImport } from './routes/_authenticated/store'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
 import { Route as AuthenticatedQuotesRouteImport } from './routes/_authenticated/quotes'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
@@ -56,6 +57,11 @@ const AuthenticatedStoreRoute = AuthenticatedStoreRouteImport.update({
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRivalsRoute = AuthenticatedRivalsRouteImport.update({
+  id: '/rivals',
+  path: '/rivals',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedQuotesRoute = AuthenticatedQuotesRouteImport.update({
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
+  '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
+  '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
   '/_authenticated/quotes': typeof AuthenticatedQuotesRoute
+  '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/packs'
     | '/quiz'
     | '/quotes'
+    | '/rivals'
     | '/settings'
     | '/store'
     | '/auth/reset'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/packs'
     | '/quiz'
     | '/quotes'
+    | '/rivals'
     | '/settings'
     | '/store'
     | '/auth/reset'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/_authenticated/packs'
     | '/_authenticated/quiz'
     | '/_authenticated/quotes'
+    | '/_authenticated/rivals'
     | '/_authenticated/settings'
     | '/_authenticated/store'
     | '/auth/reset'
@@ -249,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/rivals': {
+      id: '/_authenticated/rivals'
+      path: '/rivals'
+      fullPath: '/rivals'
+      preLoaderRoute: typeof AuthenticatedRivalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/quotes': {
       id: '/_authenticated/quotes'
       path: '/quotes'
@@ -309,6 +328,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
   AuthenticatedQuotesRoute: typeof AuthenticatedQuotesRoute
+  AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
 }
@@ -321,6 +341,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
   AuthenticatedQuotesRoute: AuthenticatedQuotesRoute,
+  AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStoreRoute: AuthenticatedStoreRoute,
 }
