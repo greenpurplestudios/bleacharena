@@ -273,6 +273,22 @@ export const dict = {
   resetsIn: { en: "Resets in", ar: "يُعاد الضبط خلال" },
   hours: { en: "h", ar: "س" },
   minutes: { en: "m", ar: "د" },
+  // Weekly Rewards (Phase 5)
+  weeklyRewards: { en: "Weekly Rewards", ar: "المكافآت الأسبوعية" },
+  weeklyRewardsSub: { en: "Last week's spoils", ar: "غنائم الأسبوع الماضي" },
+  weeklyRewardsDesc: {
+    en: "Claim rewards based on your final leaderboard rank from last week.",
+    ar: "استلم مكافآت بناءً على ترتيبك النهائي في متصدرين الأسبوع الماضي.",
+  },
+  yourRank: { en: "Your Rank", ar: "ترتيبك" },
+  noEntry: {
+    en: "You didn't submit a draft last week. Play this week to qualify!",
+    ar: "لم تسجّل نتيجة الأسبوع الماضي. العب هذا الأسبوع للتأهل!",
+  },
+  claimReward: { en: "Claim Reward", ar: "استلم المكافأة" },
+  rewardTiers: { en: "Reward Tiers", ar: "مستويات المكافآت" },
+  bonusPack: { en: "bonus pack", ar: "حزمة إضافية" },
+  rewardClaimed: { en: "Reward claimed", ar: "تم استلام المكافأة" },
 };
 
 export type TKey = keyof typeof dict;

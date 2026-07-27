@@ -17,6 +17,7 @@ import { Route as AuthResetRouteImport } from './routes/auth.reset'
 import { Route as AuthenticatedStoreRouteImport } from './routes/_authenticated/store'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
+import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
 import { Route as AuthenticatedQuotesRouteImport } from './routes/_authenticated/quotes'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
@@ -63,6 +64,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
 const AuthenticatedRivalsRoute = AuthenticatedRivalsRouteImport.update({
   id: '/rivals',
   path: '/rivals',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRewardsRoute = AuthenticatedRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedQuotesRoute = AuthenticatedQuotesRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
+  '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/store': typeof AuthenticatedStoreRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
+  '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/store': typeof AuthenticatedStoreRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
   '/_authenticated/quotes': typeof AuthenticatedQuotesRoute
+  '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/store': typeof AuthenticatedStoreRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/packs'
     | '/quiz'
     | '/quotes'
+    | '/rewards'
     | '/rivals'
     | '/settings'
     | '/store'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/packs'
     | '/quiz'
     | '/quotes'
+    | '/rewards'
     | '/rivals'
     | '/settings'
     | '/store'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/_authenticated/packs'
     | '/_authenticated/quiz'
     | '/_authenticated/quotes'
+    | '/_authenticated/rewards'
     | '/_authenticated/rivals'
     | '/_authenticated/settings'
     | '/_authenticated/store'
@@ -280,6 +292,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRivalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/rewards': {
+      id: '/_authenticated/rewards'
+      path: '/rewards'
+      fullPath: '/rewards'
+      preLoaderRoute: typeof AuthenticatedRewardsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/quotes': {
       id: '/_authenticated/quotes'
       path: '/quotes'
@@ -348,6 +367,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
   AuthenticatedQuotesRoute: typeof AuthenticatedQuotesRoute
+  AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
@@ -362,6 +382,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
   AuthenticatedQuotesRoute: AuthenticatedQuotesRoute,
+  AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStoreRoute: AuthenticatedStoreRoute,
