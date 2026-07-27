@@ -3,6 +3,7 @@ import { BleachLogo } from "@/components/BleachLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { useI18n } from "@/lib/i18n";
+import { useSession } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -10,12 +11,24 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { t } = useI18n();
+  const { user } = useSession();
   return (
     <>
       <ReiatsuBackground count={34} />
       <header className="relative z-10 mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <BleachLogo size="sm" />
-        <LanguageSwitcher />
+        <div className="flex items-center gap-2">
+          {user ? (
+            <Link to="/settings" className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground">
+              {t("account")}
+            </Link>
+          ) : (
+            <Link to="/auth" className="rounded-lg bg-primary px-3 py-1.5 text-xs font-black uppercase tracking-widest text-primary-foreground">
+              {t("signIn")}
+            </Link>
+          )}
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <main className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col items-center justify-center px-4 pb-16 text-center">
