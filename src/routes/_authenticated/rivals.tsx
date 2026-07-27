@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { characters } from "@/data/characters";
 import { RARITY_COLOR } from "@/lib/rarity";
 import { fetchMyCollection } from "@/lib/packs";
+import { trackMission } from "@/lib/missions";
 import {
   battleRival,
   fetchMyRecentBattles,
@@ -117,7 +118,7 @@ function RivalsPage() {
       return;
     }
     setBattle(res);
-    if (res.winnerId === myId) playSound("rare");
+    if (res.winnerId === myId) { playSound("rare"); trackMission("rival_win", 1); }
     else if (res.winnerId === null) playSound("reveal");
     else playSound("error");
     qc.invalidateQueries({ queryKey: ["rival-stats"] });

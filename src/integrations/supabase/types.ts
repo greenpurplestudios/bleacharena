@@ -59,6 +59,27 @@ export type Database = {
         }
         Relationships: []
       }
+      mission_defs: {
+        Row: {
+          id: string
+          reward_souls: number
+          sort_order: number
+          target: number
+        }
+        Insert: {
+          id: string
+          reward_souls: number
+          sort_order?: number
+          target: number
+        }
+        Update: {
+          id?: string
+          reward_souls?: number
+          sort_order?: number
+          target?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -273,6 +294,33 @@ export type Database = {
           },
         ]
       }
+      user_mission_progress: {
+        Row: {
+          claimed: boolean
+          day_key: string
+          mission_id: string
+          progress: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          day_key: string
+          mission_id: string
+          progress?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          day_key?: string
+          mission_id?: string
+          progress?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_packs: {
         Row: {
           count: number
@@ -298,6 +346,8 @@ export type Database = {
     Functions: {
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
+      claim_mission: { Args: { p_mission_id: string }; Returns: Json }
+      current_day_key: { Args: never; Returns: string }
       current_season_key: { Args: never; Returns: string }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
@@ -332,6 +382,17 @@ export type Database = {
           meta: Json
           name_ar: string
           name_en: string
+        }[]
+      }
+      get_my_missions: {
+        Args: never
+        Returns: {
+          claimed: boolean
+          mission_id: string
+          progress: number
+          reward_souls: number
+          sort_order: number
+          target: number
         }[]
       }
       get_my_packs: {
@@ -391,6 +452,10 @@ export type Database = {
       submit_score:
         | { Args: { p_score: number }; Returns: Json }
         | { Args: { p_score: number; p_team?: Json }; Returns: Json }
+      track_mission: {
+        Args: { p_increment?: number; p_mission_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

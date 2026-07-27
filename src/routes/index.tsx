@@ -94,6 +94,7 @@ function Home() {
             { to: "/quiz", key: "quizShort", desc: "quizDesc", icon: "◈" },
             { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★" },
             { to: "/rivals", key: "rivals", desc: "rivalsDesc", icon: "⚔" },
+            { to: "/missions", key: "missions", desc: "missionsDesc", icon: "◎" },
             { to: "/characters", key: "characters", desc: "charactersDesc", icon: "☰" },
             { to: "/settings", key: "settings", desc: "settingsDesc", icon: "⚙" },
           ].map((m) => (
