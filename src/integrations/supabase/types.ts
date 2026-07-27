@@ -14,6 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
+      bleachdle_daily: {
+        Row: {
+          character_id: string
+          created_at: string
+          day_key: string
+          puzzle_number: number
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          day_key: string
+          puzzle_number: number
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          day_key?: string
+          puzzle_number?: number
+        }
+        Relationships: []
+      }
+      bleachdle_solves: {
+        Row: {
+          day_key: string
+          guesses: number
+          solved_at: string
+          souls_awarded: number
+          user_id: string
+          won: boolean
+        }
+        Insert: {
+          day_key: string
+          guesses: number
+          solved_at?: string
+          souls_awarded?: number
+          user_id: string
+          won: boolean
+        }
+        Update: {
+          day_key?: string
+          guesses?: number
+          solved_at?: string
+          souls_awarded?: number
+          user_id?: string
+          won?: boolean
+        }
+        Relationships: []
+      }
+      bleachdle_stats: {
+        Row: {
+          best_streak: number
+          current_streak: number
+          fastest_solve: number | null
+          games_played: number
+          games_won: number
+          last_played_day: string | null
+          total_guesses: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number
+          current_streak?: number
+          fastest_solve?: number | null
+          games_played?: number
+          games_won?: number
+          last_played_day?: string | null
+          total_guesses?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number
+          current_streak?: number
+          fastest_solve?: number | null
+          games_played?: number
+          games_won?: number
+          last_played_day?: string | null
+          total_guesses?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       characters_catalog: {
         Row: {
           id: string
@@ -379,6 +463,7 @@ export type Database = {
       current_season_key: { Args: never; Returns: string }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
+      get_bleachdle_today: { Args: { p_candidates: string[] }; Returns: Json }
       get_leaderboard: {
         Args: { p_limit?: number; p_season?: string }
         Returns: {
@@ -391,6 +476,7 @@ export type Database = {
           username_color: string
         }[]
       }
+      get_my_bleachdle_stats: { Args: never; Returns: Json }
       get_my_collection: {
         Args: never
         Returns: {
@@ -479,6 +565,10 @@ export type Database = {
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
       set_rival_team: { Args: { p_slots: Json }; Returns: Json }
       set_username: { Args: { p_username: string }; Returns: Json }
+      submit_bleachdle: {
+        Args: { p_day: string; p_guesses: number; p_won: boolean }
+        Returns: Json
+      }
       submit_score:
         | { Args: { p_score: number }; Returns: Json }
         | { Args: { p_score: number; p_team?: Json }; Returns: Json }
