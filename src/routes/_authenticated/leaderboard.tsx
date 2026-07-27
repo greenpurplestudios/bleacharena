@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { currentWeekLabel, fetchLeaderboard, getCurrentUserId, getMyProfile } from "@/lib/leaderboard";
+import { fetchStore } from "@/lib/store";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({
@@ -40,6 +41,15 @@ function LeaderboardPage() {
     queryFn: () => fetchLeaderboard(100),
     staleTime: 30_000,
   });
+  const { data: storeItems } = useQuery({
+    queryKey: ["store"],
+    queryFn: () => fetchStore(),
+    staleTime: 5 * 60_000,
+  });
+  const titleMap = (storeItems ?? []).reduce<Record<string, { en: string; ar: string }>>((acc, it) => {
+    if (it.kind === "title") acc[it.id] = it.name;
+    return acc;
+  }, {});
 
   return (
     <>
@@ -80,6 +90,8 @@ function LeaderboardPage() {
           )}
           {rows?.map((r, i) => {
             const isMe = myId && r.user_id === myId;
+            const titleLabel = r.title ? titleMap[r.title]?.[locale] : null;
+            const nameColor = r.username_color ?? undefined;
             return (
               <li
                 key={r.user_id}
@@ -99,7 +111,12 @@ function LeaderboardPage() {
                   {r.rank}
                 </span>
                 <span className="min-w-0 flex-1 truncate font-semibold">
-                  {r.username}
+                  <span style={nameColor ? { color: nameColor } : undefined}>{r.username}</span>
+                  {titleLabel && (
+                    <span className="ms-2 rounded-md border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary">
+                      {titleLabel}
+                    </span>
+                  )}
                   {isMe && (
                     <span className="ms-2 rounded-md bg-primary/20 px-1.5 py-0.5 text-[10px] uppercase tracking-widest text-primary">{t("you")}</span>
                   )}
