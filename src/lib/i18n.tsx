@@ -281,7 +281,6 @@ export const dict = {
     ar: "استلم مكافآت بناءً على ترتيبك النهائي في متصدرين الأسبوع الماضي.",
   },
   yourRank: { en: "Your Rank", ar: "ترتيبك" },
-  yourScore: { en: "Your Score", ar: "نتيجتك" },
   noEntry: {
     en: "You didn't submit a draft last week. Play this week to qualify!",
     ar: "لم تسجّل نتيجة الأسبوع الماضي. العب هذا الأسبوع للتأهل!",
