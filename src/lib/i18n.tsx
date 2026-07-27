@@ -261,6 +261,18 @@ export const dict = {
   victory: { en: "Victory", ar: "انتصار" },
   defeat: { en: "Defeat", ar: "هزيمة" },
   draw: { en: "Draw", ar: "تعادل" },
+  // Missions (Phase 4)
+  missions: { en: "Missions", ar: "المهام" },
+  missionsSub: { en: "Daily objectives", ar: "أهداف يومية" },
+  missionsDesc: { en: "Complete daily objectives to earn Souls. Resets every 24h (UTC).", ar: "أكمل الأهداف اليومية لكسب الأرواح. يعاد ضبطها كل ٢٤ ساعة." },
+  dailyMissions: { en: "Daily Missions", ar: "المهام اليومية" },
+  claim: { en: "Claim", ar: "استلام" },
+  claimed: { en: "Claimed", ar: "تم الاستلام" },
+  reward: { en: "Reward", ar: "المكافأة" },
+  progress: { en: "Progress", ar: "التقدم" },
+  resetsIn: { en: "Resets in", ar: "يُعاد الضبط خلال" },
+  hours: { en: "h", ar: "س" },
+  minutes: { en: "m", ar: "د" },
 };
 
 export type TKey = keyof typeof dict;
