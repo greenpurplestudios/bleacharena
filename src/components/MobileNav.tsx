@@ -26,6 +26,7 @@ export function MobileNav() {
     { to: "/leaderboard" as const, key: "leaderboard" as const, icon: "★" },
     { to: "/rivals" as const, key: "rivals" as const, icon: "⚔" },
     { to: "/missions" as const, key: "missions" as const, icon: "◎" },
+    { to: "/rewards" as const, key: "weeklyRewards" as const, icon: "🏆" },
     { to: "/characters" as const, key: "characters" as const, icon: "☰" },
     { to: "/settings" as const, key: "settings" as const, icon: "⚙" },
     { to: "/follow" as const, key: "followUs" as const, icon: "@" },
