@@ -95,6 +95,7 @@ function Home() {
             { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★" },
             { to: "/rivals", key: "rivals", desc: "rivalsDesc", icon: "⚔" },
             { to: "/missions", key: "missions", desc: "missionsDesc", icon: "◎" },
+            { to: "/rewards", key: "weeklyRewards", desc: "weeklyRewardsDesc", icon: "🏆" },
             { to: "/characters", key: "characters", desc: "charactersDesc", icon: "☰" },
             { to: "/settings", key: "settings", desc: "settingsDesc", icon: "⚙" },
           ].map((m) => (
