@@ -8,7 +8,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { RARITY_COLOR } from "@/lib/rarity";
 
-export const Route = createFileRoute("/quiz")({
+export const Route = createFileRoute("/_authenticated/quiz")({
   head: () => ({
     meta: [
       { title: "Which Bleach Character Are You? — Bleach Arena" },

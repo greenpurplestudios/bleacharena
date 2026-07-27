@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
+import { useSession } from "@/hooks/use-session";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function MobileNav() {
   const { t, dir } = useI18n();
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { user } = useSession();
+  const nav = useNavigate();
+  const qc = useQueryClient();
 
   useEffect(() => { setOpen(false); }, [pathname]);
 
@@ -21,6 +27,13 @@ export function MobileNav() {
   ];
 
   const corner = dir === "rtl" ? "left-4" : "right-4";
+
+  const signOut = async () => {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    nav({ to: "/auth", replace: true });
+  };
 
   return (
     <>
@@ -62,6 +75,25 @@ export function MobileNav() {
                   </li>
                 );
               })}
+              <li className="border-t border-white/10">
+                {user ? (
+                  <button
+                    onClick={signOut}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground hover:bg-white/5"
+                  >
+                    <span aria-hidden className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-white/5 font-display text-sm font-bold">↩</span>
+                    <span className="font-medium">{t("signOut")}</span>
+                  </button>
+                ) : (
+                  <Link
+                    to="/auth"
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-primary hover:bg-white/5"
+                  >
+                    <span aria-hidden className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-display text-sm font-bold">✦</span>
+                    <span className="font-medium">{t("signIn")}</span>
+                  </Link>
+                )}
+              </li>
             </ul>
           </nav>
         </>

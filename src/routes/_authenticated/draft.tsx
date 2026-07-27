@@ -15,7 +15,7 @@ import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-export const Route = createFileRoute("/draft")({
+export const Route = createFileRoute("/_authenticated/draft")({
   head: () => ({
     meta: [
       { title: "Draft — Bleach Draft" },
