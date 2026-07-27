@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { useI18n, type DictKey } from "@/lib/i18n";
+import { useI18n, type TKey } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
-type NavItem = { to: string; key: DictKey; icon: string };
-type NavGroup = { id: string; labelKey: DictKey; icon: string; items: NavItem[] };
+type NavItem = { to: string; key: TKey; icon: string };
+type NavGroup = { id: string; labelKey: TKey; icon: string; items: NavItem[] };
 
 const GROUPS: NavGroup[] = [
   {
