@@ -117,7 +117,7 @@ function RivalsPage() {
       return;
     }
     setBattle(res);
-    if (res.winnerId === myId) playSound("rare");
+    if (res.winnerId === myId) { playSound("rare"); trackMission("rival_win", 1); }
     else if (res.winnerId === null) playSound("reveal");
     else playSound("error");
     qc.invalidateQueries({ queryKey: ["rival-stats"] });
