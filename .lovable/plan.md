@@ -1,94 +1,102 @@
-This is a massive, multi-week feature set — roughly the size of everything already built on top of the current app. I'll break it into a phased plan so we ship real, working systems instead of half of everything. Please confirm the phasing (or reorder), and I'll start Phase 1.
+# Long-Term Progression System
 
-## Phase 0 — Foundation (blocking prerequisite)
+Ship Profiles, Levels + Rewards, Daily Login, and Achievements as one integrated system on top of the existing account, Collection, Draft, Rivals, Bleachdle and Store.
 
-**Auth migration: anonymous → permanent accounts**
-- Enable Email/Password + Google in Cloud Auth (verification on, HIBP on, no auto-confirm).
-- New `/auth` route: sign in, sign up, password reset, "resend verification", Remember Me (persistSession).
-- Move all app routes except `/`, `/auth`, `/follow` under `_authenticated/`.
-- One-time migration: on first login, if the user previously had anonymous data (same device), offer to link username + leaderboard row to the new account. After that, anonymous auth is disabled.
-- Extend `profiles` with: `souls int`, `title text`, `username_color text`, `email` (mirror), timestamps.
+## Scope
 
-Nothing else works until this lands, so it ships alone.
+All four systems land together, fully bilingual (EN/AR), responsive, animated, and wired into every existing game mode via a single XP/achievement tracker so future modes plug in with one call.
 
-## Phase 1 — Collection + Packs + Souls + Duplicates
+## Database (single migration)
 
-Data model (one migration, RLS + GRANTs per rules):
-- `character_ownership(user_id, character_id, count, first_obtained_at)` — PK (user_id, character_id).
-- `packs_inventory(user_id, pack_type, count)` — pack_type enum: bronze/silver/gold/ultra/legend.
-- `soul_transactions(id, user_id, delta, reason, meta jsonb, created_at)` — append-only ledger; `profiles.souls` is the cached balance updated by RPC.
-- RPCs (SECURITY DEFINER):
-  - `grant_pack_for_score(p_score)` — called by `submit_score`; maps score→pack via the table you specified.
-  - `open_pack(p_pack_type)` — atomic: decrement pack, roll character weighted by rarity, insert/increment ownership, if duplicate credit souls (Common 5 / Uncommon 15 / Rare 40 / Epic 100 / Legendary 250 / Mythic 600 — tunable), return `{character_id, duplicate, souls_awarded}`.
-  - `spend_souls(p_amount, p_reason, p_meta)` — guarded debit.
-- Client:
-  - `/collection` — grid of all 60+ characters, owned in color, missing as silhouette, % complete, search/filter/sort (reuses characters page filters).
-  - `/packs` — inventory + open flow with per-tier artwork, animation, sound (reuse `sound.ts`, add tier-specific reveal). Rare pulls: screen flash + slow reveal + `play("rare")`.
-  - Draft result: instead of just "score submitted", show pack earned + CTA "Open now".
-  - Souls balance chip in header + mobile nav.
+New tables (all with GRANTs + RLS + own-row policies):
 
-## Phase 2 — Store + Cosmetics
+- `player_levels` — `user_id`, `level`, `xp`, `total_xp`, `updated_at`
+- `level_rewards_claimed` — `user_id`, `level` (PK pair)
+- `daily_login` — `user_id`, `streak`, `last_claim_day`, `total_claims`
+- `achievements_catalog` — `id`, `category`, `rarity`, `target`, `xp_reward`, `soul_reward`, `title_reward`, `sort_order`, `name_en/ar`, `desc_en/ar`
+- `user_achievements` — `user_id`, `achievement_id`, `progress`, `unlocked_at`
+- Extend `profiles` with: `avatar_character_id text`, `favorite_character_id text`, `profile_frame text`, `profile_border text`, `total_souls_earned int`, `packs_opened int`, `drafts_played int`, `best_draft_score numeric`, `highest_rival_rating int`, `play_seconds int`
 
-- `store_items(id, kind, payload jsonb, price_souls int, active bool)` — kinds: `character`, `title`, `username_color`, (future: frame, background).
-- `store_purchases(id, user_id, item_id, price_paid, purchased_at)`.
-- RPC `purchase_item(p_item_id)` — checks souls, applies effect (character → ownership +1; cosmetic → `user_cosmetics` row + set active).
-- `user_cosmetics(user_id, kind, value, active)` — active title / color rendered on leaderboards & profile.
-- Character prices by rarity (souls): Common 200, Uncommon 500, Rare 1200, Epic 3000, Legendary 8000; **Mythic not listable**.
-- `/store` page: tabs (Characters / Titles / Colors), price, own/locked state, buy modal.
+Seed `achievements_catalog` and cosmetic `store_items` for level-unlock titles/colors/frames (marked non-purchasable, granted by `equip_item` after level unlock).
 
-## Phase 3 — Rivals
+Extend cosmetic kinds: add `frame` and `border` alongside existing `title`/`username_color`; `equip_item` handles them and `profiles` stores the equipped IDs.
 
-Data:
-- `rival_teams(user_id pk, slot_1..slot_5 text, updated_at)` — validated: 5 owned characters.
-- `rival_matches(id, attacker_id, defender_id, attacker_team jsonb, defender_team jsonb, result, points_delta, souls_awarded, created_at, day_key)`.
-- `rival_points(user_id, season_key, points int)`.
-- Unique index `(attacker_id, defender_id, day_key)` enforces "no repeat opponent same day".
-- Trigger/RPC enforces 5 attacks/day per attacker.
+## RPCs
 
-Logic:
-- Battle resolution: deterministic seeded compare of team scores (reuse `scoreTeam`) + small RNG for excitement; server-side in RPC so it's cheat-proof.
-- Win +3, Loss −1, floor at 0. Small soul reward per win.
-- `find_opponents()` RPC returns 3–5 candidates near your rank with saved teams.
+- `add_xp(p_amount int, p_source text)` — adds XP, handles level-up loop, returns `{ new_level, xp, xp_to_next, leveled_up, unlocks[] }`. Auto-inserts level reward entries.
+- `claim_level_reward(p_level int)` — grants souls/title/color/frame from a config table lookup, marks claimed
+- `claim_daily_login()` — computes streak from `last_claim_day` vs `current_day_key`, grants day-N reward (souls/pack), triggers XP, returns full state
+- `get_daily_login_state()` — streak, day index, next-claim countdown seconds, calendar
+- `track_achievement(p_id text, p_progress int)` — increments, unlocks when target hit, grants XP+souls+title, returns unlock info
+- `set_avatar(p_character_id text)` / `set_favorite(p_character_id text)` — validates ownership via `user_collection`
+- `get_public_profile(p_user_id uuid)` — returns full profile card data (safe fields only)
+- `get_my_profile_full()` — same for own profile including private counters
+- `get_my_achievements()` — catalog + progress joined
+- `get_level_rewards_state()` — list of milestones with claimed flag
 
-UI:
-- `/rivals` — set team (drag from collection), find opponents, battle animation (reuse card reveals), result screen.
-- `/rivals/leaderboard` — same shape as draft leaderboard, shows title + colored username + team preview, weekly reset via `season_key`.
-- Offline Battle Report modal on login: query matches where you were defender since last login, show W/L/points/souls/attacker list.
+Extend existing RPCs to call `add_xp` and `track_achievement` internally:
+- `submit_score` → XP + draft achievements + updates best_draft_score/drafts_played
+- `open_pack` → XP + pack achievements + packs_opened
+- `battle_rival` → XP + rivals achievements + highest_rival_rating
+- `submit_bleachdle` → XP + bleachdle achievements
+- `claim_mission` → XP
+- `purchase_item` → economy achievements
 
-## Phase 4 — Daily Missions
+## Frontend
 
-- `daily_missions(user_id, day_key, m1_target int, m1_progress, m1_claimed, m2_progress, m2_claimed, m3_progress, m3_claimed, all_claimed)`.
-- `get_or_create_today_missions()` RPC generates M1 target (random 78–92, based on player's recent avg), returns state.
-- Progress hooks: after `submit_score` → update M1; after `open_pack` → M2; after rival win → M3.
-- `claim_mission(n)` RPC awards souls + completion bonus when all three claimed.
-- `/missions` page: 3 cards, progress bars, countdown to UTC midnight, claim buttons, animated completion.
+New routes under `_authenticated/`:
+- `profile.$userId.tsx` — public profile card
+- `profile.index.tsx` — own profile (edit avatar/favorite, quick stats, recent achievements)
+- `achievements.tsx` — grouped by category with rarity chips, progress bars, unlock animation
+- `daily.tsx` — 7-day calendar, streak counter, animated claim
+- `levels.tsx` — level track with milestone rewards, claim buttons
 
-## Phase 5 — Weekly Rewards
+New components:
+- `AvatarPicker` — modal with search / rarity filter / owned-only grid + live preview
+- `PlayerAvatar` — reusable circular avatar using character artwork with frame overlay
+- `XPBar` — animated progress bar, used in header + profile
+- `LevelUpOverlay` — full-screen confetti + glow + sound, triggered via context
+- `AchievementToast` — celebration on unlock
+- `UsernameBadge` — renders username with color + title + frame; used across leaderboards, rivals, battle reports
 
-- `weekly_rewards(user_id, season_key, board, rank, souls, delivered, claimed_at)`.
-- pg_cron on Monday 00:00 UTC calls `/api/public/hooks/weekly-reset`:
-  - Snapshot draft + rivals top 50, insert weekly_rewards rows, no auto-credit — credit on next login claim so popup feels rewarding.
-- Animated reward popup on login when unclaimed rewards exist.
-- Reward curve (souls): #1 5000, #2 3500, #3 2500, #4–5 1800, #6–10 1200, #11–25 700, #26–50 300.
+Global `ProgressionProvider` in `__root.tsx`:
+- Listens for XP/achievement RPC results via a small event bus (`emitXp`, `emitUnlock`)
+- Shows `LevelUpOverlay` / `AchievementToast` from anywhere
+- Refreshes souls + level in header
 
-## Phase 6 — Architecture polish
+Header additions: level badge + XP mini-bar next to souls, avatar next to menu.
+MobileNav + hub: links to Profile / Daily / Achievements / Levels.
 
-- `src/lib/game/` module per system (packs, souls, rivals, missions, store) with typed client + server RPC wrappers.
-- All content (packs, rarity tables, reward curves, mission templates, store items) in `src/data/*.ts` OR the `store_items` table — additions are data-only.
-- React Query keys namespaced per system; single `useSouls()` hook subscribes to profile changes.
-- Reusable `<AnimatedReward>`, `<PackOpenSequence>`, `<BattleAnimation>` components.
-- Bilingual strings added phase-by-phase in `i18n.tsx`.
+Leaderboard, Rivals list, and battle report render `PlayerAvatar` + `UsernameBadge`; clicking a name navigates to `/profile/$userId`.
 
-## Notes / decisions I'll default to unless you say otherwise
+## i18n
 
-- Souls values, pack odds, prices, mission targets, reward curve: numbers above are starting values, easy to tune later.
-- Rivals battles are server-computed deterministic (no live combat) — matches your "attack offline teams" spec.
-- Weekly reset uses existing ISO-week `season_key`.
-- Anonymous → account migration is one-shot per device; new users go straight to email/password + Google.
-- Mythic exclusion from store enforced in RPC, not just UI.
+Add EN/AR strings for every new label, milestone name, achievement name/description, and toast copy.
 
-## Scope check
+## Config
 
-Phase 0 alone is a real chunk (auth rewrite + route gating + linking existing scores). Phases 1–5 each add a table set + RPCs + a page + integrations into draft/results. Realistically this is 6 iterations, not one message.
+`src/lib/progression.ts`:
+- `xpForLevel(n)` — soft curve, e.g. `50 * n * (n + 1)`
+- `LEVEL_REWARDS` — milestone table (level → souls/title/color/frame/border)
+- `DAILY_REWARDS` — 7-day cycle
+- Achievement id constants + tracker helpers so every game mode calls `track('draft_score_90')` etc.
 
-**Reply "start phase 0"** (or reorder / cut anything) and I'll implement Phase 0 end-to-end, then check in before Phase 1.
+## Technical notes
+
+```text
+Game mode action
+  └─► existing RPC (submit_score / open_pack / battle_rival / submit_bleachdle / …)
+        ├─► existing gameplay logic
+        ├─► add_xp(N)          ── returns level-up info
+        └─► track_achievement()── returns unlock info
+              │
+              ▼
+        Client receives {xp, level_up, unlocks[]}
+              │
+              ▼
+        ProgressionProvider fires overlays + refreshes header
+```
+
+Missing a day resets `streak` to 1 on next claim; already-claimed rewards remain in inventory. Level reward cosmetics use the same `store_items` + `user_inventory` pipeline so they equip through existing Settings UI.
+
+Public profile fetched via `get_public_profile` returns only safe fields (no email, no private counters exposed for other users beyond those listed in the spec).

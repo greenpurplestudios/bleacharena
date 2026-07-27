@@ -22,11 +22,16 @@ import { Route as AuthenticatedQuotesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
+import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated/levels'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/draft'
+import { Route as AuthenticatedDailyRouteImport } from './routes/_authenticated/daily'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedCharactersRouteImport } from './routes/_authenticated/characters'
 import { Route as AuthenticatedBleachdleRouteImport } from './routes/_authenticated/bleachdle'
+import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
+import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
+import { Route as AuthenticatedProfileUserIdRouteImport } from './routes/_authenticated/profile.$userId'
 
 const FollowRoute = FollowRouteImport.update({
   id: '/follow',
@@ -92,6 +97,11 @@ const AuthenticatedMissionsRoute = AuthenticatedMissionsRouteImport.update({
   path: '/missions',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLevelsRoute = AuthenticatedLevelsRouteImport.update({
+  id: '/levels',
+  path: '/levels',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLeaderboardRoute =
   AuthenticatedLeaderboardRouteImport.update({
     id: '/leaderboard',
@@ -101,6 +111,11 @@ const AuthenticatedLeaderboardRoute =
 const AuthenticatedDraftRoute = AuthenticatedDraftRouteImport.update({
   id: '/draft',
   path: '/draft',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDailyRoute = AuthenticatedDailyRouteImport.update({
+  id: '/daily',
+  path: '/daily',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
@@ -118,16 +133,37 @@ const AuthenticatedBleachdleRoute = AuthenticatedBleachdleRouteImport.update({
   path: '/bleachdle',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAchievementsRoute =
+  AuthenticatedAchievementsRouteImport.update({
+    id: '/achievements',
+    path: '/achievements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileIndexRoute =
+  AuthenticatedProfileIndexRouteImport.update({
+    id: '/profile/',
+    path: '/profile/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProfileUserIdRoute =
+  AuthenticatedProfileUserIdRouteImport.update({
+    id: '/profile/$userId',
+    path: '/profile/$userId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
+  '/achievements': typeof AuthenticatedAchievementsRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/collection': typeof AuthenticatedCollectionRoute
+  '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
+  '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
@@ -137,16 +173,21 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
+  '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
+  '/profile/': typeof AuthenticatedProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
+  '/achievements': typeof AuthenticatedAchievementsRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/collection': typeof AuthenticatedCollectionRoute
+  '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
+  '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/quiz': typeof AuthenticatedQuizRoute
@@ -156,6 +197,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
+  '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -163,11 +206,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
+  '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
   '/_authenticated/bleachdle': typeof AuthenticatedBleachdleRoute
   '/_authenticated/characters': typeof AuthenticatedCharactersRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
+  '/_authenticated/daily': typeof AuthenticatedDailyRoute
   '/_authenticated/draft': typeof AuthenticatedDraftRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
+  '/_authenticated/levels': typeof AuthenticatedLevelsRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
@@ -177,6 +223,8 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
+  '/_authenticated/profile/$userId': typeof AuthenticatedProfileUserIdRoute
+  '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -184,11 +232,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/follow'
+    | '/achievements'
     | '/bleachdle'
     | '/characters'
     | '/collection'
+    | '/daily'
     | '/draft'
     | '/leaderboard'
+    | '/levels'
     | '/missions'
     | '/packs'
     | '/quiz'
@@ -198,16 +249,21 @@ export interface FileRouteTypes {
     | '/settings'
     | '/store'
     | '/auth/reset'
+    | '/profile/$userId'
+    | '/profile/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/follow'
+    | '/achievements'
     | '/bleachdle'
     | '/characters'
     | '/collection'
+    | '/daily'
     | '/draft'
     | '/leaderboard'
+    | '/levels'
     | '/missions'
     | '/packs'
     | '/quiz'
@@ -217,17 +273,22 @@ export interface FileRouteTypes {
     | '/settings'
     | '/store'
     | '/auth/reset'
+    | '/profile/$userId'
+    | '/profile'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/follow'
+    | '/_authenticated/achievements'
     | '/_authenticated/bleachdle'
     | '/_authenticated/characters'
     | '/_authenticated/collection'
+    | '/_authenticated/daily'
     | '/_authenticated/draft'
     | '/_authenticated/leaderboard'
+    | '/_authenticated/levels'
     | '/_authenticated/missions'
     | '/_authenticated/packs'
     | '/_authenticated/quiz'
@@ -237,6 +298,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/store'
     | '/auth/reset'
+    | '/_authenticated/profile/$userId'
+    | '/_authenticated/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -339,6 +402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMissionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/levels': {
+      id: '/_authenticated/levels'
+      path: '/levels'
+      fullPath: '/levels'
+      preLoaderRoute: typeof AuthenticatedLevelsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/leaderboard': {
       id: '/_authenticated/leaderboard'
       path: '/leaderboard'
@@ -351,6 +421,13 @@ declare module '@tanstack/react-router' {
       path: '/draft'
       fullPath: '/draft'
       preLoaderRoute: typeof AuthenticatedDraftRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/daily': {
+      id: '/_authenticated/daily'
+      path: '/daily'
+      fullPath: '/daily'
+      preLoaderRoute: typeof AuthenticatedDailyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/collection': {
@@ -374,15 +451,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBleachdleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/achievements': {
+      id: '/_authenticated/achievements'
+      path: '/achievements'
+      fullPath: '/achievements'
+      preLoaderRoute: typeof AuthenticatedAchievementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/': {
+      id: '/_authenticated/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile/$userId': {
+      id: '/_authenticated/profile/$userId'
+      path: '/profile/$userId'
+      fullPath: '/profile/$userId'
+      preLoaderRoute: typeof AuthenticatedProfileUserIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAchievementsRoute: typeof AuthenticatedAchievementsRoute
   AuthenticatedBleachdleRoute: typeof AuthenticatedBleachdleRoute
   AuthenticatedCharactersRoute: typeof AuthenticatedCharactersRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
+  AuthenticatedDailyRoute: typeof AuthenticatedDailyRoute
   AuthenticatedDraftRoute: typeof AuthenticatedDraftRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
+  AuthenticatedLevelsRoute: typeof AuthenticatedLevelsRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
@@ -391,14 +492,19 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
+  AuthenticatedProfileUserIdRoute: typeof AuthenticatedProfileUserIdRoute
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAchievementsRoute: AuthenticatedAchievementsRoute,
   AuthenticatedBleachdleRoute: AuthenticatedBleachdleRoute,
   AuthenticatedCharactersRoute: AuthenticatedCharactersRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
+  AuthenticatedDailyRoute: AuthenticatedDailyRoute,
   AuthenticatedDraftRoute: AuthenticatedDraftRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
+  AuthenticatedLevelsRoute: AuthenticatedLevelsRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
@@ -407,6 +513,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStoreRoute: AuthenticatedStoreRoute,
+  AuthenticatedProfileUserIdRoute: AuthenticatedProfileUserIdRoute,
+  AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -431,13 +539,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
