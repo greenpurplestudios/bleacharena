@@ -92,6 +92,42 @@ export type Database = {
         }
         Relationships: []
       }
+      store_items: {
+        Row: {
+          active: boolean
+          cost: number
+          created_at: string
+          id: string
+          kind: string
+          meta: Json
+          name_ar: string
+          name_en: string
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          cost: number
+          created_at?: string
+          id: string
+          kind: string
+          meta?: Json
+          name_ar: string
+          name_en: string
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          cost?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          meta?: Json
+          name_ar?: string
+          name_en?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       user_collection: {
         Row: {
           character_id: string
@@ -121,6 +157,32 @@ export type Database = {
           },
         ]
       }
+      user_inventory: {
+        Row: {
+          acquired_at: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "store_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_packs: {
         Row: {
           count: number
@@ -146,6 +208,7 @@ export type Database = {
     Functions: {
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       current_season_key: { Args: never; Returns: string }
+      equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       get_leaderboard: {
         Args: { p_limit?: number; p_season?: string }
         Returns: {
@@ -166,6 +229,17 @@ export type Database = {
           rarity: string
         }[]
       }
+      get_my_inventory: {
+        Args: never
+        Returns: {
+          acquired_at: string
+          item_id: string
+          kind: string
+          meta: Json
+          name_ar: string
+          name_en: string
+        }[]
+      }
       get_my_packs: {
         Args: never
         Returns: {
@@ -173,8 +247,22 @@ export type Database = {
           tier: string
         }[]
       }
+      get_store: {
+        Args: never
+        Returns: {
+          cost: number
+          id: string
+          kind: string
+          meta: Json
+          name_ar: string
+          name_en: string
+          owned: boolean
+          sort_order: number
+        }[]
+      }
       open_pack: { Args: { p_tier: string }; Returns: Json }
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
+      purchase_item: { Args: { p_item_id: string }; Returns: Json }
       set_username: { Args: { p_username: string }; Returns: Json }
       submit_score:
         | { Args: { p_score: number }; Returns: Json }
