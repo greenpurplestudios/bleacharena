@@ -157,6 +157,32 @@ export const dict = {
   totalCount: { en: "Total", ar: "الإجمالي" },
   // Leaderboard team
   draftedTeam: { en: "Drafted Team", ar: "الفريق" },
+  // Auth
+  email: { en: "Email", ar: "البريد الإلكتروني" },
+  password: { en: "Password", ar: "كلمة المرور" },
+  or: { en: "or", ar: "أو" },
+  authSignIn: { en: "Sign in", ar: "تسجيل الدخول" },
+  authSignInDesc: { en: "Welcome back, Shinigami.", ar: "مرحباً بعودتك أيها الشينيغامي." },
+  authCreateAccount: { en: "Create account", ar: "إنشاء حساب" },
+  authSignUpDesc: { en: "Save your collection, souls and rivals rank forever.", ar: "احفظ مجموعتك وأرواحك ومرتبتك للأبد." },
+  authResetPassword: { en: "Reset password", ar: "استعادة كلمة المرور" },
+  authResetDesc: { en: "We'll email you a secure reset link.", ar: "سنرسل لك رابط استعادة آمن." },
+  authContinueGoogle: { en: "Continue with Google", ar: "المتابعة بجوجل" },
+  authRememberMe: { en: "Remember me", ar: "تذكرني" },
+  authForgot: { en: "Forgot password?", ar: "نسيت كلمة المرور؟" },
+  authHaveAccount: { en: "Already have an account?", ar: "لديك حساب؟" },
+  authNewHere: { en: "New here? Create an account", ar: "جديد؟ أنشئ حساباً" },
+  authBackToSignIn: { en: "Back to sign in", ar: "العودة لتسجيل الدخول" },
+  authSendResetLink: { en: "Send reset link", ar: "أرسل رابط الاستعادة" },
+  authCheckEmail: { en: "Check your email to verify your account.", ar: "تحقق من بريدك لتأكيد الحساب." },
+  authResetSent: { en: "Check your email for the reset link.", ar: "تحقق من بريدك للحصول على الرابط." },
+  authChooseNewPassword: { en: "Choose a new password.", ar: "اختر كلمة مرور جديدة." },
+  authOpenFromEmail: { en: "Open this page from the reset link in your email.", ar: "افتح هذه الصفحة من رابط الاستعادة في بريدك." },
+  authUpdatePassword: { en: "Update password", ar: "تحديث كلمة المرور" },
+  authPasswordUpdated: { en: "Password updated. Redirecting…", ar: "تم التحديث. جاري التحويل…" },
+  signOut: { en: "Sign out", ar: "تسجيل الخروج" },
+  account: { en: "Account", ar: "الحساب" },
+  signIn: { en: "Sign in", ar: "تسجيل الدخول" },
 };
 
 export type TKey = keyof typeof dict;
