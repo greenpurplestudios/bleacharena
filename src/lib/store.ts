@@ -79,8 +79,7 @@ export interface PurchaseResult {
 export async function purchaseItem(itemId: string): Promise<PurchaseResult> {
   const { data, error } = await supabase.rpc("purchase_item", { p_item_id: itemId });
   if (error) return { ok: false, error: error.message };
-  const p = (data ?? {}) as PurchaseResult & { ok: boolean };
-  return p;
+  return (data ?? {}) as unknown as PurchaseResult;
 }
 
 export async function equipItem(
@@ -89,7 +88,7 @@ export async function equipItem(
 ): Promise<{ ok: boolean; error?: string }> {
   const { data, error } = await supabase.rpc("equip_item", {
     p_kind: kind,
-    p_item_id: itemId,
+    p_item_id: itemId as string,
   });
   if (error) return { ok: false, error: error.message };
   const p = (data ?? {}) as { ok: boolean; error?: string };
