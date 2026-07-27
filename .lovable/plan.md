@@ -1,67 +1,94 @@
-This is a large change set. Here's the plan before I start.
+This is a massive, multi-week feature set — roughly the size of everything already built on top of the current app. I'll break it into a phased plan so we ship real, working systems instead of half of everything. Please confirm the phasing (or reorder), and I'll start Phase 1.
 
-## 1. Rebrand — "Bleach Arena"
-- Rename the site everywhere to **Bleach Arena** (header, footer, page titles, meta, i18n EN+AR).
-- "Bleach Draft" becomes the name of the draft mode only.
-- New **Home hub** at `/` with 4 mode cards: Bleach Draft, Who Said That?, Leaderboard, Follow Us. The current landing hero moves into the Draft page intro.
+## Phase 0 — Foundation (blocking prerequisite)
 
-## 2. Navigation — mobile-friendly corner button
-- Add a floating menu button (bottom-right corner, respects RTL) that opens a sheet/drawer with links to: Home, Bleach Draft, Who Said That?, Leaderboard, Follow Us, plus language toggle.
-- Existing desktop header links stay; the drawer is the mobile nav so the new "Who Said That?" tab is always reachable.
+**Auth migration: anonymous → permanent accounts**
+- Enable Email/Password + Google in Cloud Auth (verification on, HIBP on, no auto-confirm).
+- New `/auth` route: sign in, sign up, password reset, "resend verification", Remember Me (persistSession).
+- Move all app routes except `/`, `/auth`, `/follow` under `_authenticated/`.
+- One-time migration: on first login, if the user previously had anonymous data (same device), offer to link username + leaderboard row to the new account. After that, anonymous auth is disabled.
+- Extend `profiles` with: `souls int`, `title text`, `username_color text`, `email` (mirror), timestamps.
 
-## 3. Follow Us page
-- Add link card for **https://greenpurplestudios.github.io** alongside the existing Instagram + email cards.
+Nothing else works until this lands, so it ships alone.
 
-## 4. Easter egg
-- Clicking the Bleach logo 21 times shows a big purple+green gradient heart fullscreen overlay for 10 seconds with a soft pulse animation, then fades out. Counter resets after each trigger.
+## Phase 1 — Collection + Packs + Souls + Duplicates
 
-## 5. Roster — 3 new characters + 10 images
-- New: Senjumaru Shutara (ultra→legendary, OVR 93), Soi Fon (epic, OVR 86), Baraggan Louisenbairn (legendary, OVR 87 — Segunda Espada).
-- Wire uploaded images to: Baraggan, Don Kanonji, Jinta, Mizuiro, Ururu, Yumichika, Rangiku, Senjumaru, Soi Fon, Tatsuki.
+Data model (one migration, RLS + GRANTs per rules):
+- `character_ownership(user_id, character_id, count, first_obtained_at)` — PK (user_id, character_id).
+- `packs_inventory(user_id, pack_type, count)` — pack_type enum: bronze/silver/gold/ultra/legend.
+- `soul_transactions(id, user_id, delta, reason, meta jsonb, created_at)` — append-only ledger; `profiles.souls` is the cached balance updated by RPC.
+- RPCs (SECURITY DEFINER):
+  - `grant_pack_for_score(p_score)` — called by `submit_score`; maps score→pack via the table you specified.
+  - `open_pack(p_pack_type)` — atomic: decrement pack, roll character weighted by rarity, insert/increment ownership, if duplicate credit souls (Common 5 / Uncommon 15 / Rare 40 / Epic 100 / Legendary 250 / Mythic 600 — tunable), return `{character_id, duplicate, souls_awarded}`.
+  - `spend_souls(p_amount, p_reason, p_meta)` — guarded debit.
+- Client:
+  - `/collection` — grid of all 60+ characters, owned in color, missing as silhouette, % complete, search/filter/sort (reuses characters page filters).
+  - `/packs` — inventory + open flow with per-tier artwork, animation, sound (reuse `sound.ts`, add tier-specific reveal). Rare pulls: screen flash + slow reveal + `play("rare")`.
+  - Draft result: instead of just "score submitted", show pack earned + CTA "Open now".
+  - Souls balance chip in header + mobile nav.
 
-## 6. Leaderboard (Lovable Cloud / Supabase)
+## Phase 2 — Store + Cosmetics
 
-**Data model** (single migration with GRANTs + RLS):
-```
-profiles(user_id pk, username unique citext, created_at, updated_at)
-leaderboard_scores(
-  id, user_id fk, season_key text, score numeric(5,2),
-  submitted_at, unique(user_id, season_key)
-)
-seasons view: current ISO week key computed via SQL function week_key(now())
-```
-- **has_username()** helper + RLS: profiles readable by all authenticated; each user updates only own row. Scores readable by all authenticated; insert/update only own row via RPC.
-- **`submit_score(p_score numeric)` SECURITY DEFINER RPC**:
-  - clamps score to `[0, 100]`, rejects if not finite
-  - computes current `season_key` server-side (never trusts client)
-  - upserts: only writes if `p_score > existing.score` for `(user_id, current_season)`
-  - requires a username set; returns `{ needs_username: true }` if not
-- **`get_leaderboard(p_season text default null, p_limit int default 100)`**: returns rank, username, score for the requested (default current) season. Uses `RANK() OVER (ORDER BY score DESC)`.
-- Weekly reset is implicit: `season_key` changes automatically each ISO week — no cron needed, all history preserved.
+- `store_items(id, kind, payload jsonb, price_souls int, active bool)` — kinds: `character`, `title`, `username_color`, (future: frame, background).
+- `store_purchases(id, user_id, item_id, price_paid, purchased_at)`.
+- RPC `purchase_item(p_item_id)` — checks souls, applies effect (character → ownership +1; cosmetic → `user_cosmetics` row + set active).
+- `user_cosmetics(user_id, kind, value, active)` — active title / color rendered on leaderboards & profile.
+- Character prices by rarity (souls): Common 200, Uncommon 500, Rare 1200, Epic 3000, Legendary 8000; **Mythic not listable**.
+- `/store` page: tabs (Characters / Titles / Colors), price, own/locked state, buy modal.
 
-**Client flow**:
-- On first visit, call `supabase.auth.signInAnonymously()` if no session (silent).
-- After a completed draft, submit score via RPC. If it returns `needs_username`, show the bilingual popup (exact copy from the request). Save username → resubmit once.
-- Debounce/guard the submit button to prevent duplicate submissions.
-- Username editable from a small "Profile" section on the Leaderboard page.
+## Phase 3 — Rivals
 
-**Leaderboard page** `/leaderboard`:
-- Header with current week label ("Week of Mon DD").
-- List: `#Rank  Username  Score` (score to 1 decimal, /100).
-- Highlight current user's row.
-- Skeleton loader while fetching; empty state ("Be the first to claim the top spot").
-- Fully responsive; RTL-aware.
-- React Query with 30s stale time.
+Data:
+- `rival_teams(user_id pk, slot_1..slot_5 text, updated_at)` — validated: 5 owned characters.
+- `rival_matches(id, attacker_id, defender_id, attacker_team jsonb, defender_team jsonb, result, points_delta, souls_awarded, created_at, day_key)`.
+- `rival_points(user_id, season_key, points int)`.
+- Unique index `(attacker_id, defender_id, day_key)` enforces "no repeat opponent same day".
+- Trigger/RPC enforces 5 attacks/day per attacker.
 
-## 7. Files touched
-- Migrations: 1 new (profiles, scores, RPCs, RLS, GRANTs).
-- New: `src/routes/leaderboard.tsx`, `src/routes/home.tsx` (or repurpose `index.tsx`), `src/components/MobileNavButton.tsx`, `src/components/UsernamePrompt.tsx`, `src/lib/leaderboard.ts`, `src/lib/anon-auth.ts`, `src/lib/easter-egg.tsx`.
-- Edits: `characters.ts` (+3, +10 images), `SiteHeader.tsx`, `SiteFooter.tsx`, `follow.tsx`, `draft.tsx` (submit on complete), `i18n.tsx` (all new strings EN+AR), `__root.tsx` (mount mobile nav + anon-auth boot + easter egg listener).
+Logic:
+- Battle resolution: deterministic seeded compare of team scores (reuse `scoreTeam`) + small RNG for excitement; server-side in RPC so it's cheat-proof.
+- Win +3, Loss −1, floor at 0. Small soul reward per win.
+- `find_opponents()` RPC returns 3–5 candidates near your rank with saved teams.
 
-## Technical notes
-- Anonymous auth uses Supabase's built-in `signInAnonymously()`; profile row auto-created via trigger on `auth.users` insert.
-- Username uniqueness enforced by unique index on `lower(username)`.
-- Score clamped and validated server-side; client value never trusted.
-- Score is stored per `(user_id, season_key)` so history for monthly/all-time views is a query change, not a schema change.
+UI:
+- `/rivals` — set team (drag from collection), find opponents, battle animation (reuse card reveals), result screen.
+- `/rivals/leaderboard` — same shape as draft leaderboard, shows title + colored username + team preview, weekly reset via `season_key`.
+- Offline Battle Report modal on login: query matches where you were defender since last login, show W/L/points/souls/attacker list.
 
-Confirm and I'll implement end-to-end.
+## Phase 4 — Daily Missions
+
+- `daily_missions(user_id, day_key, m1_target int, m1_progress, m1_claimed, m2_progress, m2_claimed, m3_progress, m3_claimed, all_claimed)`.
+- `get_or_create_today_missions()` RPC generates M1 target (random 78–92, based on player's recent avg), returns state.
+- Progress hooks: after `submit_score` → update M1; after `open_pack` → M2; after rival win → M3.
+- `claim_mission(n)` RPC awards souls + completion bonus when all three claimed.
+- `/missions` page: 3 cards, progress bars, countdown to UTC midnight, claim buttons, animated completion.
+
+## Phase 5 — Weekly Rewards
+
+- `weekly_rewards(user_id, season_key, board, rank, souls, delivered, claimed_at)`.
+- pg_cron on Monday 00:00 UTC calls `/api/public/hooks/weekly-reset`:
+  - Snapshot draft + rivals top 50, insert weekly_rewards rows, no auto-credit — credit on next login claim so popup feels rewarding.
+- Animated reward popup on login when unclaimed rewards exist.
+- Reward curve (souls): #1 5000, #2 3500, #3 2500, #4–5 1800, #6–10 1200, #11–25 700, #26–50 300.
+
+## Phase 6 — Architecture polish
+
+- `src/lib/game/` module per system (packs, souls, rivals, missions, store) with typed client + server RPC wrappers.
+- All content (packs, rarity tables, reward curves, mission templates, store items) in `src/data/*.ts` OR the `store_items` table — additions are data-only.
+- React Query keys namespaced per system; single `useSouls()` hook subscribes to profile changes.
+- Reusable `<AnimatedReward>`, `<PackOpenSequence>`, `<BattleAnimation>` components.
+- Bilingual strings added phase-by-phase in `i18n.tsx`.
+
+## Notes / decisions I'll default to unless you say otherwise
+
+- Souls values, pack odds, prices, mission targets, reward curve: numbers above are starting values, easy to tune later.
+- Rivals battles are server-computed deterministic (no live combat) — matches your "attack offline teams" spec.
+- Weekly reset uses existing ISO-week `season_key`.
+- Anonymous → account migration is one-shot per device; new users go straight to email/password + Google.
+- Mythic exclusion from store enforced in RPC, not just UI.
+
+## Scope check
+
+Phase 0 alone is a real chunk (auth rewrite + route gating + linking existing scores). Phases 1–5 each add a table set + RPCs + a page + integrations into draft/results. Realistically this is 6 iterations, not one message.
+
+**Reply "start phase 0"** (or reorder / cut anything) and I'll implement Phase 0 end-to-end, then check in before Phase 1.
