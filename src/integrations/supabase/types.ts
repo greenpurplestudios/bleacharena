@@ -92,6 +92,96 @@ export type Database = {
         }
         Relationships: []
       }
+      rival_battles: {
+        Row: {
+          attacker_delta: number
+          attacker_id: string
+          attacker_score: number
+          attacker_team: Json
+          created_at: string
+          defender_delta: number
+          defender_id: string
+          defender_score: number
+          defender_team: Json
+          id: string
+          winner_id: string | null
+        }
+        Insert: {
+          attacker_delta?: number
+          attacker_id: string
+          attacker_score: number
+          attacker_team?: Json
+          created_at?: string
+          defender_delta?: number
+          defender_id: string
+          defender_score: number
+          defender_team?: Json
+          id?: string
+          winner_id?: string | null
+        }
+        Update: {
+          attacker_delta?: number
+          attacker_id?: string
+          attacker_score?: number
+          attacker_team?: Json
+          created_at?: string
+          defender_delta?: number
+          defender_id?: string
+          defender_score?: number
+          defender_team?: Json
+          id?: string
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
+      rival_stats: {
+        Row: {
+          battles_day: string
+          battles_today: number
+          losses: number
+          rating: number
+          updated_at: string
+          user_id: string
+          wins: number
+        }
+        Insert: {
+          battles_day?: string
+          battles_today?: number
+          losses?: number
+          rating?: number
+          updated_at?: string
+          user_id: string
+          wins?: number
+        }
+        Update: {
+          battles_day?: string
+          battles_today?: number
+          losses?: number
+          rating?: number
+          updated_at?: string
+          user_id?: string
+          wins?: number
+        }
+        Relationships: []
+      }
+      rival_teams: {
+        Row: {
+          slots: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          slots?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          slots?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       store_items: {
         Row: {
           active: boolean
@@ -207,8 +297,10 @@ export type Database = {
     }
     Functions: {
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
+      battle_rival: { Args: { p_opponent: string }; Returns: Json }
       current_season_key: { Args: never; Returns: string }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
+      find_rival_opponent: { Args: never; Returns: Json }
       get_leaderboard: {
         Args: { p_limit?: number; p_season?: string }
         Returns: {
@@ -249,6 +341,35 @@ export type Database = {
           tier: string
         }[]
       }
+      get_my_recent_battles: {
+        Args: { p_limit?: number }
+        Returns: {
+          created_at: string
+          i_lost: boolean
+          i_won: boolean
+          id: string
+          my_delta: number
+          my_score: number
+          opp_score: number
+          opponent_id: string
+          opponent_name: string
+        }[]
+      }
+      get_my_rival_stats: { Args: never; Returns: Json }
+      get_my_rival_team: { Args: never; Returns: Json }
+      get_rival_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          losses: number
+          rank: number
+          rating: number
+          title: string
+          user_id: string
+          username: string
+          username_color: string
+          wins: number
+        }[]
+      }
       get_store: {
         Args: never
         Returns: {
@@ -265,6 +386,7 @@ export type Database = {
       open_pack: { Args: { p_tier: string }; Returns: Json }
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
+      set_rival_team: { Args: { p_slots: Json }; Returns: Json }
       set_username: { Args: { p_username: string }; Returns: Json }
       submit_score:
         | { Args: { p_score: number }; Returns: Json }
