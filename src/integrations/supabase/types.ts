@@ -145,16 +145,19 @@ export type Database = {
       }
       characters_catalog: {
         Row: {
+          gender: string
           id: string
           overall: number
           rarity: string
         }
         Insert: {
+          gender?: string
           id: string
           overall: number
           rarity: string
         }
         Update: {
+          gender?: string
           id?: string
           overall?: number
           rarity?: string
@@ -416,6 +419,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rival_daily_matches: {
+        Row: {
+          attacker_id: string
+          created_at: string
+          day: string
+          defender_id: string
+        }
+        Insert: {
+          attacker_id: string
+          created_at?: string
+          day?: string
+          defender_id: string
+        }
+        Update: {
+          attacker_id?: string
+          created_at?: string
+          day?: string
+          defender_id?: string
+        }
+        Relationships: []
+      }
       rival_stats: {
         Row: {
           battles_day: string
@@ -635,6 +659,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       weekly_reward_claims: {
         Row: {
           claimed_at: string
@@ -816,6 +861,13 @@ export type Database = {
         Args: { p_item_id: string; p_user: string }
         Returns: undefined
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       open_pack: { Args: { p_tier: string }; Returns: Json }
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
       previous_season_key: { Args: never; Returns: string }
@@ -843,7 +895,7 @@ export type Database = {
       xp_for_level: { Args: { p_level: number }; Returns: number }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -970,6 +1022,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
