@@ -400,7 +400,6 @@ export const dict = {
   noFriends: { en: "No friends yet. Search for players to connect.", ar: "لا يوجد أصدقاء بعد. ابحث عن اللاعبين للتواصل." },
   noRequests: { en: "No pending requests.", ar: "لا توجد طلبات معلقة." },
   searchPlayers: { en: "Search players by username…", ar: "ابحث عن اللاعبين بالاسم…" },
-  viewProfile: { en: "View Profile", ar: "عرض الملف" },
   friendsCount: { en: "Friends", ar: "أصدقاء" },
 };
 
