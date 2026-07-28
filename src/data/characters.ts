@@ -35,11 +35,6 @@ import senjmaruImg from "@/assets/characters/senjmaru.jpeg.asset.json";
 import yumechikaImg from "@/assets/characters/yumechika.jpeg.asset.json";
 import soiFonImg from "@/assets/characters/soi_fon.jpeg.asset.json";
 import rangikuImg from "@/assets/characters/rangiku.jpeg.asset.json";
-import tatsukiImg from "@/assets/characters/tatsuki_arisawa.jpeg.asset.json";
-import gintaImg from "@/assets/characters/ginta.jpeg.asset.json";
-import keigoImg from "@/assets/characters/keigo.jpeg.asset.json";
-import mizuiroImg from "@/assets/characters/mizuiro_kojima.jpeg.asset.json";
-import ururuImg from "@/assets/characters/ururu.jpeg.asset.json";
 import kuboImg from "@/assets/characters/tite_kubo.jpeg.asset.json";
 import gerardImg from "@/assets/characters/gerard.jpeg.asset.json";
 import pernidaImg from "@/assets/characters/pernida.jpeg.asset.json";
@@ -56,6 +51,16 @@ import kirinjiImg from "@/assets/characters/kirinji.jpeg.asset.json";
 import auraImg from "@/assets/characters/aura.jpeg.asset.json";
 import nellielImg from "@/assets/characters/nelliel.jpeg.asset.json";
 import ginImg from "@/assets/characters/gin.jpeg.asset.json";
+import ukitakeImg from "@/assets/characters/ukitake.jpeg.asset.json";
+import nanaoImg from "@/assets/characters/nanao.jpeg.asset.json";
+import azashiroImg from "@/assets/characters/azashiro.jpeg.asset.json";
+import nemuImg from "@/assets/characters/nemu.jpeg.asset.json";
+import bambiettaImg from "@/assets/characters/bambietta.jpeg.asset.json";
+import bazzardImg from "@/assets/characters/bazzard_black.jpeg.asset.json";
+import ikomekidomoeImg from "@/assets/characters/ikomekidomoe.jpeg.asset.json";
+import tosenImg from "@/assets/characters/tosen.jpeg.asset.json";
+import szayelImg from "@/assets/characters/szayel_apporo.jpeg.asset.json";
+import qaisImg from "@/assets/characters/qais.jpeg.asset.json";
 import { rarityFromOverall } from "@/lib/rarity";
 
 // Data-driven roster. New characters can be added freely — game logic
