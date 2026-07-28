@@ -79,7 +79,8 @@ export type HintCell =
   | { kind: "name"; state: "correct" | "wrong" }
   | { kind: "ovr"; state: "correct" | "higher" | "lower"; value: number }
   | { kind: "rarity"; state: "correct" | "wrong"; value: string }
-  | { kind: "affiliation"; state: "correct" | "partial" | "wrong"; value: string };
+  | { kind: "affiliation"; state: "correct" | "partial" | "wrong"; value: string }
+  | { kind: "gender"; state: "correct" | "wrong"; value: string };
 
 export interface GuessRow {
   guess: Character;
@@ -119,6 +120,9 @@ export function compareGuess(guess: Character, answer: Character): GuessRow {
     if (gTokens.some((t) => aTokens.includes(t))) affState = "partial";
   }
   cells.push({ kind: "affiliation", state: affState, value: ga });
+  const gg = guess.gender ?? "unknown";
+  const ag = answer.gender ?? "unknown";
+  cells.push({ kind: "gender", state: gg === ag ? "correct" : "wrong", value: gg });
   return { guess, cells };
 }
 
