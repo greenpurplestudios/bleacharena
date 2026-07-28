@@ -35,11 +35,6 @@ import senjmaruImg from "@/assets/characters/senjmaru.jpeg.asset.json";
 import yumechikaImg from "@/assets/characters/yumechika.jpeg.asset.json";
 import soiFonImg from "@/assets/characters/soi_fon.jpeg.asset.json";
 import rangikuImg from "@/assets/characters/rangiku.jpeg.asset.json";
-import tatsukiImg from "@/assets/characters/tatsuki_arisawa.jpeg.asset.json";
-import gintaImg from "@/assets/characters/ginta.jpeg.asset.json";
-import keigoImg from "@/assets/characters/keigo.jpeg.asset.json";
-import mizuiroImg from "@/assets/characters/mizuiro_kojima.jpeg.asset.json";
-import ururuImg from "@/assets/characters/ururu.jpeg.asset.json";
 import kuboImg from "@/assets/characters/tite_kubo.jpeg.asset.json";
 import gerardImg from "@/assets/characters/gerard.jpeg.asset.json";
 import pernidaImg from "@/assets/characters/pernida.jpeg.asset.json";
@@ -56,6 +51,16 @@ import kirinjiImg from "@/assets/characters/kirinji.jpeg.asset.json";
 import auraImg from "@/assets/characters/aura.jpeg.asset.json";
 import nellielImg from "@/assets/characters/nelliel.jpeg.asset.json";
 import ginImg from "@/assets/characters/gin.jpeg.asset.json";
+import ukitakeImg from "@/assets/characters/ukitake.jpeg.asset.json";
+import nanaoImg from "@/assets/characters/nanao.jpeg.asset.json";
+import azashiroImg from "@/assets/characters/azashiro.jpeg.asset.json";
+import nemuImg from "@/assets/characters/nemu.jpeg.asset.json";
+import bambiettaImg from "@/assets/characters/bambietta.jpeg.asset.json";
+import bazzardImg from "@/assets/characters/bazzard_black.jpeg.asset.json";
+import ikomekidomoeImg from "@/assets/characters/ikomekidomoe.jpeg.asset.json";
+import tosenImg from "@/assets/characters/tosen.jpeg.asset.json";
+import szayelImg from "@/assets/characters/szayel_apporo.jpeg.asset.json";
+import qaisImg from "@/assets/characters/qais.jpeg.asset.json";
 import { rarityFromOverall } from "@/lib/rarity";
 
 // Data-driven roster. New characters can be added freely — game logic
@@ -85,7 +90,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Shinigami", faction: "Gotei 13", division: "6th", rank: "Captain",
     arc: "Soul Society", shikai: "Senbonzakura", bankai: "Senbonzakura Kageyoshi",
     image: byakuyaImg.url,
-    overall: 92,
+    overall: 91,
   },
   {
     id: "c-004", slug: "kenpachi-zaraki",
@@ -133,7 +138,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Shinigami", faction: "Allies", division: null, rank: "Former Captain",
     arc: "Thousand-Year Blood War", shikai: "Benihime", bankai: "Kannonbiraki Benihime Aratame",
     image: uraharaImg.url,
-    overall: 91,
+    overall: 93,
   },
   {
     id: "c-010", slug: "shunsui-kyoraku",
@@ -157,7 +162,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Arrancar", faction: "Espada", division: "4", rank: "Cuarta Espada",
     arc: "Arrancar", shikai: "Murciélago", bankai: null,
     image: ulquiorraImg.url,
-    overall: 92,
+    overall: 88,
   },
   {
     id: "c-013", slug: "hanataro-yamada",
@@ -229,7 +234,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Arrancar", faction: "Espada", division: "1", rank: "Primera Espada",
     arc: "Fake Karakura", shikai: "Los Lobos", bankai: null,
     image: starkImg.url,
-    overall: 87,
+    overall: 90,
   },
   {
     id: "c-022", slug: "shinji-hirako",
@@ -237,7 +242,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Shinigami / Visored", faction: "Gotei 13", division: "5th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Sakanade", bankai: "Sakashima Yokoshima Happōfusagari",
     image: shinjiImg.url,
-    overall: 85,
+    overall: 87,
   },
   {
     id: "c-023", slug: "lille-barro",
@@ -301,7 +306,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Shinigami", faction: "Gotei 13", division: "12th", rank: "Captain",
     arc: "Thousand-Year Blood War", shikai: "Ashisogi Jizō", bankai: "Konjiki Ashisogi Jizō",
     image: mayuriImg.url,
-    overall: 92,
+    overall: 91,
   },
   {
     id: "c-031", slug: "rangiku-matsumoto",
@@ -337,46 +342,6 @@ const raw: Omit<Character, "rarity">[] = [
     overall: 42,
   },
   {
-    id: "c-035", slug: "jinta-hanakari",
-    name: { en: "Jinta Hanakari", ar: "جينتا هاناكاري" },
-    race: "Human", faction: "Urahara Shop", division: null, rank: null,
-    arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: gintaImg.url,
-    overall: 32,
-  },
-  {
-    id: "c-036", slug: "ururu-tsumugiya",
-    name: { en: "Ururu Tsumugiya", ar: "أوروارو تسوموغيا" },
-    race: "Human", faction: "Urahara Shop", division: null, rank: null,
-    arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: ururuImg.url,
-    overall: 52,
-  },
-  {
-    id: "c-037", slug: "keigo-asano",
-    name: { en: "Keigo Asano", ar: "كيغو أسانو" },
-    race: "Human", faction: "Karakura Friends", division: null, rank: null,
-    arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: keigoImg.url,
-    overall: 20,
-  },
-  {
-    id: "c-038", slug: "mizuiro-kojima",
-    name: { en: "Mizuiro Kojima", ar: "ميزويرو كوجيما" },
-    race: "Human", faction: "Karakura Friends", division: null, rank: null,
-    arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: mizuiroImg.url,
-    overall: 24,
-  },
-  {
-    id: "c-039", slug: "tatsuki-arisawa",
-    name: { en: "Tatsuki Arisawa", ar: "تاتسوكي أريساوا" },
-    race: "Human", faction: "Karakura Friends", division: null, rank: null,
-    arc: "Agent of the Shinigami", shikai: null, bankai: null,
-    image: tatsukiImg.url,
-    overall: 50,
-  },
-  {
     id: "c-040", slug: "don-kanonji",
     name: { en: "Don Kanonji", ar: "دون كانونجي" },
     race: "Human / Spiritualist", faction: "Comedic Relief", division: null, rank: "Karakura Superhero",
@@ -406,7 +371,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Arrancar", faction: "Espada", division: "2", rank: "Segunda Espada",
     arc: "Fake Karakura", shikai: "Arrogante", bankai: null,
     image: baraganImg.url,
-    overall: 87,
+    overall: 89,
   },
   {
     id: "c-044", slug: "gerard-valkyrie",
@@ -494,7 +459,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: kirioImg.url,
-    overall: 91,
+    overall: 92,
   },
   {
     id: "c-055", slug: "tenjiro-kirinji",
@@ -502,7 +467,7 @@ const raw: Omit<Character, "rarity">[] = [
     race: "Shinigami / Royal Guard", faction: "Zero Division", division: null, rank: "Zero Division",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: kirinjiImg.url,
-    overall: 91,
+    overall: 92,
   },
   {
     id: "c-056", slug: "aura-michibane",
@@ -519,6 +484,87 @@ const raw: Omit<Character, "rarity">[] = [
     arc: "Hueco Mundo", shikai: "Gamuza", bankai: null,
     image: nellielImg.url,
     overall: 88,
+  },
+  {
+    id: "c-058", slug: "jushiro-ukitake",
+    name: { en: "Jūshirō Ukitake", ar: "جوشيرو أوكيتاكي" },
+    race: "Shinigami", faction: "Gotei 13", division: "13th", rank: "Captain",
+    arc: "Thousand-Year Blood War", shikai: "Sōgyo no Kotowari", bankai: null,
+    image: ukitakeImg.url,
+    overall: 92,
+  },
+  {
+    id: "c-059", slug: "nanao-ise",
+    name: { en: "Nanao Ise", ar: "ناناو إيسي" },
+    race: "Shinigami", faction: "Gotei 13", division: "1st", rank: "Lieutenant",
+    arc: "Thousand-Year Blood War", shikai: "Shinken Hakkyōken", bankai: null,
+    image: nanaoImg.url,
+    overall: 81,
+  },
+  {
+    id: "c-060", slug: "azashiro-soya",
+    name: { en: "Azashiro Sōya", ar: "أزاشيرو سويا" },
+    race: "Shinigami", faction: "Antagonist", division: null, rank: "Former Captain",
+    arc: "Bount", shikai: null, bankai: null,
+    image: azashiroImg.url,
+    overall: 90,
+  },
+  {
+    id: "c-061", slug: "nemu-kurotsuchi",
+    name: { en: "Nemu Kurotsuchi", ar: "نيمو كوروتسوتشي" },
+    race: "Shinigami / Modified", faction: "Gotei 13", division: "12th", rank: "Lieutenant",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: nemuImg.url,
+    overall: 87,
+  },
+  {
+    id: "c-062", slug: "bambietta-basterbine",
+    name: { en: "Bambietta Basterbine", ar: "بامبييتا باستربين" },
+    race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter E",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: bambiettaImg.url,
+    overall: 87,
+  },
+  {
+    id: "c-063", slug: "bazz-b",
+    name: { en: "Bazz-B", ar: "باز-ب" },
+    race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter H",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: bazzardImg.url,
+    overall: 88,
+  },
+  {
+    id: "c-064", slug: "ikomikidomoe",
+    name: { en: "Ikomikidomoe", ar: "إيكوميكيدومي" },
+    race: "Zanpakutō Spirit", faction: "Zero Division", division: null, rank: "Sword Guardian",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: ikomekidomoeImg.url,
+    overall: 91,
+  },
+  {
+    id: "c-065", slug: "kaname-tosen",
+    name: { en: "Kaname Tōsen", ar: "كانامي توسِن" },
+    race: "Shinigami / Visored", faction: "Antagonist", division: "9th", rank: "Former Captain",
+    arc: "Fake Karakura", shikai: "Suzumushi", bankai: "Suzumushi Tsuishiki: Enma Kōrogi",
+    image: tosenImg.url,
+    overall: 86,
+  },
+  {
+    id: "c-066", slug: "szayelaporro-granz",
+    name: { en: "Szayelaporro Granz", ar: "سزايلابورو غرانز" },
+    race: "Arrancar", faction: "Espada", division: "8", rank: "Octava Espada",
+    arc: "Hueco Mundo", shikai: "Fornicarás", bankai: null,
+    image: szayelImg.url,
+    overall: 88,
+  },
+  {
+    id: "c-067", slug: "qais",
+    name: { en: "Qais", ar: "قيس" },
+    race: "Developer", faction: "Developer", division: null, rank: "Developer",
+    arc: "Behind the Scenes", shikai: null, bankai: null,
+    image: qaisImg.url,
+    overall: 1,
+    tags: ["developer", "secret"],
   },
 ];
 
