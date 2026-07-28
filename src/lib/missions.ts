@@ -14,7 +14,7 @@ export interface Mission {
 export const MISSION_LABEL: Record<MissionId, { en: string; ar: string }> = {
   draft_play: { en: "Complete a Draft", ar: "أكمل عملية اختيار" },
   pack_open: { en: "Open 2 Packs", ar: "افتح حزمتين" },
-  rival_win: { en: "Win a Rival Battle", ar: "افز في مبارزة" },
+  rival_win: { en: "Win a Rival Battle", ar: "فز في مبارزة" },
   quiz_correct: { en: "Answer 3 Quotes Correctly", ar: "أجب على ٣ اقتباسات بشكل صحيح" },
 };
 
