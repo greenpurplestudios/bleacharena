@@ -6,6 +6,10 @@ import { useI18n } from "@/lib/i18n";
 import { getPublicProfile, type ProfileFull } from "@/lib/progression";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { XPBar } from "@/components/XPBar";
+import {
+  getFriendStatus, sendFriendRequest, respondFriendRequest, removeFriend,
+  type FriendState,
+} from "@/lib/friends";
 
 export const Route = createFileRoute("/_authenticated/profile/$userId")({
   head: ({ params }) => ({
@@ -27,13 +31,33 @@ function PublicProfilePage() {
   const { userId } = Route.useParams();
   const { t, locale } = useI18n();
   const [p, setP] = useState<ProfileFull | null | "missing">(null);
+  const [fs, setFs] = useState<{ state: FriendState; id?: string }>({ state: "none" });
+  const [busy, setBusy] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       const r = await getPublicProfile(userId);
       setP(r ?? "missing");
+      setFs(await getFriendStatus(userId));
     })();
   }, [userId]);
+
+  const notify = (m: string) => { setToast(m); setTimeout(() => setToast(null), 2000); };
+  const refreshStatus = async () => setFs(await getFriendStatus(userId));
+
+  const onAdd = async () => {
+    setBusy(true);
+    const r = await sendFriendRequest(userId);
+    setBusy(false);
+    if (r.ok) { notify(r.status === "accepted" ? t("friendAdded") : t("requestSent")); refreshStatus(); }
+    else notify(r.error === "already_friends" ? t("alreadyFriends") : r.error === "already_requested" ? t("requestPending") : (r.error ?? "Error"));
+  };
+  const onAccept = async () => {
+    if (!fs.id) return;
+    setBusy(true); await respondFriendRequest(fs.id, true); setBusy(false); refreshStatus();
+  };
+  const onCancel = async () => { setBusy(true); await removeFriend(userId); setBusy(false); refreshStatus(); };
 
   if (p === null) return (<><SiteHeader /><main className="p-10 text-center text-sm text-muted-foreground">{t("loading")}</main></>);
   if (p === "missing") return (<><SiteHeader /><main className="p-10 text-center text-sm text-muted-foreground">{t("playerNotFound")}</main></>);
@@ -59,6 +83,30 @@ function PublicProfilePage() {
               <div className="mt-2 text-[10px] uppercase tracking-widest text-muted-foreground">
                 {t("memberSince")} {fmtDate(p.created_at)}
               </div>
+              {fs.state !== "self" && (
+                <div className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
+                  {fs.state === "none" && (
+                    <button disabled={busy} onClick={onAdd}
+                      className="rounded-md bg-primary/90 px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary disabled:opacity-50">{t("addFriend")}</button>
+                  )}
+                  {fs.state === "outgoing" && (
+                    <button disabled={busy} onClick={onCancel}
+                      className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold hover:bg-white/10 disabled:opacity-50">{t("cancelRequest")}</button>
+                  )}
+                  {fs.state === "incoming" && (
+                    <>
+                      <button disabled={busy} onClick={onAccept}
+                        className="rounded-md bg-primary/90 px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary disabled:opacity-50">{t("acceptRequest")}</button>
+                      <button disabled={busy} onClick={onCancel}
+                        className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold hover:bg-white/10 disabled:opacity-50">{t("rejectRequest")}</button>
+                    </>
+                  )}
+                  {fs.state === "friends" && (
+                    <button disabled={busy} onClick={onCancel}
+                      className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-xs font-bold text-destructive hover:bg-destructive/20 disabled:opacity-50">{t("removeFriend")}</button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -88,6 +136,11 @@ function PublicProfilePage() {
           </section>
         )}
       </main>
+      {toast && (
+        <div className="fixed inset-x-0 bottom-6 mx-auto w-fit rounded-full border border-white/10 bg-black/80 px-4 py-2 text-sm text-white shadow-lg backdrop-blur">
+          {toast}
+        </div>
+      )}
     </>
   );
 }
