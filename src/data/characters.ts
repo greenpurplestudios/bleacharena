@@ -571,4 +571,16 @@ const raw: Omit<Character, "rarity">[] = [
 export const characters: Character[] = raw.map((c) => ({
   ...c,
   rarity: rarityFromOverall(c.overall),
+  gender: c.gender ?? inferGender(c.id),
 }));
+
+function inferGender(id: string): "male" | "female" | "other" {
+  const female = new Set([
+    "c-002", "c-008", "c-015", "c-031", "c-041", "c-042", "c-047",
+    "c-051", "c-054", "c-056", "c-057", "c-059", "c-061", "c-062",
+  ]);
+  const other = new Set(["c-050", "c-064"]);
+  if (female.has(id)) return "female";
+  if (other.has(id)) return "other";
+  return "male";
+}

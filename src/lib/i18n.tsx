@@ -323,6 +323,11 @@ export const dict = {
   rarityHint: { en: "Rarity", ar: "الندرة" },
   affiliationHint: { en: "Affiliation", ar: "الانتماء" },
   characterHint: { en: "Character", ar: "الشخصية" },
+  genderHint: { en: "Gender", ar: "الجنس" },
+  genderMale: { en: "Male", ar: "ذكر" },
+  genderFemale: { en: "Female", ar: "أنثى" },
+  genderOther: { en: "Other", ar: "آخر" },
+  rivalAlreadyFought: { en: "You've already fought this opponent today.", ar: "لقد قاتلت هذا الخصم اليوم بالفعل." },
   bleachdleShareTitle: { en: "Bleachdle", ar: "بليتشدل" },
   // Progression: profile, levels, daily, achievements
   levelUp: { en: "Level Up!", ar: "ارتقاء مستوى!" },

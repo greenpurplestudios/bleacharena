@@ -51,7 +51,7 @@ function useCountdown() {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-function CellChip({ cell, tOvr, tRarity, tAff, tName }: { cell: HintCell; tOvr: string; tRarity: string; tAff: string; tName: string }) {
+function CellChip({ cell, tOvr, tRarity, tAff, tName, tGender, tGenderMale, tGenderFemale, tGenderOther }: { cell: HintCell; tOvr: string; tRarity: string; tAff: string; tName: string; tGender: string; tGenderMale: string; tGenderFemale: string; tGenderOther: string }) {
   let bg = "bg-white/5 border-white/10 text-muted-foreground";
   if (cell.state === "correct") bg = "bg-emerald-500/20 border-emerald-400/50 text-emerald-100";
   else if (cell.state === "partial") bg = "bg-amber-500/20 border-amber-400/50 text-amber-100";
@@ -61,7 +61,9 @@ function CellChip({ cell, tOvr, tRarity, tAff, tName }: { cell: HintCell; tOvr: 
   const label =
     cell.kind === "name" ? tName :
     cell.kind === "ovr" ? tOvr :
-    cell.kind === "rarity" ? tRarity : tAff;
+    cell.kind === "rarity" ? tRarity :
+    cell.kind === "gender" ? tGender : tAff;
+  const genderLabel = (v: string) => v === "male" ? tGenderMale : v === "female" ? tGenderFemale : tGenderOther;
   const content =
     cell.kind === "ovr" ? (
       <span className="flex items-center gap-1 font-display font-black">
@@ -74,6 +76,8 @@ function CellChip({ cell, tOvr, tRarity, tAff, tName }: { cell: HintCell; tOvr: 
       <span className="font-semibold capitalize">{cell.value}</span>
     ) : cell.kind === "affiliation" ? (
       <span className="font-semibold truncate">{cell.value}</span>
+    ) : cell.kind === "gender" ? (
+      <span className="font-semibold truncate">{genderLabel(cell.value)}</span>
     ) : (
       <span aria-hidden className="font-black">{cell.state === "correct" ? "✓" : "✗"}</span>
     );
@@ -85,9 +89,9 @@ function CellChip({ cell, tOvr, tRarity, tAff, tName }: { cell: HintCell; tOvr: 
   );
 }
 
-function GuessRowView({ row, locale, ...labels }: { row: GuessRow; locale: "en" | "ar"; tOvr: string; tRarity: string; tAff: string; tName: string }) {
+function GuessRowView({ row, locale, ...labels }: { row: GuessRow; locale: "en" | "ar"; tOvr: string; tRarity: string; tAff: string; tName: string; tGender: string; tGenderMale: string; tGenderFemale: string; tGenderOther: string }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))] gap-1.5 items-stretch">
+    <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(5,minmax(0,1fr))] gap-1.5 items-stretch">
       <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 p-1.5">
         {row.guess.image ? (
           <img src={row.guess.image} alt="" className="h-10 w-10 flex-shrink-0 rounded-md object-cover" loading="lazy" />
@@ -97,7 +101,7 @@ function GuessRowView({ row, locale, ...labels }: { row: GuessRow; locale: "en" 
         <span className="truncate text-xs font-semibold">{row.guess.name[locale]}</span>
       </div>
       {row.cells.map((c, i) => (
-        <CellChip key={i} cell={c} tOvr={labels.tOvr} tRarity={labels.tRarity} tAff={labels.tAff} tName={labels.tName} />
+        <CellChip key={i} cell={c} tOvr={labels.tOvr} tRarity={labels.tRarity} tAff={labels.tAff} tName={labels.tName} tGender={labels.tGender} tGenderMale={labels.tGenderMale} tGenderFemale={labels.tGenderFemale} tGenderOther={labels.tGenderOther} />
       ))}
     </div>
   );
@@ -133,8 +137,24 @@ function BleachdlePage() {
       setPuzzle(p);
       setStats(s);
       setLoading(false);
-      if (p?.already_solved) {
-        // show empty board until they replay in practice; keep countdown/stats.
+      // Restore in-progress guesses from localStorage for today's puzzle
+      if (p && !p.already_solved) {
+        try {
+          const key = `bleachdle:progress:${p.day_key}`;
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const ids: string[] = JSON.parse(raw);
+            const answerChar = characters.find((c) => c.id === p.character_id);
+            if (answerChar && Array.isArray(ids)) {
+              const restored: GuessRow[] = [];
+              for (const id of ids) {
+                const g = characters.find((c) => c.id === id);
+                if (g) restored.push(compareGuess(g, answerChar));
+              }
+              if (restored.length) setRows(restored);
+            }
+          }
+        } catch {}
       }
     })();
     return () => { alive = false; };
@@ -185,7 +205,17 @@ function BleachdlePage() {
     setQuery("");
     play("tap");
     const isWin = choice.id === answer.id;
+    // Persist in-progress guesses (only for the real daily puzzle)
+    if (!practice && puzzle) {
+      try {
+        const key = `bleachdle:progress:${puzzle.day_key}`;
+        localStorage.setItem(key, JSON.stringify(next.map((r) => r.guess.id)));
+      } catch {}
+    }
     if (isWin || next.length >= MAX_GUESSES) {
+      if (!practice && puzzle) {
+        try { localStorage.removeItem(`bleachdle:progress:${puzzle.day_key}`); } catch {}
+      }
       finish(next, isWin);
     }
   };
@@ -324,7 +354,7 @@ function BleachdlePage() {
             {rows.length > 0 && (
               <div className="mb-4 flex flex-col gap-1.5">
                 {rows.map((r, i) => (
-                  <GuessRowView key={i} row={r} locale={locale} tOvr={t("ovrHint")} tRarity={t("rarityHint")} tAff={t("affiliationHint")} tName={t("characterHint")} />
+                  <GuessRowView key={i} row={r} locale={locale} tOvr={t("ovrHint")} tRarity={t("rarityHint")} tAff={t("affiliationHint")} tName={t("characterHint")} tGender={t("genderHint")} tGenderMale={t("genderMale")} tGenderFemale={t("genderFemale")} tGenderOther={t("genderOther")} />
                 ))}
               </div>
             )}

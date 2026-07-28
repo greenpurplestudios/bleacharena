@@ -152,6 +152,7 @@ function RivalsPage() {
       case "opponent_no_team": return t("rivalNoOpponent");
       case "no_opponent": return t("rivalNoOpponent");
       case "daily_limit": return t("rivalDailyReached");
+      case "already_fought_today": return t("rivalAlreadyFought");
       case "need_five": return t("rivalNeedFive");
       case "duplicates": return t("rivalDuplicates");
       case "not_owned": return t("rivalNotOwned");
