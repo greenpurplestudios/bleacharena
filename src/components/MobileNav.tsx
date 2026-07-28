@@ -58,6 +58,7 @@ const GROUPS: NavGroup[] = [
     icon: "🏆",
     items: [
       { to: "/leaderboard", key: "leaderboard", icon: "★" },
+      { to: "/friends", key: "friends", icon: "♥" },
     ],
   },
   {
