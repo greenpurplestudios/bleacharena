@@ -188,6 +188,33 @@ export type Database = {
         }
         Relationships: []
       }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          status: Database["public"]["Enums"]["friend_status"]
+          updated_at: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: Database["public"]["Enums"]["friend_status"]
+          updated_at?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: Database["public"]["Enums"]["friend_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leaderboard_scores: {
         Row: {
           id: string
@@ -725,6 +752,7 @@ export type Database = {
       find_rival_opponent: { Args: never; Returns: Json }
       get_bleachdle_today: { Args: { p_candidates: string[] }; Returns: Json }
       get_daily_login_state: { Args: never; Returns: Json }
+      get_friend_status: { Args: { p_other: string }; Returns: Json }
       get_leaderboard: {
         Args: { p_limit?: number; p_season?: string }
         Returns: {
@@ -781,6 +809,34 @@ export type Database = {
           first_obtained_at: string
           overall: number
           rarity: string
+        }[]
+      }
+      get_my_friend_requests: {
+        Args: never
+        Returns: {
+          avatar_character_id: string
+          created_at: string
+          direction: string
+          id: string
+          profile_frame: string
+          title: string
+          user_id: string
+          username: string
+          username_color: string
+        }[]
+      }
+      get_my_friends: {
+        Args: never
+        Returns: {
+          avatar_character_id: string
+          friended_at: string
+          level: number
+          profile_frame: string
+          rival_rating: number
+          title: string
+          user_id: string
+          username: string
+          username_color: string
         }[]
       }
       get_my_inventory: {
@@ -872,6 +928,24 @@ export type Database = {
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
       previous_season_key: { Args: never; Returns: string }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
+      remove_friend: { Args: { p_other: string }; Returns: Json }
+      respond_friend_request: {
+        Args: { p_accept: boolean; p_request_id: string }
+        Returns: Json
+      }
+      search_users: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: {
+          avatar_character_id: string
+          level: number
+          profile_frame: string
+          title: string
+          user_id: string
+          username: string
+          username_color: string
+        }[]
+      }
+      send_friend_request: { Args: { p_addressee: string }; Returns: Json }
       set_avatar: { Args: { p_character_id: string }; Returns: Json }
       set_favorite: { Args: { p_character_id: string }; Returns: Json }
       set_rival_team: { Args: { p_slots: Json }; Returns: Json }
@@ -896,6 +970,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      friend_status: "pending" | "accepted"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1024,6 +1099,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      friend_status: ["pending", "accepted"],
     },
   },
 } as const
