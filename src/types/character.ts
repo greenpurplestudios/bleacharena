@@ -18,6 +18,7 @@ export interface Character {
   shikai?: string | null;
   bankai?: string | null;
   image?: string | null;
+  gender?: "male" | "female" | "other";
   /** Derived from `overall` at data-load time. Do NOT set manually. */
   rarity: Rarity;
   overall: number;
