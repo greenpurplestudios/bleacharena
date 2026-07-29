@@ -164,6 +164,126 @@ export type Database = {
         }
         Relationships: []
       }
+      clan_join_requests: {
+        Row: {
+          clan_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          clan_id: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          clan_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_join_requests_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clan_members: {
+        Row: {
+          clan_id: string
+          joined_at: string
+          role: Database["public"]["Enums"]["clan_role"]
+          user_id: string
+        }
+        Insert: {
+          clan_id: string
+          joined_at?: string
+          role?: Database["public"]["Enums"]["clan_role"]
+          user_id: string
+        }
+        Update: {
+          clan_id?: string
+          joined_at?: string
+          role?: Database["public"]["Enums"]["clan_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_members_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clan_messages: {
+        Row: {
+          clan_id: string
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          clan_id: string
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          clan_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_messages_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clans: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          leader_id: string
+          member_count: number
+          name: string
+          tag: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          leader_id: string
+          member_count?: number
+          name: string
+          tag: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          leader_id?: string
+          member_count?: number
+          name?: string
+          tag?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       daily_login: {
         Row: {
           last_claim_day: string | null
@@ -345,6 +465,7 @@ export type Database = {
         Row: {
           avatar_character_id: string | null
           best_draft_score: number
+          clan_id: string | null
           created_at: string
           drafts_played: number
           email: string | null
@@ -365,6 +486,7 @@ export type Database = {
         Insert: {
           avatar_character_id?: string | null
           best_draft_score?: number
+          clan_id?: string | null
           created_at?: string
           drafts_played?: number
           email?: string | null
@@ -385,6 +507,7 @@ export type Database = {
         Update: {
           avatar_character_id?: string | null
           best_draft_score?: number
+          clan_id?: string | null
           created_at?: string
           drafts_played?: number
           email?: string | null
@@ -742,15 +865,45 @@ export type Database = {
       add_xp: { Args: { p_amount: number; p_source?: string }; Returns: Json }
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
+      cancel_join_request: { Args: { p_clan_id: string }; Returns: Json }
       claim_daily_login: { Args: never; Returns: Json }
       claim_level_reward: { Args: { p_level: number }; Returns: Json }
       claim_mission: { Args: { p_mission_id: string }; Returns: Json }
       claim_weekly_reward: { Args: never; Returns: Json }
+      create_clan: {
+        Args: { p_description?: string; p_name: string; p_tag: string }
+        Returns: Json
+      }
       current_day_key: { Args: never; Returns: string }
       current_season_key: { Args: never; Returns: string }
+      disband_clan: { Args: never; Returns: Json }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
       get_bleachdle_today: { Args: { p_candidates: string[] }; Returns: Json }
+      get_clan_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          id: string
+          member_count: number
+          name: string
+          rank: number
+          tag: string
+          total_level: number
+          total_rating: number
+        }[]
+      }
+      get_clan_messages: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_character_id: string
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+          username: string
+          username_color: string
+        }[]
+      }
       get_daily_login_state: { Args: never; Returns: Json }
       get_friend_status: { Args: { p_other: string }; Returns: Json }
       get_leaderboard: {
@@ -801,6 +954,7 @@ export type Database = {
         }[]
       }
       get_my_bleachdle_stats: { Args: never; Returns: Json }
+      get_my_clan: { Args: never; Returns: Json }
       get_my_collection: {
         Args: never
         Returns: {
@@ -924,13 +1078,38 @@ export type Database = {
         }
         Returns: boolean
       }
+      kick_clan_member: { Args: { p_user_id: string }; Returns: Json }
+      leave_clan: { Args: never; Returns: Json }
+      list_clans: {
+        Args: { p_limit?: number; p_query?: string }
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          member_count: number
+          my_request: boolean
+          name: string
+          tag: string
+          total_level: number
+        }[]
+      }
+      my_clan_id: { Args: never; Returns: string }
+      my_clan_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["clan_role"]
+      }
       open_pack: { Args: { p_tier: string }; Returns: Json }
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
       previous_season_key: { Args: never; Returns: string }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
       remove_friend: { Args: { p_other: string }; Returns: Json }
+      request_join_clan: { Args: { p_clan_id: string }; Returns: Json }
       respond_friend_request: {
         Args: { p_accept: boolean; p_request_id: string }
+        Returns: Json
+      }
+      respond_join_request: {
+        Args: { p_accept: boolean; p_user_id: string }
         Returns: Json
       }
       search_users: {
@@ -945,8 +1124,16 @@ export type Database = {
           username_color: string
         }[]
       }
+      send_clan_message: { Args: { p_content: string }; Returns: Json }
       send_friend_request: { Args: { p_addressee: string }; Returns: Json }
       set_avatar: { Args: { p_character_id: string }; Returns: Json }
+      set_clan_member_role: {
+        Args: {
+          p_role: Database["public"]["Enums"]["clan_role"]
+          p_user_id: string
+        }
+        Returns: Json
+      }
       set_favorite: { Args: { p_character_id: string }; Returns: Json }
       set_rival_team: { Args: { p_slots: Json }; Returns: Json }
       set_username: { Args: { p_username: string }; Returns: Json }
@@ -965,11 +1152,17 @@ export type Database = {
         Args: { p_increment?: number; p_mission_id: string }
         Returns: Json
       }
+      transfer_clan_leadership: { Args: { p_user_id: string }; Returns: Json }
+      update_clan_description: {
+        Args: { p_description: string }
+        Returns: Json
+      }
       weekly_reward_for_rank: { Args: { p_rank: number }; Returns: Json }
       xp_for_level: { Args: { p_level: number }; Returns: number }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      clan_role: "leader" | "officer" | "member"
       friend_status: "pending" | "accepted"
     }
     CompositeTypes: {
@@ -1099,6 +1292,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      clan_role: ["leader", "officer", "member"],
       friend_status: ["pending", "accepted"],
     },
   },
