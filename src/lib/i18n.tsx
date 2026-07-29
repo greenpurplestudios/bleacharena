@@ -401,10 +401,6 @@ export const dict = {
   noRequests: { en: "No pending requests.", ar: "لا توجد طلبات معلقة." },
   searchPlayers: { en: "Search players by username…", ar: "ابحث عن اللاعبين بالاسم…" },
   friendsCount: { en: "Friends", ar: "أصدقاء" },
-};
-
-// Clans
-Object.assign(dict, {
   clans: { en: "Clans", ar: "العشائر" },
   clansDesc: { en: "Form a clan, chat, and climb the standings together.", ar: "كوّن عشيرة ودردش وتنافس معاً." },
   myClan: { en: "My Clan", ar: "عشيرتي" },
@@ -447,7 +443,7 @@ Object.assign(dict, {
   confirmLeave: { en: "Leave this clan?", ar: "مغادرة العشيرة؟" },
   confirmKick: { en: "Kick this member?", ar: "طرد هذا العضو؟" },
   confirmTransfer: { en: "Make this member the leader? You will become a member.", ar: "جعل هذا العضو قائداً؟ ستصبح عضواً عادياً." },
-});
+};
 
 export type TKey = keyof typeof dict;
 
