@@ -79,9 +79,10 @@ export interface ClanLeaderboardRow {
 type RpcResult = { ok: boolean; error?: string; [k: string]: unknown };
 
 async function rpc(name: string, args?: Record<string, unknown>): Promise<RpcResult> {
-  const { data, error } = await supabase.rpc(name, args ?? {});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.rpc as any)(name, args ?? {});
   if (error) return { ok: false, error: error.message };
-  return (data as RpcResult) ?? { ok: false, error: "empty" };
+  return ((data as unknown) as RpcResult) ?? { ok: false, error: "empty" };
 }
 
 export const createClan = (tag: string, name: string, description: string) =>
@@ -105,7 +106,7 @@ export const sendClanMessage = (content: string) =>
 export async function getMyClan(): Promise<MyClanState> {
   const { data, error } = await supabase.rpc("get_my_clan");
   if (error || !data) return { ok: true, in_clan: false };
-  return data as MyClanState;
+  return (data as unknown) as MyClanState;
 }
 
 export async function listClans(query = ""): Promise<ClanListRow[]> {
