@@ -444,7 +444,6 @@ export const dict = {
   confirmKick: { en: "Kick this member?", ar: "طرد هذا العضو؟" },
   confirmTransfer: { en: "Make this member the leader? You will become a member.", ar: "جعل هذا العضو قائداً؟ ستصبح عضواً عادياً." },
   // Clan weekly leaderboard + rewards
-  myClan: { en: "My Clan", ar: "عشيرتي" },
   clanWeekly: { en: "Weekly Rankings", ar: "الترتيب الأسبوعي" },
   clanWeeklyDesc: {
     en: "Clan score = the sum of every member's best draft score this week.",
