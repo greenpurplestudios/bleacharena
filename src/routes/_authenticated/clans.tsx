@@ -5,10 +5,13 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
+import { supabase } from "@/integrations/supabase/client";
 import {
   createClan, disbandClan, getClanMessages, getMyClan, kickClanMember, leaveClan,
   listClans, requestJoinClan, cancelJoinRequest, respondJoinRequest,
   sendClanMessage, setClanMemberRole, transferClanLeadership, updateClanDescription,
+  getClanWeeklyLeaderboard, getMyClanWeeklyReward, claimClanWeeklyReward,
+  type ClanWeeklyRow, type ClanWeeklyRewardStatus,
   type ClanListRow, type ClanMember, type ClanMessage, type MyClanState,
 } from "@/lib/clans";
 
@@ -28,6 +31,7 @@ function ClansPage() {
   const [state, setState] = useState<MyClanState | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [tab, setTab] = useState<"clan" | "weekly">("clan");
 
   const notify = (m: string) => { setToast(m); setTimeout(() => setToast(null), 2400); };
 
@@ -49,10 +53,26 @@ function ClansPage() {
         </header>
         {loading ? (
           <div className="rounded-2xl border border-white/10 bg-card/50 p-8 text-center text-sm text-muted-foreground">…</div>
-        ) : state?.in_clan ? (
+        ) : (
+          <>
+            <div className="mb-4 flex gap-2">
+              {(["clan", "weekly"] as const).map((k) => (
+                <button key={k} onClick={() => setTab(k)}
+                  className={`rounded-lg px-4 py-2 text-sm font-bold ${
+                    tab === k ? "bg-primary text-primary-foreground" : "border border-white/10 bg-white/5 hover:bg-white/10"
+                  }`}>
+                  {t(k === "clan" ? "myClan" : "clanWeekly")}
+                </button>
+              ))}
+            </div>
+            {tab === "weekly" ? (
+              <ClanWeeklyView notify={notify} />
+            ) : state?.in_clan ? (
           <MyClanView state={state} onChange={refresh} notify={notify} />
         ) : (
           <BrowseView onJoined={refresh} notify={notify} />
+            )}
+          </>
         )}
         {toast && (
           <div className="fixed inset-x-0 bottom-6 mx-auto w-fit rounded-full border border-white/10 bg-black/80 px-4 py-2 text-sm text-white shadow-lg backdrop-blur">
@@ -349,8 +369,15 @@ function ClanChat() {
   const refresh = useCallback(async () => setMessages(await getClanMessages(100)), []);
   useEffect(() => {
     refresh();
-    const id = setInterval(refresh, 5000);
-    return () => clearInterval(id);
+    const channel = supabase
+      .channel("clan-chat")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "clan_messages" }, () => {
+        refresh();
+      })
+      .subscribe();
+    // safety net if the socket drops
+    const id = setInterval(refresh, 20000);
+    return () => { clearInterval(id); supabase.removeChannel(channel); };
   }, [refresh]);
   useEffect(() => {
     const el = listRef.current;
@@ -368,7 +395,12 @@ function ClanChat() {
 
   return (
     <section className="rounded-2xl border border-white/10 bg-card/50 p-4">
-      <h2 className="mb-3 font-display text-lg font-black">{t("clanChat")}</h2>
+      <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-black">
+        {t("clanChat")}
+        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />{t("liveChat")}
+        </span>
+      </h2>
       <div ref={listRef} className="mb-3 max-h-80 space-y-2 overflow-y-auto rounded-lg border border-white/10 bg-black/20 p-3">
         {messages.length === 0 ? (
           <p className="text-center text-xs text-muted-foreground">—</p>
@@ -411,4 +443,94 @@ function mapError(err: string | undefined, t: (k: import("@/lib/i18n").TKey) => 
     case "leader_must_transfer_or_disband": return t("leaderMustTransfer");
     default: return err ?? "Error";
   }
+}
+
+function ClanWeeklyView({ notify }: { notify: (m: string) => void }) {
+  const { t } = useI18n();
+  const [rows, setRows] = useState<ClanWeeklyRow[] | null>(null);
+  const [reward, setReward] = useState<ClanWeeklyRewardStatus | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    const [l, r] = await Promise.all([getClanWeeklyLeaderboard(100), getMyClanWeeklyReward()]);
+    setRows(l);
+    setReward(r);
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const claim = async () => {
+    setBusy(true);
+    const res = await claimClanWeeklyReward();
+    setBusy(false);
+    if (!res.ok) return notify(mapError(res.error, t));
+    notify(t("rewardClaimed"));
+    load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <section className="rounded-2xl border border-white/10 bg-card/50 p-4">
+        <h2 className="font-display text-lg font-black">{t("clanWeeklyReward")}</h2>
+        <p className="mt-1 text-xs text-muted-foreground">{t("clanWeeklyRewardDesc")}</p>
+        {reward === null ? (
+          <p className="mt-3 text-sm text-muted-foreground">…</p>
+        ) : !reward.in_clan ? (
+          <p className="mt-3 text-sm text-muted-foreground">{t("notInClanReward")}</p>
+        ) : !reward.has_entry ? (
+          <p className="mt-3 text-sm text-muted-foreground">{t("clanNoEntry")}</p>
+        ) : (
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <span className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 font-display text-sm font-black text-primary">
+              {t("yourRank")} #{reward.rank}
+            </span>
+            <span className="font-display text-sm font-black text-accent">✦ {reward.souls}</span>
+            {reward.pack && (
+              <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest">
+                {reward.pack} {t("bonusPack")}
+              </span>
+            )}
+            <button
+              disabled={busy || reward.claimed}
+              onClick={claim}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              {reward.claimed ? t("claimed") : t("claimReward")}
+            </button>
+          </div>
+        )}
+      </section>
+
+      <section className="rounded-2xl border border-white/10 bg-card/50 p-4">
+        <h2 className="font-display text-lg font-black">{t("clanWeekly")}</h2>
+        <p className="mt-1 text-xs text-muted-foreground">{t("clanWeeklyDesc")}</p>
+        {rows === null ? (
+          <p className="mt-4 text-sm text-muted-foreground">…</p>
+        ) : rows.length === 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">{t("noClans")}</p>
+        ) : (
+          <ul className="mt-4 space-y-2">
+            {rows.map((c) => (
+              <li key={c.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
+                <span className="w-8 flex-none text-center font-display text-lg font-black text-muted-foreground">
+                  {c.rank}
+                </span>
+                <span className="flex h-10 w-12 flex-none items-center justify-center rounded-lg border border-primary/40 bg-primary/10 font-display text-xs font-black text-primary">
+                  [{c.tag}]
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-display text-sm font-bold">{c.name}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {c.scoring_members}/{c.member_count} {t("scoringMembers")}
+                  </div>
+                </div>
+                <span className="font-display text-lg font-black text-accent">
+                  {Math.round(c.total_score)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
 }
