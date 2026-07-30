@@ -89,6 +89,38 @@ export async function openPack(tier: PackTier): Promise<OpenPackResult> {
 
 export interface PackInventoryRow { tier: PackTier; count: number }
 
+export interface OpenAllResult {
+  ok: boolean;
+  opened: number;
+  soulsAwarded: number;
+  results: OpenPackResult[];
+  error?: string;
+}
+
+export async function openAllPacks(tier: PackTier): Promise<OpenAllResult> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.rpc as any)("open_all_packs", { p_tier: tier });
+  if (error) return { ok: false, opened: 0, soulsAwarded: 0, results: [], error: error.message };
+  const p = (data ?? {}) as {
+    ok: boolean; opened?: number; souls_awarded?: number; error?: string;
+    results?: Array<{ character_id?: string; rarity?: Rarity; overall?: number; duplicate?: boolean; souls_awarded?: number }>;
+  };
+  if (!p.ok) return { ok: false, opened: 0, soulsAwarded: 0, results: [], error: p.error };
+  return {
+    ok: true,
+    opened: Number(p.opened ?? 0),
+    soulsAwarded: Number(p.souls_awarded ?? 0),
+    results: (p.results ?? []).map((r) => ({
+      ok: true,
+      characterId: r.character_id,
+      rarity: r.rarity,
+      overall: r.overall,
+      duplicate: !!r.duplicate,
+      soulsAwarded: Number(r.souls_awarded ?? 0),
+    })),
+  };
+}
+
 export async function fetchMyPacks(): Promise<PackInventoryRow[]> {
   const { data, error } = await supabase.rpc("get_my_packs");
   if (error || !data) return [];
