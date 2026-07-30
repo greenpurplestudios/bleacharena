@@ -443,6 +443,31 @@ export const dict = {
   confirmLeave: { en: "Leave this clan?", ar: "مغادرة العشيرة؟" },
   confirmKick: { en: "Kick this member?", ar: "طرد هذا العضو؟" },
   confirmTransfer: { en: "Make this member the leader? You will become a member.", ar: "جعل هذا العضو قائداً؟ ستصبح عضواً عادياً." },
+  // Clan weekly leaderboard + rewards
+  myClan: { en: "My Clan", ar: "عشيرتي" },
+  clanWeekly: { en: "Weekly Rankings", ar: "الترتيب الأسبوعي" },
+  clanWeeklyDesc: {
+    en: "Clan score = the sum of every member's best draft score this week.",
+    ar: "نقاط العشيرة = مجموع أفضل نتيجة سحب لكل عضو هذا الأسبوع.",
+  },
+  clanScore: { en: "Clan Score", ar: "نقاط العشيرة" },
+  scoringMembers: { en: "scoring", ar: "مسجّلون" },
+  clanWeeklyReward: { en: "Clan Weekly Reward", ar: "مكافأة العشيرة الأسبوعية" },
+  clanWeeklyRewardDesc: {
+    en: "Claim rewards based on your clan's final rank last week.",
+    ar: "استلم مكافآت بناءً على ترتيب عشيرتك النهائي الأسبوع الماضي.",
+  },
+  clanNoEntry: {
+    en: "Your clan didn't score last week. Play drafts to qualify!",
+    ar: "لم تسجّل عشيرتك نقاطاً الأسبوع الماضي. العب لتتأهل!",
+  },
+  notInClanReward: { en: "Join a clan to earn clan rewards.", ar: "انضم إلى عشيرة لكسب مكافآت العشيرة." },
+  liveChat: { en: "Live", ar: "مباشر" },
+  // Packs
+  openAll: { en: "Open all", ar: "افتح الكل" },
+  openedPacks: { en: "packs opened", ar: "حزم مفتوحة" },
+  newCharacters: { en: "New characters", ar: "شخصيات جديدة" },
+  duplicates: { en: "Duplicates", ar: "مكررة" },
 };
 
 export type TKey = keyof typeof dict;
