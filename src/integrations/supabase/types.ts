@@ -251,6 +251,36 @@ export type Database = {
           },
         ]
       }
+      clan_weekly_reward_claims: {
+        Row: {
+          claimed_at: string
+          clan_id: string
+          pack_tier: string | null
+          rank: number
+          season_key: string
+          souls_awarded: number
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          clan_id: string
+          pack_tier?: string | null
+          rank: number
+          season_key: string
+          souls_awarded?: number
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          clan_id?: string
+          pack_tier?: string | null
+          rank?: number
+          season_key?: string
+          souls_awarded?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       clans: {
         Row: {
           created_at: string
@@ -866,10 +896,12 @@ export type Database = {
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
       cancel_join_request: { Args: { p_clan_id: string }; Returns: Json }
+      claim_clan_weekly_reward: { Args: never; Returns: Json }
       claim_daily_login: { Args: never; Returns: Json }
       claim_level_reward: { Args: { p_level: number }; Returns: Json }
       claim_mission: { Args: { p_mission_id: string }; Returns: Json }
       claim_weekly_reward: { Args: never; Returns: Json }
+      clan_weekly_reward_for_rank: { Args: { p_rank: number }; Returns: Json }
       create_clan: {
         Args: { p_description?: string; p_name: string; p_tag: string }
         Returns: Json
@@ -902,6 +934,18 @@ export type Database = {
           user_id: string
           username: string
           username_color: string
+        }[]
+      }
+      get_clan_weekly_leaderboard: {
+        Args: { p_limit?: number; p_season?: string }
+        Returns: {
+          id: string
+          member_count: number
+          name: string
+          rank: number
+          scoring_members: number
+          tag: string
+          total_score: number
         }[]
       }
       get_daily_login_state: { Args: never; Returns: Json }
@@ -955,6 +999,7 @@ export type Database = {
       }
       get_my_bleachdle_stats: { Args: never; Returns: Json }
       get_my_clan: { Args: never; Returns: Json }
+      get_my_clan_weekly_reward: { Args: never; Returns: Json }
       get_my_collection: {
         Args: never
         Returns: {
@@ -1098,6 +1143,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["clan_role"]
       }
+      open_all_packs: { Args: { p_tier: string }; Returns: Json }
       open_pack: { Args: { p_tier: string }; Returns: Json }
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
       previous_season_key: { Args: never; Returns: string }
