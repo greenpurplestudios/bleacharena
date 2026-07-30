@@ -5,10 +5,13 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
+import { supabase } from "@/integrations/supabase/client";
 import {
   createClan, disbandClan, getClanMessages, getMyClan, kickClanMember, leaveClan,
   listClans, requestJoinClan, cancelJoinRequest, respondJoinRequest,
   sendClanMessage, setClanMemberRole, transferClanLeadership, updateClanDescription,
+  getClanWeeklyLeaderboard, getMyClanWeeklyReward, claimClanWeeklyReward,
+  type ClanWeeklyRow, type ClanWeeklyRewardStatus,
   type ClanListRow, type ClanMember, type ClanMessage, type MyClanState,
 } from "@/lib/clans";
 
@@ -28,6 +31,7 @@ function ClansPage() {
   const [state, setState] = useState<MyClanState | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [tab, setTab] = useState<"clan" | "weekly">("clan");
 
   const notify = (m: string) => { setToast(m); setTimeout(() => setToast(null), 2400); };
 
@@ -49,10 +53,26 @@ function ClansPage() {
         </header>
         {loading ? (
           <div className="rounded-2xl border border-white/10 bg-card/50 p-8 text-center text-sm text-muted-foreground">…</div>
-        ) : state?.in_clan ? (
+        ) : (
+          <>
+            <div className="mb-4 flex gap-2">
+              {(["clan", "weekly"] as const).map((k) => (
+                <button key={k} onClick={() => setTab(k)}
+                  className={`rounded-lg px-4 py-2 text-sm font-bold ${
+                    tab === k ? "bg-primary text-primary-foreground" : "border border-white/10 bg-white/5 hover:bg-white/10"
+                  }`}>
+                  {t(k === "clan" ? "myClan" : "clanWeekly")}
+                </button>
+              ))}
+            </div>
+            {tab === "weekly" ? (
+              <ClanWeeklyView notify={notify} />
+            ) : state?.in_clan ? (
           <MyClanView state={state} onChange={refresh} notify={notify} />
         ) : (
           <BrowseView onJoined={refresh} notify={notify} />
+            )}
+          </>
         )}
         {toast && (
           <div className="fixed inset-x-0 bottom-6 mx-auto w-fit rounded-full border border-white/10 bg-black/80 px-4 py-2 text-sm text-white shadow-lg backdrop-blur">
