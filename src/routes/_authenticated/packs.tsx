@@ -10,6 +10,7 @@ import {
   PACK_DESCRIPTION,
   fetchMyPacks,
   openPack,
+  openAllPacks,
   type PackTier,
   type OpenPackResult,
   type PackInventoryRow,
@@ -39,6 +40,7 @@ function PacksPage() {
   const [inventory, setInventory] = useState<PackInventoryRow[] | null>(null);
   const [opening, setOpening] = useState<PackTier | null>(null);
   const [result, setResult] = useState<OpenPackResult | null>(null);
+  const [bulk, setBulk] = useState<{ tier: PackTier; opened: number; souls: number; results: OpenPackResult[] } | null>(null);
   const { refresh: refreshSouls } = useSouls();
 
   const load = async () => {
@@ -101,6 +103,48 @@ function PacksPage() {
 
   const closeResult = () => setResult(null);
 
+  const doOpenAll = async (tier: PackTier) => {
+    if (opening) return;
+    if (countFor(tier) < 1) return;
+    setOpening(tier);
+    setResult(null);
+    setBulk(null);
+    play("reveal");
+    await new Promise((r) => setTimeout(r, 700));
+    const res = await openAllPacks(tier);
+    if (res.ok && res.opened > 0) {
+      const gotRare = res.results.some((r) => r.rarity === "mythic" || r.rarity === "legendary");
+      play(gotRare ? "rare" : "success");
+      const mythics = res.results.filter((r) => r.rarity === "mythic").length;
+      trackMission("pack_open", res.opened);
+      await Promise.all([
+        addXp(XP.packOpen * res.opened, "pack"),
+        bumpProfileStats({ packs_opened: res.opened }),
+        trackAchievement("pack_10", res.opened),
+        trackAchievement("pack_100", res.opened),
+        trackAchievement("pack_500", res.opened),
+        mythics > 0 ? trackAchievement("pack_first_mythic", 1) : Promise.resolve(),
+        mythics > 0 ? trackAchievement("pack_25_mythic", mythics) : Promise.resolve(),
+      ]);
+      try {
+        const coll = await fetchMyCollection();
+        const owned = coll.length;
+        await Promise.all([
+          trackAchievement("col_10", owned, true),
+          trackAchievement("col_25", owned, true),
+          trackAchievement("col_50", owned, true),
+          trackAchievement("col_complete", owned >= characters.length ? 1 : 0, true),
+        ]);
+      } catch { /* silent */ }
+      setBulk({ tier, opened: res.opened, souls: res.soulsAwarded, results: res.results });
+    } else {
+      play("skip");
+    }
+    setOpening(null);
+    load();
+    refreshSouls();
+  };
+
   return (
     <>
       <ReiatsuBackground count={18} />
@@ -126,11 +170,9 @@ function PacksPage() {
             const color = PACK_COLOR[tier];
             const disabled = count < 1 || !!opening;
             return (
-              <button
+              <div
                 key={tier}
-                onClick={() => doOpen(tier)}
-                disabled={disabled}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/70 p-5 text-start backdrop-blur-md transition-all hover:border-white/25 hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-50"
+                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/70 p-5 text-start backdrop-blur-md transition-all hover:border-white/25"
                 style={{ boxShadow: count > 0 ? `0 0 30px -12px ${color}` : undefined }}
               >
                 <div
@@ -158,29 +200,93 @@ function PacksPage() {
                   </span>
                 </div>
                 <div className="mt-5 flex items-center justify-between">
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  <button
+                    onClick={() => doOpen(tier)}
+                    disabled={disabled}
+                    className="rounded-lg bg-primary px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-primary-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                  >
                     {count > 0 ? t("tapToOpen") : t("noPacks")}
-                  </span>
-                  {count > 0 && (
-                    <span aria-hidden className="font-display text-lg text-primary">卍</span>
+                  </button>
+                  {count > 1 && (
+                    <button
+                      onClick={() => doOpenAll(tier)}
+                      disabled={disabled}
+                      className="rounded-lg border px-3 py-1.5 text-[11px] font-black uppercase tracking-widest disabled:cursor-not-allowed disabled:opacity-40"
+                      style={{ borderColor: `${color}66`, background: `${color}1a`, color }}
+                    >
+                      {t("openAll")} ×{count}
+                    </button>
                   )}
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
       </main>
 
-      {(opening || result) && (
+      {(opening || result || bulk) && (
         <div
           className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 px-4 backdrop-blur-md"
-          onClick={result ? closeResult : undefined}
+          onClick={result ? closeResult : bulk ? () => setBulk(null) : undefined}
         >
-          {opening && !result && <PackOpeningAnim tier={opening} />}
+          {opening && !result && !bulk && <PackOpeningAnim tier={opening} />}
           {result && <PackResultCard result={result} onClose={closeResult} />}
+          {bulk && <BulkResultCard bulk={bulk} onClose={() => setBulk(null)} />}
         </div>
       )}
     </>
+  );
+}
+
+function BulkResultCard({ bulk, onClose }: {
+  bulk: { tier: PackTier; opened: number; souls: number; results: OpenPackResult[] };
+  onClose: () => void;
+}) {
+  const { t, locale } = useI18n();
+  const news = bulk.results.filter((r) => !r.duplicate);
+  const dupes = bulk.results.length - news.length;
+  return (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/10 bg-card p-5"
+      style={{ animation: "card-in 0.35s ease-out both" }}
+    >
+      <h3 className="text-center font-display text-xl font-black" style={{ color: PACK_COLOR[bulk.tier] }}>
+        {bulk.opened} {t("openedPacks")}
+      </h3>
+      <p className="mt-1 text-center text-sm text-muted-foreground">
+        {t("newCharacters")}: {news.length} · {t("duplicates")}: {dupes} · +{bulk.souls} {t("souls")}
+      </p>
+      <ul className="mt-4 space-y-1.5">
+        {bulk.results.map((r, i) => {
+          const char = characters.find((c) => c.id === r.characterId);
+          const rc = r.rarity ? RARITY_COLOR[r.rarity] : "#888";
+          return (
+            <li key={i} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 p-2">
+              {char?.image ? (
+                <img src={char.image} alt={char.name[locale]} className="h-9 w-9 flex-none rounded-md object-cover" />
+              ) : (
+                <span className="h-9 w-9 flex-none rounded-md bg-white/10" />
+              )}
+              <span className="min-w-0 flex-1 truncate text-sm font-bold">{char?.name[locale] ?? r.characterId}</span>
+              <span className="rounded-md border px-2 py-0.5 text-[10px] font-black uppercase tracking-widest"
+                style={{ borderColor: `${rc}66`, color: rc, background: `${rc}1a` }}>
+                {r.rarity ? RARITY_LABEL[r.rarity][locale] : "—"}
+              </span>
+              <span className={`w-16 text-end text-[11px] ${r.duplicate ? "text-accent" : "text-emerald-400"}`}>
+                {r.duplicate ? `+${r.soulsAwarded}✦` : t("newCharacter")}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      <button
+        onClick={onClose}
+        className="glow-orange mt-5 w-full rounded-xl bg-primary px-5 py-3 font-display text-sm font-black uppercase tracking-widest text-primary-foreground"
+      >
+        {t("close")}
+      </button>
+    </div>
   );
 }
 
