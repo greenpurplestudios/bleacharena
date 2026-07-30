@@ -76,6 +76,28 @@ export interface ClanLeaderboardRow {
   total_rating: number;
 }
 
+export interface ClanWeeklyRow {
+  rank: number;
+  id: string;
+  tag: string;
+  name: string;
+  member_count: number;
+  total_score: number;
+  scoring_members: number;
+}
+
+export interface ClanWeeklyRewardStatus {
+  ok: boolean;
+  season?: string;
+  in_clan: boolean;
+  rank: number | null;
+  score: number | null;
+  souls: number;
+  pack: string | null;
+  claimed: boolean;
+  has_entry: boolean;
+}
+
 type RpcResult = { ok: boolean; error?: string; [k: string]: unknown };
 
 async function rpc(name: string, args?: Record<string, unknown>): Promise<RpcResult> {
@@ -126,3 +148,19 @@ export async function getClanLeaderboard(limit = 100): Promise<ClanLeaderboardRo
   if (error || !data) return [];
   return data as ClanLeaderboardRow[];
 }
+
+export async function getClanWeeklyLeaderboard(limit = 100): Promise<ClanWeeklyRow[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.rpc as any)("get_clan_weekly_leaderboard", { p_limit: limit });
+  if (error || !data) return [];
+  return (data as ClanWeeklyRow[]).map((r) => ({ ...r, total_score: Number(r.total_score) }));
+}
+
+export async function getMyClanWeeklyReward(): Promise<ClanWeeklyRewardStatus | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.rpc as any)("get_my_clan_weekly_reward");
+  if (error || !data) return null;
+  return data as ClanWeeklyRewardStatus;
+}
+
+export const claimClanWeeklyReward = () => rpc("claim_clan_weekly_reward");
