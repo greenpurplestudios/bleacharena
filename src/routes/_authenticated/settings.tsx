@@ -14,6 +14,7 @@ import {
   SettingToggle,
   SettingSlider,
 } from "@/components/settings/SettingsRow";
+import { InstallAppRow } from "@/components/InstallAppRow";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -125,6 +126,10 @@ function SettingsPage() {
               {t("changeUsername")}
             </button>
           </SettingRow>
+        </SettingsSection>
+
+        <SettingsSection title={t("installSection")}>
+          <InstallAppRow />
         </SettingsSection>
 
         <SettingsSection
