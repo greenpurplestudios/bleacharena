@@ -6,13 +6,14 @@ import { useI18n } from "@/lib/i18n";
 import { fetchStore, purchaseItem, type StoreItem, type StoreKind } from "@/lib/store";
 import { useSouls } from "@/hooks/use-souls";
 import { play } from "@/lib/sound";
+import uraharaArt from "@/assets/brand/urahara_shop.jpeg.asset.json";
 
 export const Route = createFileRoute("/_authenticated/store")({
   head: () => ({
     meta: [
-      { title: "Store — Bleach Arena" },
+      { title: "Urahara's Shop — Bleach Arena" },
       { name: "description", content: "Spend Souls on titles, username colors and extra packs." },
-      { property: "og:title", content: "Bleach Arena — Store" },
+      { property: "og:title", content: "Bleach Arena — Urahara's Shop" },
       { property: "og:description", content: "Cosmetics and packs for Souls." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/_authenticated/store")({
 });
 
 const KIND_ORDER: StoreKind[] = ["pack", "title", "username_color"];
+const KIND_ICON: Record<StoreKind, string> = { pack: "卍", title: "❖", username_color: "✧" };
 
 function StorePage() {
   const { t, locale } = useI18n();
@@ -29,6 +31,7 @@ function StorePage() {
   const [items, setItems] = useState<StoreItem[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [flash, setFlash] = useState<{ id: string; kind: "ok" | "err"; msg: string } | null>(null);
+  const [active, setActive] = useState<StoreKind | null>(null);
 
   const load = async () => setItems(await fetchStore());
   useEffect(() => { load(); }, []);
@@ -70,32 +73,91 @@ function StorePage() {
       <ReiatsuBackground count={16} />
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
-        <div className="mb-8 text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">{t("store")}</p>
-          <h1 className="mt-2 font-display text-4xl font-black text-glow-orange sm:text-5xl">{t("storeTitle")}</h1>
-          <p className="mt-3 text-sm text-muted-foreground">{t("storeDesc")}</p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 font-display text-sm font-black text-accent">
-            <span aria-hidden>✦</span>
-            {souls ?? 0} {t("souls")}
+        {/* Shopkeeper counter */}
+        <section
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#12100e] via-card/80 to-[#1b1512] p-5 shadow-2xl backdrop-blur-md sm:p-7"
+          style={{ animation: "card-in 0.45s ease-out both" }}
+        >
+          <div className="pointer-events-none absolute inset-0 opacity-40 [background:radial-gradient(60%_80%_at_80%_0%,color-mix(in_oklab,var(--color-primary)_25%,transparent),transparent_70%)]" />
+          <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">{t("shopkeeperRole")}</p>
+              <h1 className="mt-1 font-display text-3xl font-black text-glow-orange sm:text-5xl">{t("storeTitle")}</h1>
+              <p className="mt-3 max-w-md rounded-2xl border border-white/10 bg-black/30 px-3 py-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                “{t("shopkeeperGreeting")}”
+                <span className="mt-1 block text-[10px] uppercase tracking-[0.3em] text-primary/80">
+                  — {t("shopkeeperName")}
+                </span>
+              </p>
+              <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 font-display text-sm font-black text-accent">
+                <span aria-hidden>✦</span>
+                {souls ?? 0} {t("souls")}
+              </div>
+            </div>
+            <img
+              src={uraharaArt.url}
+              alt={t("shopkeeperName")}
+              loading="lazy"
+              className="h-40 w-24 shrink-0 self-end object-cover object-top opacity-95 mix-blend-lighten drop-shadow-[0_0_25px_rgba(0,0,0,0.8)] sm:h-64 sm:w-40"
+              style={{ maskImage: "linear-gradient(to bottom, black 78%, transparent)", WebkitMaskImage: "linear-gradient(to bottom, black 78%, transparent)" }}
+            />
           </div>
-        </div>
+        </section>
 
         {items === null && (
           <p className="py-10 text-center text-sm text-muted-foreground">{t("loading")}</p>
         )}
 
-        {items && KIND_ORDER.map((kind) => {
+        {items && active === null && (
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {KIND_ORDER.map((kind, i) => {
+              const list = grouped[kind];
+              const heading = kind === "pack" ? t("packs") : kind === "title" ? t("titles") : t("usernameColors");
+              return (
+                <button
+                  key={kind}
+                  onClick={() => { play("tap"); setActive(kind); }}
+                  disabled={!list.length}
+                  style={{ animation: `card-in 0.45s ease-out ${0.08 * i}s both` }}
+                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 p-5 text-start backdrop-blur-md transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_12px_40px_-12px_var(--color-primary)] disabled:opacity-40"
+                >
+                  <span aria-hidden className="block font-display text-4xl text-primary transition-transform group-hover:scale-110">
+                    {KIND_ICON[kind]}
+                  </span>
+                  <span className="mt-3 block font-display text-xl font-black uppercase tracking-wide">{heading}</span>
+                  <span className="mt-1 block text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                    {list.length} {t("shopItemsCount")}
+                  </span>
+                  <span className="mt-4 inline-block rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary">
+                    {t("shopBrowse")}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {items && active !== null && (() => {
+          const kind = active;
           const list = grouped[kind];
-          if (!list.length) return null;
           const heading =
             kind === "pack" ? t("packs") : kind === "title" ? t("titles") : t("usernameColors");
           return (
-            <section key={kind} className="mb-8">
-              <h2 className="mb-3 font-display text-lg font-black uppercase tracking-widest text-muted-foreground">
-                {heading}
-              </h2>
+            <section className="mt-6">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-display text-2xl font-black uppercase tracking-widest">{heading}</h2>
+                <button
+                  onClick={() => { play("tap"); setActive(null); }}
+                  className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-white/10"
+                >
+                  {t("shopBack")}
+                </button>
+              </div>
+              {list.length === 0 && (
+                <p className="py-10 text-center text-sm text-muted-foreground">{t("shopEmpty")}</p>
+              )}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {list.map((it) => {
+                {list.map((it, idx) => {
                   const canAfford = souls === null || souls >= it.cost;
                   const disabled = it.owned || !canAfford || busy === it.id;
                   const isFlashing = flash?.id === it.id;
@@ -103,7 +165,8 @@ function StorePage() {
                   return (
                     <div
                       key={it.id}
-                      className="relative overflow-hidden rounded-2xl border border-white/10 bg-card/70 p-4 backdrop-blur-md transition-colors hover:border-white/25"
+                      style={{ animation: `card-in 0.35s ease-out ${Math.min(idx, 8) * 0.04}s both` }}
+                      className="relative overflow-hidden rounded-2xl border border-white/10 bg-card/70 p-4 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-primary/40"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -165,7 +228,7 @@ function StorePage() {
               </div>
             </section>
           );
-        })}
+        })()}
       </main>
     </>
   );
