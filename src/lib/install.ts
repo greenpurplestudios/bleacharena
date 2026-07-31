@@ -25,7 +25,9 @@ if (typeof window !== "undefined") {
 
 export function subscribeInstall(cb: () => void) {
   listeners.add(cb);
-  return () => listeners.delete(cb);
+  return () => {
+    listeners.delete(cb);
+  };
 }
 
 export function canInstall(): boolean {
