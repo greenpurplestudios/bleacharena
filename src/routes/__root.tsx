@@ -16,7 +16,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { MobileNav } from "@/components/MobileNav";
 import { EasterEggHeart } from "@/components/EasterEggHeart";
 import { PWAUpdateToast } from "@/components/PWAUpdateToast";
-import { InstallPrompt } from "@/components/InstallPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { ProgressionProvider } from "@/hooks/use-progression";
 
@@ -170,7 +169,6 @@ function RootComponent() {
           <MobileNav />
           <EasterEggHeart />
           <PWAUpdateToast />
-          <InstallPrompt />
           </div>
         </ProgressionProvider>
       </I18nProvider>

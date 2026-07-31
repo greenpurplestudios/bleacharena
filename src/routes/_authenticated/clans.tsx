@@ -311,7 +311,7 @@ function MyClanView({ state, onChange, notify }: { state: MyClanState; onChange:
         </ul>
       </section>
 
-      <ClanChat />
+      <ClanChat clanId={clan.id} />
     </div>
   );
 }
@@ -358,27 +358,30 @@ function MemberRow({ m, myRole, onKick, onPromote, onDemote, onTransfer, busy }:
   );
 }
 
-function ClanChat() {
+function ClanChat({ clanId }: { clanId: string }) {
   const { t } = useI18n();
   const { user } = useSession();
   const [messages, setMessages] = useState<ClanMessage[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const refresh = useCallback(async () => setMessages(await getClanMessages(100)), []);
   useEffect(() => {
     refresh();
     const channel = supabase
-      .channel("clan-chat")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "clan_messages" }, () => {
-        refresh();
-      })
+      .channel(`clan-chat:${clanId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "clan_messages", filter: `clan_id=eq.${clanId}` },
+        () => { refresh(); },
+      )
       .subscribe();
     // safety net if the socket drops
-    const id = setInterval(refresh, 20000);
+    const id = setInterval(refresh, 5000);
     return () => { clearInterval(id); supabase.removeChannel(channel); };
-  }, [refresh]);
+  }, [refresh, clanId]);
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -388,9 +391,30 @@ function ClanChat() {
     const v = text.trim();
     if (!v) return;
     setSending(true);
+    setError(null);
+    setText("");
+    const optimisticId = `local-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: optimisticId,
+        user_id: user?.id ?? "",
+        username: null,
+        username_color: null,
+        avatar_character_id: null,
+        content: v,
+        created_at: new Date().toISOString(),
+      },
+    ]);
     const res = await sendClanMessage(v);
     setSending(false);
-    if (res.ok) { setText(""); refresh(); }
+    if (res.ok) {
+      await refresh();
+    } else {
+      setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
+      setText(v);
+      setError(res.error ?? "error");
+    }
   };
 
   return (
@@ -431,6 +455,7 @@ function ClanChat() {
           {t("sendMessage")}
         </button>
       </div>
+      {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
     </section>
   );
 }
