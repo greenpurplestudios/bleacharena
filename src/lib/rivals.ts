@@ -36,6 +36,8 @@ export interface RivalLeaderRow {
   losses: number;
   title: string | null;
   username_color: string | null;
+  name_frame: string | null;
+  avatar_character_id: string | null;
 }
 
 export interface RecentBattle {
