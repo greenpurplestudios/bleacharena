@@ -485,9 +485,6 @@ export const dict = {
     ar: "إطارات مرموقة تحيط باسمك في المتصدرين والملفات.",
   },
   cosmeticNameFrame: { en: "Name Frame", ar: "إطار اسم" },
-  equip: { en: "Equip", ar: "تجهيز" },
-  equipped: { en: "Equipped", ar: "مجهّز" },
-  unequip: { en: "Remove", ar: "إزالة" },
   animatedLabel: { en: "Animated", ar: "متحرك" },
   staticLabel: { en: "Static", ar: "ثابت" },
   noNameFrames: {
