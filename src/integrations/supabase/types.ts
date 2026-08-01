@@ -59,6 +59,41 @@ export type Database = {
         }
         Relationships: []
       }
+      active_potions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          item_id: string
+          luck: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          item_id: string
+          luck: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          item_id?: string
+          luck?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "active_potions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "store_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bleachdle_daily: {
         Row: {
           character_id: string
@@ -419,6 +454,7 @@ export type Database = {
           level: number
           name_ar: string
           name_en: string
+          name_frame_item: string | null
           souls: number
           title_item: string | null
         }
@@ -430,6 +466,7 @@ export type Database = {
           level: number
           name_ar: string
           name_en: string
+          name_frame_item?: string | null
           souls?: number
           title_item?: string | null
         }
@@ -441,6 +478,7 @@ export type Database = {
           level?: number
           name_ar?: string
           name_en?: string
+          name_frame_item?: string | null
           souls?: number
           title_item?: string | null
         }
@@ -501,10 +539,12 @@ export type Database = {
           email: string | null
           favorite_character_id: string | null
           highest_rival_rating: number
+          name_frame: string | null
           packs_opened: number
           play_seconds: number
           profile_border: string | null
           profile_frame: string | null
+          referral_code: string | null
           souls: number
           title: string | null
           total_souls_earned: number
@@ -522,10 +562,12 @@ export type Database = {
           email?: string | null
           favorite_character_id?: string | null
           highest_rival_rating?: number
+          name_frame?: string | null
           packs_opened?: number
           play_seconds?: number
           profile_border?: string | null
           profile_frame?: string | null
+          referral_code?: string | null
           souls?: number
           title?: string | null
           total_souls_earned?: number
@@ -543,10 +585,12 @@ export type Database = {
           email?: string | null
           favorite_character_id?: string | null
           highest_rival_rating?: number
+          name_frame?: string | null
           packs_opened?: number
           play_seconds?: number
           profile_border?: string | null
           profile_frame?: string | null
+          referral_code?: string | null
           souls?: number
           title?: string | null
           total_souls_earned?: number
@@ -554,6 +598,36 @@ export type Database = {
           user_id?: string
           username?: string | null
           username_color?: string | null
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          packs_awarded: number
+          referred_id: string
+          referrer_id: string
+          souls_awarded: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          packs_awarded?: number
+          referred_id: string
+          referrer_id: string
+          souls_awarded?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          packs_awarded?: number
+          referred_id?: string
+          referrer_id?: string
+          souls_awarded?: number
         }
         Relationships: []
       }
@@ -839,6 +913,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_potions: {
+        Row: {
+          count: number
+          created_at: string
+          item_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          item_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          item_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_potions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "store_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -892,6 +998,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_potion: { Args: { p_item_id: string }; Returns: Json }
       add_xp: { Args: { p_amount: number; p_source?: string }; Returns: Json }
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
@@ -911,6 +1018,7 @@ export type Database = {
       disband_clan: { Args: never; Returns: Json }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
+      get_active_potion: { Args: never; Returns: Json }
       get_bleachdle_today: { Args: { p_candidates: string[] }; Returns: Json }
       get_clan_leaderboard: {
         Args: { p_limit?: number }
@@ -953,6 +1061,8 @@ export type Database = {
       get_leaderboard: {
         Args: { p_limit?: number; p_season?: string }
         Returns: {
+          avatar_character_id: string
+          name_frame: string
           rank: number
           score: number
           team: Json
@@ -973,6 +1083,7 @@ export type Database = {
           level: number
           name_ar: string
           name_en: string
+          name_frame_item: string
           souls: number
           title_item: string
           unlocked: boolean
@@ -1067,6 +1178,17 @@ export type Database = {
           tier: string
         }[]
       }
+      get_my_potions: {
+        Args: never
+        Returns: {
+          count: number
+          item_id: string
+          luck: number
+          minutes: number
+          name_ar: string
+          name_en: string
+        }[]
+      }
       get_my_profile_full: { Args: never; Returns: Json }
       get_my_recent_battles: {
         Args: { p_limit?: number }
@@ -1082,6 +1204,7 @@ export type Database = {
           opponent_name: string
         }[]
       }
+      get_my_referral: { Args: never; Returns: Json }
       get_my_rival_stats: { Args: never; Returns: Json }
       get_my_rival_team: { Args: never; Returns: Json }
       get_my_weekly_reward: { Args: never; Returns: Json }
@@ -1089,7 +1212,9 @@ export type Database = {
       get_rival_leaderboard: {
         Args: { p_limit?: number }
         Returns: {
+          avatar_character_id: string
           losses: number
+          name_frame: string
           rank: number
           rating: number
           title: string
@@ -1148,6 +1273,7 @@ export type Database = {
       pack_tier_from_score: { Args: { p_score: number }; Returns: string }
       previous_season_key: { Args: never; Returns: string }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
+      redeem_referral: { Args: { p_code: string }; Returns: Json }
       remove_friend: { Args: { p_other: string }; Returns: Json }
       request_join_clan: { Args: { p_clan_id: string }; Returns: Json }
       respond_friend_request: {
