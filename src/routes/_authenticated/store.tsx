@@ -4,6 +4,11 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { useI18n } from "@/lib/i18n";
 import { fetchStore, purchaseItem, type StoreItem, type StoreKind } from "@/lib/store";
+import { NameFrame } from "@/components/NameFrame";
+import {
+  activatePotion, fetchActivePotion, fetchMyPotions, formatRemaining, POTION_COLOR,
+  type ActivePotion, type PotionRow,
+} from "@/lib/potions";
 import { useSouls } from "@/hooks/use-souls";
 import { play } from "@/lib/sound";
 import uraharaArt from "@/assets/brand/urahara_shop.jpeg.asset.json";
@@ -22,8 +27,10 @@ export const Route = createFileRoute("/_authenticated/store")({
   component: StorePage,
 });
 
-const KIND_ORDER: StoreKind[] = ["pack", "title", "username_color"];
-const KIND_ICON: Record<StoreKind, string> = { pack: "卍", title: "❖", username_color: "✧" };
+const KIND_ORDER: StoreKind[] = ["pack", "potion", "name_frame", "title", "username_color"];
+const KIND_ICON: Record<StoreKind, string> = {
+  pack: "卍", title: "❖", username_color: "✧", name_frame: "▩", potion: "⚗",
+};
 
 function StorePage() {
   const { t, locale } = useI18n();
@@ -32,15 +39,54 @@ function StorePage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [flash, setFlash] = useState<{ id: string; kind: "ok" | "err"; msg: string } | null>(null);
   const [active, setActive] = useState<StoreKind | null>(null);
+  const [potions, setPotions] = useState<PotionRow[]>([]);
+  const [activePotion, setActivePotion] = useState<ActivePotion>({ active: false, luck: 0 });
+  const [now, setNow] = useState(() => Date.now());
 
-  const load = async () => setItems(await fetchStore());
+  const load = async () => {
+    const [s, p, a] = await Promise.all([fetchStore(), fetchMyPotions(), fetchActivePotion()]);
+    setItems(s);
+    setPotions(p);
+    setActivePotion(a);
+  };
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (!activePotion.active) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [activePotion.active]);
 
   const grouped = useMemo(() => {
-    const g: Record<StoreKind, StoreItem[]> = { pack: [], title: [], username_color: [] };
+    const g: Record<StoreKind, StoreItem[]> = {
+      pack: [], title: [], username_color: [], name_frame: [], potion: [],
+    };
     (items ?? []).forEach((i) => g[i.kind].push(i));
     return g;
   }, [items]);
+
+  const potionCount = (id: string) => potions.find((p) => p.itemId === id)?.count ?? 0;
+  const remaining = activePotion.endsAt ? activePotion.endsAt - now : 0;
+  const potionRunning = activePotion.active && remaining > 0;
+
+  const drink = async (itemId: string) => {
+    if (busy) return;
+    setBusy(itemId);
+    const res = await activatePotion(itemId);
+    setBusy(null);
+    if (res.ok) {
+      play("success");
+      setFlash({ id: itemId, kind: "ok", msg: t("potionActive") });
+      await load();
+    } else {
+      play("skip");
+      setFlash({
+        id: itemId,
+        kind: "err",
+        msg: res.error === "potion_active" ? t("potionAlreadyActive") : t("noPotions"),
+      });
+    }
+    setTimeout(() => setFlash(null), 1800);
+  };
 
   const buy = async (item: StoreItem) => {
     if (busy) return;
