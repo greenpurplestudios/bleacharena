@@ -51,9 +51,15 @@ export const RARITY_COLOR: Record<Rarity, string> = {
 export function pickWeighted<T extends { rarity: Rarity }>(
   pool: T[],
   rand: () => number = Math.random,
+  /** Luck bonus, e.g. 0.5 = +50% chance for high rarities. */
+  luck = 0,
 ): T | null {
   if (pool.length === 0) return null;
-  const weights = pool.map((c) => RARITY_WEIGHTS[c.rarity] ?? 1);
+  const boost: Record<Rarity, number> = {
+    common: 1, uncommon: 1, rare: 1 + luck * 0.5,
+    epic: 1 + luck, legendary: 1 + luck * 1.5, mythic: 1 + luck * 2,
+  };
+  const weights = pool.map((c) => (RARITY_WEIGHTS[c.rarity] ?? 1) * (boost[c.rarity] ?? 1));
   const total = weights.reduce((a, b) => a + b, 0);
   let r = rand() * total;
   for (let i = 0; i < pool.length; i++) {

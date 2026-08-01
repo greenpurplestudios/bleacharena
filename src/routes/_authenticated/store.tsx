@@ -4,6 +4,11 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { useI18n } from "@/lib/i18n";
 import { fetchStore, purchaseItem, type StoreItem, type StoreKind } from "@/lib/store";
+import { NameFrame } from "@/components/NameFrame";
+import {
+  activatePotion, fetchActivePotion, fetchMyPotions, formatRemaining, POTION_COLOR,
+  type ActivePotion, type PotionRow,
+} from "@/lib/potions";
 import { useSouls } from "@/hooks/use-souls";
 import { play } from "@/lib/sound";
 import uraharaArt from "@/assets/brand/urahara_shop.jpeg.asset.json";
@@ -22,8 +27,10 @@ export const Route = createFileRoute("/_authenticated/store")({
   component: StorePage,
 });
 
-const KIND_ORDER: StoreKind[] = ["pack", "title", "username_color"];
-const KIND_ICON: Record<StoreKind, string> = { pack: "卍", title: "❖", username_color: "✧" };
+const KIND_ORDER: StoreKind[] = ["pack", "potion", "name_frame", "title", "username_color"];
+const KIND_ICON: Record<StoreKind, string> = {
+  pack: "卍", title: "❖", username_color: "✧", name_frame: "▩", potion: "⚗",
+};
 
 function StorePage() {
   const { t, locale } = useI18n();
@@ -32,15 +39,60 @@ function StorePage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [flash, setFlash] = useState<{ id: string; kind: "ok" | "err"; msg: string } | null>(null);
   const [active, setActive] = useState<StoreKind | null>(null);
+  const [potions, setPotions] = useState<PotionRow[]>([]);
+  const [activePotion, setActivePotion] = useState<ActivePotion>({ active: false, luck: 0 });
+  const [now, setNow] = useState(() => Date.now());
 
-  const load = async () => setItems(await fetchStore());
+  const load = async () => {
+    const [s, p, a] = await Promise.all([fetchStore(), fetchMyPotions(), fetchActivePotion()]);
+    setItems(s);
+    setPotions(p);
+    setActivePotion(a);
+  };
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (!activePotion.active) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [activePotion.active]);
 
   const grouped = useMemo(() => {
-    const g: Record<StoreKind, StoreItem[]> = { pack: [], title: [], username_color: [] };
+    const g: Record<StoreKind, StoreItem[]> = {
+      pack: [], title: [], username_color: [], name_frame: [], potion: [],
+    };
     (items ?? []).forEach((i) => g[i.kind].push(i));
     return g;
   }, [items]);
+
+  const potionCount = (id: string) => potions.find((p) => p.itemId === id)?.count ?? 0;
+  const kindLabel = (k: StoreKind) =>
+    k === "pack" ? t("packs")
+    : k === "title" ? t("titles")
+    : k === "username_color" ? t("usernameColors")
+    : k === "name_frame" ? t("nameFrames")
+    : t("potions");
+  const remaining = activePotion.endsAt ? activePotion.endsAt - now : 0;
+  const potionRunning = activePotion.active && remaining > 0;
+
+  const drink = async (itemId: string) => {
+    if (busy) return;
+    setBusy(itemId);
+    const res = await activatePotion(itemId);
+    setBusy(null);
+    if (res.ok) {
+      play("success");
+      setFlash({ id: itemId, kind: "ok", msg: t("potionActive") });
+      await load();
+    } else {
+      play("skip");
+      setFlash({
+        id: itemId,
+        kind: "err",
+        msg: res.error === "potion_active" ? t("potionAlreadyActive") : t("noPotions"),
+      });
+    }
+    setTimeout(() => setFlash(null), 1800);
+  };
 
   const buy = async (item: StoreItem) => {
     if (busy) return;
@@ -108,11 +160,22 @@ function StorePage() {
           <p className="py-10 text-center text-sm text-muted-foreground">{t("loading")}</p>
         )}
 
+        {potionRunning && (
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3">
+            <span className="text-xs font-black uppercase tracking-widest text-emerald-300">
+              {t("potionActive")} · +{Math.round(activePotion.luck * 100)}% {t("luckBoost")}
+            </span>
+            <span className="font-display text-lg font-black text-emerald-300 tabular-nums">
+              {formatRemaining(remaining)}
+            </span>
+          </div>
+        )}
+
         {items && active === null && (
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {KIND_ORDER.map((kind, i) => {
               const list = grouped[kind];
-              const heading = kind === "pack" ? t("packs") : kind === "title" ? t("titles") : t("usernameColors");
+              const heading = kindLabel(kind);
               return (
                 <button
                   key={kind}
@@ -140,8 +203,7 @@ function StorePage() {
         {items && active !== null && (() => {
           const kind = active;
           const list = grouped[kind];
-          const heading =
-            kind === "pack" ? t("packs") : kind === "title" ? t("titles") : t("usernameColors");
+          const heading = kindLabel(kind);
           return (
             <section className="mt-6">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -162,6 +224,9 @@ function StorePage() {
                   const disabled = it.owned || !canAfford || busy === it.id;
                   const isFlashing = flash?.id === it.id;
                   const color = kind === "username_color" ? String(it.meta.hex ?? "#888") : undefined;
+                  const animated = kind === "name_frame" && !!(it.meta as { animated?: boolean }).animated;
+                  const luck = kind === "potion" ? Number((it.meta as { luck?: number }).luck ?? 0) : 0;
+                  const owned = kind === "potion" ? potionCount(it.id) : 0;
                   return (
                     <div
                       key={it.id}
@@ -177,8 +242,19 @@ function StorePage() {
                             {it.name[locale]}
                           </div>
                           <p className="mt-1 text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                            {kind === "pack" ? t("openable") : kind === "title" ? t("cosmeticTitle") : t("cosmeticColor")}
+                            {kind === "pack" ? t("openable")
+                              : kind === "title" ? t("cosmeticTitle")
+                              : kind === "username_color" ? t("cosmeticColor")
+                              : kind === "name_frame" ? `${t("cosmeticNameFrame")} · ${animated ? t("animatedLabel") : t("staticLabel")}`
+                              : `${t("cosmeticPotion")} · ${t("fiveMinutes")}`}
                           </p>
+                          {kind === "name_frame" && (
+                            <div className="mt-3">
+                              <NameFrame frame={it.id}>
+                                <span className="font-display text-sm font-black">{t("username")}</span>
+                              </NameFrame>
+                            </div>
+                          )}
                         </div>
                         {kind === "username_color" && (
                           <span
@@ -197,7 +273,27 @@ function StorePage() {
                         {kind === "pack" && (
                           <span aria-hidden className="font-display text-2xl text-primary">卍</span>
                         )}
+                        {kind === "potion" && (
+                          <span
+                            className="rounded-md border px-2 py-0.5 font-display text-[11px] font-black uppercase tracking-widest"
+                            style={{ color: POTION_COLOR[it.id], borderColor: POTION_COLOR[it.id] }}
+                          >
+                            +{Math.round(luck * 100)}%
+                          </span>
+                        )}
                       </div>
+                      {kind === "potion" && (
+                        <div className="mt-3 flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+                          <span>{t("myPotions")}: {owned}</span>
+                          <button
+                            onClick={() => drink(it.id)}
+                            disabled={owned <= 0 || potionRunning || busy === it.id}
+                            className="rounded-md border border-emerald-400/50 bg-emerald-500/10 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-300 disabled:opacity-40"
+                          >
+                            {t("drinkPotion")}
+                          </button>
+                        </div>
+                      )}
                       <div className="mt-4 flex items-center justify-between">
                         <span className="inline-flex items-center gap-1 font-display text-sm font-black text-accent">
                           <span aria-hidden>✦</span>

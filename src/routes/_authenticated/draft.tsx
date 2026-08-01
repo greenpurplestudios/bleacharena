@@ -17,6 +17,7 @@ import { play } from "@/lib/sound";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { fetchActivePotion, formatRemaining, type ActivePotion } from "@/lib/potions";
 
 export const Route = createFileRoute("/_authenticated/draft")({
   head: () => ({
@@ -53,6 +54,21 @@ function DraftPage() {
   const [phase, setPhase] = useState<Phase>("drafting");
   const [rerollKey, setRerollKey] = useState(0);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [potion, setPotion] = useState<ActivePotion>({ active: false, luck: 0 });
+  const [nowTs, setNowTs] = useState(() => Date.now());
+
+  useEffect(() => {
+    fetchActivePotion().then(setPotion);
+  }, []);
+  useEffect(() => {
+    if (!potion.active) return;
+    const id = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [potion.active]);
+
+  const potionLeft = potion.endsAt ? potion.endsAt - nowTs : 0;
+  const potionRunning = potion.active && potionLeft > 0;
+  const activeLuck = potionRunning ? potion.luck : 0;
 
   const filled = team.filter(Boolean).length;
 
@@ -66,7 +82,8 @@ function DraftPage() {
     if (pool.length === 0) return null;
     // rerollKey participates so React re-picks after actions.
     void rerollKey;
-    return pickWeighted(pool);
+    return pickWeighted(pool, Math.random, activeLuck);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool, phase, filled, rerollKey]);
 
   // Play a reveal / rare flourish whenever a new card is presented.
@@ -115,6 +132,16 @@ function DraftPage() {
       <ReiatsuBackground count={22} />
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
+        {potionRunning && (
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-2.5">
+            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-300">
+              +{Math.round(activeLuck * 100)}% {t("luckBoost")}
+            </span>
+            <span className="font-display text-base font-black tabular-nums text-emerald-300">
+              {formatRemaining(potionLeft)}
+            </span>
+          </div>
+        )}
         <div className="mb-6">
           <TeamSlots team={team} />
         </div>

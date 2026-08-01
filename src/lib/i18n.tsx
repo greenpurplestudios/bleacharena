@@ -478,6 +478,52 @@ export const dict = {
   openedPacks: { en: "packs opened", ar: "حزم مفتوحة" },
   newCharacters: { en: "New characters", ar: "شخصيات جديدة" },
   duplicates: { en: "Duplicates", ar: "مكررة" },
+  // Name frames
+  nameFrames: { en: "Name Frames", ar: "إطارات الاسم" },
+  nameFramesDesc: {
+    en: "Prestige frames that surround your name on leaderboards and profiles.",
+    ar: "إطارات مرموقة تحيط باسمك في المتصدرين والملفات.",
+  },
+  cosmeticNameFrame: { en: "Name Frame", ar: "إطار اسم" },
+  animatedLabel: { en: "Animated", ar: "متحرك" },
+  staticLabel: { en: "Static", ar: "ثابت" },
+  noNameFrames: {
+    en: "No name frames yet. Buy one in Urahara's Shop or unlock it by leveling up.",
+    ar: "لا توجد إطارات بعد. اشترِ واحداً من متجر أوراهارا أو افتحه بالمستويات.",
+  },
+  // Potions
+  potions: { en: "Luck Potions", ar: "جرعات الحظ" },
+  potionsDesc: {
+    en: "Boost your draft luck for 5 minutes — rarer characters appear far more often.",
+    ar: "عزّز حظك في السحب لمدة ٥ دقائق — تظهر الشخصيات النادرة أكثر بكثير.",
+  },
+  cosmeticPotion: { en: "Consumable", ar: "قابل للاستهلاك" },
+  luckBoost: { en: "Luck", ar: "الحظ" },
+  drinkPotion: { en: "Drink", ar: "اشرب" },
+  potionActive: { en: "Luck boost active", ar: "تعزيز الحظ فعّال" },
+  potionAlreadyActive: { en: "A potion is already active.", ar: "هناك جرعة فعّالة بالفعل." },
+  noPotions: { en: "No potions. Buy some in Urahara's Shop.", ar: "لا توجد جرعات. اشترِ من متجر أوراهارا." },
+  myPotions: { en: "My Potions", ar: "جرعاتي" },
+  fiveMinutes: { en: "5 min", ar: "٥ دقائق" },
+  // Referrals
+  referrals: { en: "Referrals", ar: "الإحالات" },
+  referralDesc: {
+    en: "Invite a friend. When they join with your link you both get 5 Ultra Packs, and you get 500 Souls.",
+    ar: "ادعُ صديقاً. عند انضمامه برابطك يحصل كلاكما على ٥ حزم أولترا، وتحصل أنت على ٥٠٠ روح.",
+  },
+  yourReferralLink: { en: "Your invite link", ar: "رابط دعوتك" },
+  copyLink: { en: "Copy", ar: "نسخ" },
+  copied: { en: "Copied!", ar: "تم النسخ!" },
+  referralsCount: { en: "Friends invited", ar: "أصدقاء مدعوون" },
+  referralSoulsEarned: { en: "Souls earned", ar: "أرواح مكتسبة" },
+  haveACode: { en: "Have an invite code?", ar: "لديك رمز دعوة؟" },
+  enterCode: { en: "Enter code", ar: "أدخل الرمز" },
+  redeem: { en: "Redeem", ar: "استبدال" },
+  referralSuccess: { en: "Invite redeemed — 5 Ultra Packs added!", ar: "تم استبدال الدعوة — أُضيفت ٥ حزم أولترا!" },
+  referralAlready: { en: "You already used an invite code.", ar: "لقد استخدمت رمز دعوة بالفعل." },
+  referralInvalid: { en: "Invalid invite code.", ar: "رمز دعوة غير صالح." },
+  referralSelf: { en: "You can't invite yourself.", ar: "لا يمكنك دعوة نفسك." },
+  referralTooOld: { en: "Invite codes only work on new accounts.", ar: "رموز الدعوة تعمل للحسابات الجديدة فقط." },
 };
 
 export type TKey = keyof typeof dict;

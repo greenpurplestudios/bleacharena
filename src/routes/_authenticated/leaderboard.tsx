@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
@@ -7,6 +7,8 @@ import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { currentWeekLabel, fetchLeaderboard, getCurrentUserId, getMyProfile } from "@/lib/leaderboard";
 import { fetchStore } from "@/lib/store";
+import { NameFrame } from "@/components/NameFrame";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({
@@ -110,8 +112,23 @@ function LeaderboardPage() {
                 >
                   {r.rank}
                 </span>
-                <span className="min-w-0 flex-1 truncate font-semibold">
-                  <span style={nameColor ? { color: nameColor } : undefined}>{r.username}</span>
+                <PlayerAvatar
+                  characterId={r.avatar_character_id}
+                  size={34}
+                  fallback={(r.username ?? "?")[0]?.toUpperCase()}
+                />
+                <span className="min-w-0 flex-1 font-semibold">
+                  <Link
+                    to="/profile/$userId"
+                    params={{ userId: r.user_id }}
+                    className="inline-flex max-w-full items-center hover:opacity-90"
+                  >
+                    <NameFrame frame={r.name_frame}>
+                      <span className="truncate" style={nameColor ? { color: nameColor } : undefined}>
+                        {r.username}
+                      </span>
+                    </NameFrame>
+                  </Link>
                   {titleLabel && (
                     <span className="ms-2 rounded-md border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary">
                       {titleLabel}

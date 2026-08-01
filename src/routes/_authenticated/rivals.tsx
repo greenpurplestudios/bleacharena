@@ -22,6 +22,8 @@ import {
 } from "@/lib/rivals";
 import { getCurrentUserId } from "@/lib/leaderboard";
 import { play as playSound } from "@/lib/sound";
+import { NameFrame } from "@/components/NameFrame";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 export const Route = createFileRoute("/_authenticated/rivals")({
   head: () => ({
@@ -408,8 +410,23 @@ function RivalsPage() {
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 font-display text-sm font-black">
                     {r.rank}
                   </span>
-                  <span className="min-w-0 flex-1 truncate font-semibold" style={r.username_color ? { color: r.username_color } : undefined}>
-                    {r.username}
+                  <PlayerAvatar
+                    characterId={r.avatar_character_id}
+                    size={30}
+                    fallback={(r.username ?? "?")[0]?.toUpperCase()}
+                  />
+                  <span className="min-w-0 flex-1 font-semibold">
+                    <Link
+                      to="/profile/$userId"
+                      params={{ userId: r.user_id }}
+                      className="inline-flex max-w-full items-center hover:opacity-90"
+                    >
+                      <NameFrame frame={r.name_frame}>
+                        <span className="truncate" style={r.username_color ? { color: r.username_color } : undefined}>
+                          {r.username}
+                        </span>
+                      </NameFrame>
+                    </Link>
                     {isMe && (
                       <span className="ms-2 rounded-md bg-primary/20 px-1.5 py-0.5 text-[10px] uppercase tracking-widest text-primary">{t("you")}</span>
                     )}
