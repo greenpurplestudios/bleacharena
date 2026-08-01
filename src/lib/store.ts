@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { PackTier } from "@/lib/packs";
 
-export type StoreKind = "title" | "username_color" | "pack";
+export type StoreKind = "title" | "username_color" | "pack" | "name_frame" | "potion";
 
 export interface StoreItem {
   id: string;
@@ -83,10 +83,11 @@ export async function purchaseItem(itemId: string): Promise<PurchaseResult> {
 }
 
 export async function equipItem(
-  kind: "title" | "username_color",
+  kind: "title" | "username_color" | "name_frame",
   itemId: string | null,
 ): Promise<{ ok: boolean; error?: string }> {
-  const { data, error } = await supabase.rpc("equip_item", {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.rpc as any)("equip_item", {
     p_kind: kind,
     p_item_id: itemId as string,
   });
