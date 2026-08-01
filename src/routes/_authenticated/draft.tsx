@@ -132,6 +132,16 @@ function DraftPage() {
       <ReiatsuBackground count={22} />
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
+        {potionRunning && (
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-2.5">
+            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-300">
+              +{Math.round(activeLuck * 100)}% {t("luckBoost")}
+            </span>
+            <span className="font-display text-base font-black tabular-nums text-emerald-300">
+              {formatRemaining(potionLeft)}
+            </span>
+          </div>
+        )}
         <div className="mb-6">
           <TeamSlots team={team} />
         </div>
