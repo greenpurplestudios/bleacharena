@@ -9,6 +9,9 @@ import { characters } from "@/data/characters";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { XPBar } from "@/components/XPBar";
 import { AvatarPicker } from "@/components/AvatarPicker";
+import { NameFrame, NAME_FRAMES } from "@/components/NameFrame";
+import { fetchMyInventory, equipItem, type InventoryItem } from "@/lib/store";
+import { getMyReferral, referralLink, type ReferralState } from "@/lib/referrals";
 
 export const Route = createFileRoute("/_authenticated/profile/")({
   head: () => ({
@@ -37,11 +40,19 @@ function MyProfilePage() {
   const [p, setP] = useState<ProfileFull | null>(null);
   const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set());
   const [pickerMode, setPickerMode] = useState<"avatar" | "favorite" | null>(null);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [referral, setReferral] = useState<ReferralState | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [equipping, setEquipping] = useState(false);
 
   const load = async () => {
-    const [prof, coll] = await Promise.all([getMyProfileFull(), fetchMyCollection()]);
+    const [prof, coll, inv, ref] = await Promise.all([
+      getMyProfileFull(), fetchMyCollection(), fetchMyInventory(), getMyReferral(),
+    ]);
     setP(prof);
     setOwnedIds(new Set(coll.map((r) => r.characterId)));
+    setInventory(inv);
+    setReferral(ref);
   };
   useEffect(() => { load(); }, []);
 
@@ -52,6 +63,18 @@ function MyProfilePage() {
 
   const completion = p && p.collection_total > 0
     ? Math.round((p.collection_owned / p.collection_total) * 100) : 0;
+
+  const ownedFrames = useMemo(
+    () => inventory.filter((i) => i.kind === "name_frame" && NAME_FRAMES[i.itemId]),
+    [inventory],
+  );
+
+  const applyFrame = async (id: string | null) => {
+    setEquipping(true);
+    await equipItem("name_frame", id);
+    setEquipping(false);
+    load();
+  };
 
   if (!p) {
     return (
@@ -76,9 +99,11 @@ function MyProfilePage() {
               </span>
             </button>
             <div className="min-w-0 flex-1 text-center sm:text-start">
-              <div className="font-display text-3xl font-black" style={p.username_color ? { color: p.username_color } : undefined}>
-                {p.username ?? "—"}
-              </div>
+              <NameFrame frame={p.name_frame}>
+                <span className="font-display text-3xl font-black" style={p.username_color ? { color: p.username_color } : undefined}>
+                  {p.username ?? "—"}
+                </span>
+              </NameFrame>
               {p.title && (
                 <div className="mt-1 text-xs uppercase tracking-widest text-accent">{p.title}</div>
               )}
