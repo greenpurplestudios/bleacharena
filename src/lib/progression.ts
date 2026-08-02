@@ -140,6 +140,7 @@ export interface ProfileFull {
   favorite_character_id: string | null;
   profile_frame: string | null;
   profile_border: string | null;
+  name_frame: string | null;
   souls: number;
   total_souls_earned: number;
   packs_opened: number;
