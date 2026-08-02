@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { getPublicProfile, type ProfileFull } from "@/lib/progression";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { XPBar } from "@/components/XPBar";
+import { NameFrame } from "@/components/NameFrame";
 import {
   getFriendStatus, sendFriendRequest, respondFriendRequest, removeFriend,
   type FriendState,
