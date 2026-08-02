@@ -29,6 +29,7 @@ import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDailyRouteImport } from './routes/_authenticated/daily'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedClansRouteImport } from './routes/_authenticated/clans'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCharactersRouteImport } from './routes/_authenticated/characters'
 import { Route as AuthenticatedBleachdleRouteImport } from './routes/_authenticated/bleachdle'
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
@@ -135,6 +136,11 @@ const AuthenticatedClansRoute = AuthenticatedClansRouteImport.update({
   path: '/clans',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCharactersRoute = AuthenticatedCharactersRouteImport.update({
   id: '/characters',
   path: '/characters',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/clans': typeof AuthenticatedClansRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/daily': typeof AuthenticatedDailyRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/clans': typeof AuthenticatedClansRoute
   '/collection': typeof AuthenticatedCollectionRoute
   '/daily': typeof AuthenticatedDailyRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
   '/_authenticated/bleachdle': typeof AuthenticatedBleachdleRoute
   '/_authenticated/characters': typeof AuthenticatedCharactersRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/clans': typeof AuthenticatedClansRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/daily': typeof AuthenticatedDailyRoute
@@ -253,6 +262,7 @@ export interface FileRouteTypes {
     | '/achievements'
     | '/bleachdle'
     | '/characters'
+    | '/chat'
     | '/clans'
     | '/collection'
     | '/daily'
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/achievements'
     | '/bleachdle'
     | '/characters'
+    | '/chat'
     | '/clans'
     | '/collection'
     | '/daily'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/_authenticated/achievements'
     | '/_authenticated/bleachdle'
     | '/_authenticated/characters'
+    | '/_authenticated/chat'
     | '/_authenticated/clans'
     | '/_authenticated/collection'
     | '/_authenticated/daily'
@@ -475,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClansRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/characters': {
       id: '/_authenticated/characters'
       path: '/characters'
@@ -517,6 +536,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAchievementsRoute: typeof AuthenticatedAchievementsRoute
   AuthenticatedBleachdleRoute: typeof AuthenticatedBleachdleRoute
   AuthenticatedCharactersRoute: typeof AuthenticatedCharactersRoute
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedClansRoute: typeof AuthenticatedClansRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDailyRoute: typeof AuthenticatedDailyRoute
@@ -540,6 +560,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAchievementsRoute: AuthenticatedAchievementsRoute,
   AuthenticatedBleachdleRoute: AuthenticatedBleachdleRoute,
   AuthenticatedCharactersRoute: AuthenticatedCharactersRoute,
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedClansRoute: AuthenticatedClansRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDailyRoute: AuthenticatedDailyRoute,
