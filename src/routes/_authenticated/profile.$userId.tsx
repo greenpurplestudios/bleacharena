@@ -73,9 +73,11 @@ function PublicProfilePage() {
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
             <PlayerAvatar characterId={p.avatar_character_id} frame={p.profile_frame} size={88} fallback={(p.username ?? "?")[0]?.toUpperCase()} />
             <div className="min-w-0 flex-1 text-center sm:text-start">
-              <div className="font-display text-3xl font-black" style={p.username_color ? { color: p.username_color } : undefined}>
-                {p.username ?? "—"}
-              </div>
+              <NameFrame frame={p.name_frame}>
+                <span className="font-display text-3xl font-black" style={p.username_color ? { color: p.username_color } : undefined}>
+                  {p.username ?? "—"}
+                </span>
+              </NameFrame>
               {p.title && (<div className="mt-1 text-xs uppercase tracking-widest text-accent">{p.title}</div>)}
               <div className="mt-3 max-w-md">
                 <XPBar level={p.level} xp={p.xp} xpToNext={p.xp_to_next} />
@@ -105,6 +107,8 @@ function PublicProfilePage() {
                     <button disabled={busy} onClick={onCancel}
                       className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-xs font-bold text-destructive hover:bg-destructive/20 disabled:opacity-50">{t("removeFriend")}</button>
                   )}
+                  <Link to="/chat" search={{ to: userId }}
+                    className="rounded-md border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-bold hover:bg-white/10">{t("message")}</Link>
                 </div>
               )}
             </div>
