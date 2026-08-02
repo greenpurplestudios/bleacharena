@@ -155,6 +155,59 @@ function MyProfilePage() {
 
         {/* Recent achievements */}
         <section className="mt-6 rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur">
+          <h2 className="mb-3 font-display text-lg font-black">{t("nameFrame")}</h2>
+          {ownedFrames.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("none")}</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {ownedFrames.map((f) => {
+                const active = p.name_frame === f.itemId;
+                return (
+                  <button key={f.itemId} disabled={equipping}
+                    onClick={() => applyFrame(active ? null : f.itemId)}
+                    className={`rounded-xl border p-2 transition-colors disabled:opacity-50 ${
+                      active ? "border-primary/60 bg-primary/10" : "border-white/10 bg-white/5 hover:bg-white/10"
+                    }`}>
+                    <NameFrame frame={f.itemId}>
+                      <span className="font-display text-sm font-bold">{p.username ?? "—"}</span>
+                    </NameFrame>
+                    <div className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                      {active ? t("unequip") : t("equip")}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {referral && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur">
+            <h2 className="mb-3 font-display text-lg font-black">{t("inviteFriends")}</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <code className="min-w-0 flex-1 truncate rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-xs">
+                {referralLink(referral.code)}
+              </code>
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(referralLink(referral.code));
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  } catch { /* ignore */ }
+                }}
+                className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground">
+                {copied ? t("copied") : t("copyLink")}
+              </button>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <Stat label={t("referralsCount")} value={referral.total} />
+              <Stat label={t("referralSoulsEarned")} value={referral.soulsEarned} />
+            </div>
+          </section>
+        )}
+
+        <section className="mt-6 rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="font-display text-lg font-black">{t("recentAchievements")}</h2>
             <Link to="/achievements" className="text-xs text-primary hover:underline">{t("view")}</Link>
