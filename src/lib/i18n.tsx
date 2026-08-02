@@ -535,9 +535,6 @@ export const dict = {
   backToList: { en: "Back", ar: "رجوع" },
   message: { en: "Message", ar: "مراسلة" },
   nameFrame: { en: "Name Frame", ar: "إطار الاسم" },
-  equip: { en: "Equip", ar: "تجهيز" },
-  equipped: { en: "Equipped", ar: "مجهّز" },
-  unequip: { en: "Remove", ar: "إزالة" },
   inviteFriends: { en: "Invite Friends", ar: "ادعُ أصدقاءك" },
 };
 
