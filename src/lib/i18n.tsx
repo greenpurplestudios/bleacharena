@@ -524,6 +524,21 @@ export const dict = {
   referralInvalid: { en: "Invalid invite code.", ar: "رمز دعوة غير صالح." },
   referralSelf: { en: "You can't invite yourself.", ar: "لا يمكنك دعوة نفسك." },
   referralTooOld: { en: "Invite codes only work on new accounts.", ar: "رموز الدعوة تعمل للحسابات الجديدة فقط." },
+  chat: { en: "Chat", ar: "الدردشة" },
+  globalChat: { en: "Global Chat", ar: "الدردشة العامة" },
+  directMessages: { en: "Messages", ar: "الرسائل" },
+  noConversations: { en: "No conversations yet.", ar: "لا محادثات بعد." },
+  newConversation: { en: "New message", ar: "رسالة جديدة" },
+  chatRateLimited: { en: "Slow down a little.", ar: "تمهّل قليلاً." },
+  chatNoUsername: { en: "Choose a username first.", ar: "اختر اسم مستخدم أولاً." },
+  deleteMessage: { en: "Delete", ar: "حذف" },
+  backToList: { en: "Back", ar: "رجوع" },
+  message: { en: "Message", ar: "مراسلة" },
+  nameFrame: { en: "Name Frame", ar: "إطار الاسم" },
+  equip: { en: "Equip", ar: "تجهيز" },
+  equipped: { en: "Equipped", ar: "مجهّز" },
+  unequip: { en: "Remove", ar: "إزالة" },
+  inviteFriends: { en: "Invite Friends", ar: "ادعُ أصدقاءك" },
 };
 
 export type TKey = keyof typeof dict;
