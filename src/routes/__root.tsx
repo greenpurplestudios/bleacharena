@@ -18,6 +18,7 @@ import { EasterEggHeart } from "@/components/EasterEggHeart";
 import { PWAUpdateToast } from "@/components/PWAUpdateToast";
 import { supabase } from "@/integrations/supabase/client";
 import { ProgressionProvider } from "@/hooks/use-progression";
+import { capturePendingReferral, consumePendingReferral } from "@/lib/referrals";
 
 function NotFoundComponent() {
   return (
@@ -150,8 +151,13 @@ function RootComponent() {
 
   const router = useRouter();
   useEffect(() => {
+    capturePendingReferral();
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) consumePendingReferral();
+    });
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      if (event === "SIGNED_IN") consumePendingReferral();
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });

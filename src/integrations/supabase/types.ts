@@ -373,6 +373,33 @@ export type Database = {
         }
         Relationships: []
       }
+      direct_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           addressee_id: string
@@ -397,6 +424,27 @@ export type Database = {
           requester_id?: string
           status?: Database["public"]["Enums"]["friend_status"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      global_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1015,6 +1063,7 @@ export type Database = {
       }
       current_day_key: { Args: never; Returns: string }
       current_season_key: { Args: never; Returns: string }
+      delete_global_message: { Args: { p_id: string }; Returns: Json }
       disband_clan: { Args: never; Returns: Json }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
@@ -1057,7 +1106,32 @@ export type Database = {
         }[]
       }
       get_daily_login_state: { Args: never; Returns: Json }
+      get_direct_messages: {
+        Args: { p_limit?: number; p_other: string }
+        Returns: {
+          content: string
+          created_at: string
+          id: string
+          read_at: string
+          recipient_id: string
+          sender_id: string
+        }[]
+      }
       get_friend_status: { Args: { p_other: string }; Returns: Json }
+      get_global_messages: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_character_id: string
+          content: string
+          created_at: string
+          id: string
+          name_frame: string
+          title: string
+          user_id: string
+          username: string
+          username_color: string
+        }[]
+      }
       get_leaderboard: {
         Args: { p_limit?: number; p_season?: string }
         Returns: {
@@ -1119,6 +1193,19 @@ export type Database = {
           first_obtained_at: string
           overall: number
           rarity: string
+        }[]
+      }
+      get_my_conversations: {
+        Args: never
+        Returns: {
+          avatar_character_id: string
+          last_at: string
+          last_message: string
+          name_frame: string
+          unread: number
+          user_id: string
+          username: string
+          username_color: string
         }[]
       }
       get_my_friend_requests: {
@@ -1237,6 +1324,7 @@ export type Database = {
           sort_order: number
         }[]
       }
+      get_unread_dm_count: { Args: never; Returns: number }
       grant_item: {
         Args: { p_item_id: string; p_user: string }
         Returns: undefined
@@ -1263,6 +1351,7 @@ export type Database = {
           total_level: number
         }[]
       }
+      mark_conversation_read: { Args: { p_other: string }; Returns: Json }
       my_clan_id: { Args: never; Returns: string }
       my_clan_role: {
         Args: never
@@ -1297,7 +1386,12 @@ export type Database = {
         }[]
       }
       send_clan_message: { Args: { p_content: string }; Returns: Json }
+      send_direct_message: {
+        Args: { p_content: string; p_to: string }
+        Returns: Json
+      }
       send_friend_request: { Args: { p_addressee: string }; Returns: Json }
+      send_global_message: { Args: { p_content: string }; Returns: Json }
       set_avatar: { Args: { p_character_id: string }; Returns: Json }
       set_clan_member_role: {
         Args: {
