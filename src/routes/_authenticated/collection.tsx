@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { characters } from "@/data/characters";
 import { fetchMyCollection, type CollectionRow } from "@/lib/packs";
 import { RARITY_COLOR, RARITY_LABEL, RARITY_ORDER } from "@/lib/rarity";
+import { CharacterCard } from "@/components/CharacterCard";
 import type { Rarity } from "@/types/character";
 
 export const Route = createFileRoute("/_authenticated/collection")({
@@ -129,41 +130,23 @@ function CollectionPage() {
               const isOwned = !!own;
               const rarityColor = RARITY_COLOR[c.rarity];
               return (
-                <div
-                  key={c.id}
-                  className={
-                    "relative overflow-hidden rounded-xl border transition-all " +
-                    (isOwned
-                      ? "border-white/10 bg-card/60"
-                      : "border-white/5 bg-white/[0.02] opacity-50 grayscale")
-                  }
-                  style={isOwned ? { boxShadow: `0 0 20px -12px ${rarityColor}` } : undefined}
-                >
-                  <div className="aspect-square w-full overflow-hidden">
-                    {c.image ? (
-                      <img src={c.image} alt={c.name[locale]} className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center font-display text-3xl text-primary">
-                        {c.name.en.split(" ").slice(0, 2).map((s) => s[0]).join("")}
-                      </div>
-                    )}
-                    <span
-                      className="absolute left-2 top-2 rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest backdrop-blur-md"
-                      style={{ borderColor: rarityColor, color: rarityColor, background: `${rarityColor}22` }}
+                <div key={c.id} className="relative">
+                  <div className={isOwned ? "" : "opacity-40 grayscale"}>
+                    <CharacterCard character={c} className="w-full" />
+                  </div>
+                  {isOwned && own.count > 1 && (
+                    <span className="pointer-events-none absolute -right-1 -top-1 z-10 rounded-md bg-primary px-1.5 py-0.5 font-display text-[10px] font-black text-primary-foreground">
+                      ×{own.count}
+                    </span>
+                  )}
+                  <div className="mt-1.5 text-center">
+                    <div className="truncate text-xs font-semibold">{c.name[locale]}</div>
+                    <div
+                      className="text-[9px] font-black uppercase tracking-widest"
+                      style={{ color: rarityColor }}
                     >
                       {RARITY_LABEL[c.rarity][locale]}
-                    </span>
-                    <span className="absolute right-2 top-2 rounded-md bg-black/60 px-1.5 py-0.5 font-display text-[10px] font-black text-white">
-                      #{c.overall}
-                    </span>
-                    {isOwned && own.count > 1 && (
-                      <span className="absolute bottom-2 right-2 rounded-md bg-primary/90 px-1.5 py-0.5 font-display text-[10px] font-black text-primary-foreground">
-                        ×{own.count}
-                      </span>
-                    )}
-                  </div>
-                  <div className="px-2 py-2 text-center">
-                    <div className="truncate text-xs font-semibold">{c.name[locale]}</div>
+                    </div>
                   </div>
                 </div>
               );

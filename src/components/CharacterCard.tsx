@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Character } from "@/types/character";
 import { useI18n } from "@/lib/i18n";
-import { elementOf, ELEMENT_LABEL, type ElementKey } from "@/lib/elements";
+import { elementOf } from "@/lib/elements";
+import { ELEMENT_PATH } from "@/components/ElementIcon";
+import { CARD_BACK } from "@/lib/card-backs";
 import { framingOf } from "@/lib/portrait";
 import { RARITY_LABEL } from "@/lib/rarity";
 import {
   CARD_LABEL, localizeArc, localizeBlade, localizeDivision,
-  localizeFaction, localizeRace, localizeRank,
+  localizeFaction, localizeRank,
 } from "@/lib/card-i18n";
 import commonTpl from "@/assets/cards/common.jpeg.asset.json";
 import uncommonTpl from "@/assets/cards/uncommon.jpeg.asset.json";
@@ -43,20 +45,6 @@ const GLOW: Record<Rarity, string> = {
   mythic: "rgba(255,60,45,0.6)",
 };
 
-const ELEMENT_PATH: Record<ElementKey, string> = {
-  light:
-    "M32 6 L36.5 21.5 L52 14 L44.5 29.5 L60 34 L44.5 38.5 L52 54 L36.5 46.5 L32 62 L27.5 46.5 L12 54 L19.5 38.5 L4 34 L19.5 29.5 L12 14 L27.5 21.5 Z M32 24 a10 10 0 1 0 0.1 0 Z",
-  shadow:
-    "M42 6 a28 28 0 1 0 16 50 a22 22 0 1 1 -16 -50 Z",
-  nature:
-    "M54 8 C28 8 10 24 10 44 c0 6 2 10 4 13 l-6 6 3 3 6-6 c3 2 7 4 13 4 20 0 30-18 30-44 0-6 0-10 -6-12 Z M22 50 C28 34 38 24 50 18 40 30 32 40 22 50 Z",
-  fire:
-    "M34 4 c4 12 -6 16 -10 26 -3 8 1 14 5 16 -2 -6 0 -11 4 -14 -1 8 6 10 6 18 0 5 -3 8 -6 10 12 -1 21 -10 21 -22 0 -14 -12 -22 -20 -34 Z M24 34 c-6 6 -10 12 -10 20 0 8 5 14 12 16 -4 -4 -6 -8 -6 -13 0 -9 4 -15 4 -23 Z",
-  water:
-    "M32 4 C20 22 12 32 12 42 a20 20 0 0 0 40 0 C52 32 44 22 32 4 Z M24 40 a8 14 0 0 0 10 16 a12 12 0 0 1 -10 -16 Z",
-  lightning: "M38 2 L14 34 h12 L22 62 L50 26 H36 Z",
-};
-
 /**
  * Per-language typography. Latin uses Cinzel small-caps with wide tracking;
  * Arabic uses Amiri at a larger optical size with no tracking (tracking breaks
@@ -87,13 +75,29 @@ const TYPO = {
   },
 } as const;
 
-export function CharacterCard({ character }: { character: Character }) {
+export function CharacterCard({
+  character,
+  faceDown = false,
+  onReveal,
+  className,
+  interactive = true,
+}: {
+  character: Character;
+  /** Start face-down; the player flips to reveal. */
+  faceDown?: boolean;
+  onReveal?: () => void;
+  className?: string;
+  interactive?: boolean;
+}) {
   const { locale } = useI18n();
-  const [flipped, setFlipped] = useState(false);
+  const [showBack, setShowBack] = useState(faceDown);
+  const [flipping, setFlipping] = useState(false);
+  useEffect(() => { setShowBack(faceDown); }, [faceDown, character.id]);
   const c = character;
   const ink = INK[c.rarity];
   const glow = GLOW[c.rarity];
   const tpl = TEMPLATE[c.rarity];
+  const back = CARD_BACK[c.rarity];
   const el = elementOf(c.slug);
   const f = framingOf(c.slug);
   const ty = TYPO[locale];
@@ -141,9 +145,19 @@ export function CharacterCard({ character }: { character: Character }) {
   const LABEL_Y = [27.6, 39.2, 50.8, 62.4];
   const VALUE_Y = [30.9, 42.5, 54.1, 65.7];
 
+  const toggle = () => {
+    if (!interactive) return;
+    setFlipping(true);
+    window.setTimeout(() => setFlipping(false), 850);
+    setShowBack((v) => {
+      if (v && onReveal) onReveal();
+      return !v;
+    });
+  };
+
   return (
     <div
-      className="w-full max-w-sm select-none [container-type:inline-size]"
+      className={`w-full select-none [container-type:inline-size] ${className ?? "max-w-sm"}`}
       style={{ perspective: "1400px", animation: "card-in 0.5s ease-out both" }}
       dir={rtl ? "rtl" : "ltr"}
       lang={locale}
@@ -151,21 +165,34 @@ export function CharacterCard({ character }: { character: Character }) {
       <button
         type="button"
         aria-label={name}
-        onClick={() => setFlipped((v) => !v)}
-        className="group relative block w-full cursor-pointer transition-transform duration-500 ease-out hover:-translate-y-1"
-        style={{ transformStyle: "preserve-3d", transform: flipped ? "rotateY(180deg)" : undefined }}
+        onClick={toggle}
+        className="group relative block w-full cursor-pointer hover:-translate-y-1"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: showBack ? "rotateY(180deg)" : "rotateY(0deg)",
+          transition: "transform 0.75s cubic-bezier(0.2,0.85,0.25,1), translate 0.4s ease-out",
+          willChange: "transform",
+        }}
       >
         {/* rarity aura */}
         <span
           aria-hidden
-          className="pointer-events-none absolute -inset-2 rounded-[6%] opacity-70 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
-          style={{ background: `radial-gradient(ellipse at center, ${glow}, transparent 70%)` }}
+          className="pointer-events-none absolute -inset-2 rounded-[6%] blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+          style={{
+            background: `radial-gradient(ellipse at center, ${glow}, transparent 70%)`,
+            opacity: flipping ? 1 : 0.7,
+          }}
         />
 
         {/* FRONT */}
         <div
           className="relative w-full overflow-hidden rounded-[3.5%] bg-black"
-          style={{ aspectRatio: "1128 / 1394", backfaceVisibility: "hidden" }}
+          style={{
+            aspectRatio: "1128 / 1394",
+            backfaceVisibility: "hidden",
+            opacity: showBack ? 0 : 1,
+            transition: "opacity 0.35s ease-out 0.3s",
+          }}
         >
           {/* portrait, framed inside the art window */}
           {c.image ? (
@@ -384,44 +411,25 @@ export function CharacterCard({ character }: { character: Character }) {
           ))}
         </div>
 
-        {/* BACK */}
+        {/* BACK — official card back for this rarity */}
         <div
-          className="absolute inset-0 overflow-hidden rounded-[3.5%]"
+          className="absolute inset-0 overflow-hidden rounded-[3.5%] bg-black"
           style={{
             aspectRatio: "1128 / 1394",
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
           }}
         >
-          <img src={tpl} alt="" aria-hidden className="h-full w-full scale-x-[-1] object-cover blur-[2px] brightness-[0.55]" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-[3cqw] px-[10%] text-center">
-            <span
-              className="font-black"
-              style={{ fontSize: `${nameSize + 2}cqw`, lineHeight: ty.nameLh, letterSpacing: ty.nameLs, ...engrave }}
-            >
-              {name}
-            </span>
-            <span
-              style={{
-                fontSize: `${ty.caption.size + 0.6}cqw`,
-                letterSpacing: ty.caption.ls,
-                ...engrave,
-              }}
-            >
-              {ELEMENT_LABEL[el][locale]} · {CARD_LABEL.rating[locale]} {c.overall}
-            </span>
-            <span
-              style={{
-                fontSize: `${ty.value.size + 0.3}cqw`,
-                lineHeight: ty.value.lh,
-                color: ink,
-                fontFamily: ty.family,
-                opacity: 0.9,
-              }}
-            >
-              {c.race ? localizeRace(c.race, locale) : "—"}
-            </span>
-          </div>
+          <img src={back} alt="" aria-hidden className="h-full w-full object-cover" />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+            style={{
+              background: `radial-gradient(circle at 50% 45%, ${glow}, transparent 65%)`,
+              mixBlendMode: "screen",
+              opacity: flipping ? 0.5 : 0,
+            }}
+          />
         </div>
       </button>
     </div>

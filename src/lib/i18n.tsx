@@ -248,6 +248,7 @@ export const dict = {
   packsEmpty: { en: "No packs yet. Finish a draft with 75+ to earn one.", ar: "لا حزم بعد. أنهِ درافت بـ ٧٥+ لتحصل على واحدة." },
   packsAvailable: { en: "pack(s) ready to open", ar: "حزمة جاهزة للفتح" },
   tapToOpen: { en: "Tap to open", ar: "اضغط للفتح" },
+  tapToReveal: { en: "Tap the card to reveal", ar: "اضغط على البطاقة للكشف" },
   noPacks: { en: "None yet", ar: "لا يوجد بعد" },
   packOpenError: { en: "Something went wrong opening this pack.", ar: "حدث خطأ أثناء الفتح." },
   newCharacter: { en: "New character unlocked!", ar: "تم فتح شخصية جديدة!" },
