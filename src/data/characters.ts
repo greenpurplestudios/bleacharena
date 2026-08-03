@@ -62,7 +62,6 @@ import tosenImg from "@/assets/characters/tosen.jpeg.asset.json";
 import szayelImg from "@/assets/characters/szayel_apporo.jpeg.asset.json";
 import qaisImg from "@/assets/characters/qais.jpeg.asset.json";
 import { rarityFromOverall } from "@/lib/rarity";
-import { elementFor } from "@/lib/elements";
 
 // Data-driven roster. New characters can be added freely — game logic
 // reads from this list only. Rarity is derived from `overall` at load
@@ -573,7 +572,6 @@ export const characters: Character[] = raw.map((c) => ({
   ...c,
   rarity: rarityFromOverall(c.overall),
   gender: c.gender ?? inferGender(c.id),
-  element: c.element ?? elementFor(c.slug),
 }));
 
 function inferGender(id: string): "male" | "female" | "other" {
