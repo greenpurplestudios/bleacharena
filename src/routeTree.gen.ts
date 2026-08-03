@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as FollowRouteImport } from './routes/follow'
-import { Route as CardpreviewRouteImport } from './routes/cardpreview'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -40,11 +39,6 @@ import { Route as AuthenticatedProfileUserIdRouteImport } from './routes/_authen
 const FollowRoute = FollowRouteImport.update({
   id: '/follow',
   path: '/follow',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CardpreviewRoute = CardpreviewRouteImport.update({
-  id: '/cardpreview',
-  path: '/cardpreview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -179,7 +173,6 @@ const AuthenticatedProfileUserIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/cardpreview': typeof CardpreviewRoute
   '/follow': typeof FollowRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
@@ -207,7 +200,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/cardpreview': typeof CardpreviewRoute
   '/follow': typeof FollowRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
@@ -237,7 +229,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
-  '/cardpreview': typeof CardpreviewRoute
   '/follow': typeof FollowRoute
   '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
   '/_authenticated/bleachdle': typeof AuthenticatedBleachdleRoute
@@ -267,7 +258,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/cardpreview'
     | '/follow'
     | '/achievements'
     | '/bleachdle'
@@ -295,7 +285,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/cardpreview'
     | '/follow'
     | '/achievements'
     | '/bleachdle'
@@ -324,7 +313,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/cardpreview'
     | '/follow'
     | '/_authenticated/achievements'
     | '/_authenticated/bleachdle'
@@ -354,7 +342,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
-  CardpreviewRoute: typeof CardpreviewRoute
   FollowRoute: typeof FollowRoute
 }
 
@@ -365,13 +352,6 @@ declare module '@tanstack/react-router' {
       path: '/follow'
       fullPath: '/follow'
       preLoaderRoute: typeof FollowRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cardpreview': {
-      id: '/cardpreview'
-      path: '/cardpreview'
-      fullPath: '/cardpreview'
-      preLoaderRoute: typeof CardpreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -617,7 +597,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
-  CardpreviewRoute: CardpreviewRoute,
   FollowRoute: FollowRoute,
 }
 export const routeTree = rootRouteImport
