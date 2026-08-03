@@ -3,6 +3,11 @@ import type { Character } from "@/types/character";
 import { useI18n } from "@/lib/i18n";
 import { elementOf, ELEMENT_LABEL, type ElementKey } from "@/lib/elements";
 import { framingOf } from "@/lib/portrait";
+import { RARITY_LABEL } from "@/lib/rarity";
+import {
+  CARD_LABEL, localizeArc, localizeBlade, localizeDivision,
+  localizeFaction, localizeRace, localizeRank,
+} from "@/lib/card-i18n";
 import commonTpl from "@/assets/cards/common.jpeg.asset.json";
 import uncommonTpl from "@/assets/cards/uncommon.jpeg.asset.json";
 import rareTpl from "@/assets/cards/rare.jpeg.asset.json";
@@ -52,8 +57,38 @@ const ELEMENT_PATH: Record<ElementKey, string> = {
   lightning: "M38 2 L14 34 h12 L22 62 L50 26 H36 Z",
 };
 
+/**
+ * Per-language typography. Latin uses Cinzel small-caps with wide tracking;
+ * Arabic uses Amiri at a larger optical size with no tracking (tracking breaks
+ * Arabic joining) and roomier line-height. Never one layout for both.
+ */
+const TYPO = {
+  en: {
+    family: "'Cinzel', serif",
+    upper: "uppercase" as const,
+    rarity: { size: 3.3, ls: "0.18em" },
+    caption: { size: 1.55, ls: "0.38em" },
+    label: { size: 1.5, ls: "0.24em" },
+    value: { size: 2.05, ls: "0.03em", lh: 1.15 },
+    nameLh: 1.08,
+    nameSize: (n: number) => (n > 26 ? 2.7 : n > 20 ? 3.1 : n > 14 ? 3.6 : 4.3),
+    nameLs: "0.05em",
+  },
+  ar: {
+    family: "'Amiri', 'Cairo', serif",
+    upper: "none" as const,
+    rarity: { size: 3.9, ls: "0" },
+    caption: { size: 1.95, ls: "0" },
+    label: { size: 1.8, ls: "0" },
+    value: { size: 2.25, ls: "0", lh: 1.45 },
+    nameLh: 1.3,
+    nameSize: (n: number) => (n > 26 ? 2.9 : n > 20 ? 3.4 : n > 14 ? 3.9 : 4.5),
+    nameLs: "0",
+  },
+} as const;
+
 export function CharacterCard({ character }: { character: Character }) {
-  const { locale, t } = useI18n();
+  const { locale } = useI18n();
   const [flipped, setFlipped] = useState(false);
   const c = character;
   const ink = INK[c.rarity];
@@ -61,26 +96,57 @@ export function CharacterCard({ character }: { character: Character }) {
   const tpl = TEMPLATE[c.rarity];
   const el = elementOf(c.slug);
   const f = framingOf(c.slug);
+  const ty = TYPO[locale];
+  const rtl = locale === "ar";
 
   const name = c.name[locale];
-  const nameSize = name.length > 26 ? 2.7 : name.length > 20 ? 3.1 : name.length > 14 ? 3.6 : 4.3;
+  const nameSize = ty.nameSize(name.length);
 
-  const rows: { y: number; v: string }[] = [
-    { y: 29.1, v: c.faction || "—" },
-    { y: 40.6, v: c.rank || c.division || "—" },
-    { y: 52.2, v: c.bankai || c.shikai || "—" },
-    { y: 63.8, v: c.arc || "—" },
+  const dash = rtl ? "—" : "—";
+  const rows: { label: string; value: string }[] = [
+    {
+      label: CARD_LABEL.affiliation[locale],
+      value: c.faction ? localizeFaction(c.faction, locale) : dash,
+    },
+    {
+      label: CARD_LABEL.rank[locale],
+      value: c.rank
+        ? localizeRank(c.rank, locale)
+        : c.division
+          ? localizeDivision(c.division, locale)
+          : dash,
+    },
+    {
+      label: CARD_LABEL.zanpakuto[locale],
+      value: c.bankai
+        ? localizeBlade(c.bankai, locale)
+        : c.shikai
+          ? localizeBlade(c.shikai, locale)
+          : dash,
+    },
+    {
+      label: CARD_LABEL.arc[locale],
+      value: c.arc ? localizeArc(c.arc, locale) : dash,
+    },
   ];
 
   const engrave = {
     color: ink,
     textShadow: `0 0.08cqw 0.1cqw rgba(0,0,0,0.9), 0 0 0.9cqw ${glow}, 0 0 2.2cqw ${glow}`,
+    fontFamily: ty.family,
+    textTransform: ty.upper,
   } as const;
+
+  /** label rows sit above the divider, values just beneath the label. */
+  const LABEL_Y = [27.6, 39.2, 50.8, 62.4];
+  const VALUE_Y = [30.9, 42.5, 54.1, 65.7];
 
   return (
     <div
       className="w-full max-w-sm select-none [container-type:inline-size]"
       style={{ perspective: "1400px", animation: "card-in 0.5s ease-out both" }}
+      dir={rtl ? "rtl" : "ltr"}
+      lang={locale}
     >
       <button
         type="button"
@@ -145,6 +211,32 @@ export function CharacterCard({ character }: { character: Character }) {
             style={{ mixBlendMode: "lighten" }}
           />
 
+          {/* rarity name + caption */}
+          <span
+            className="absolute flex items-center justify-center text-center font-bold leading-none"
+            style={{
+              left: "50%", top: "8.8%", width: "27%", height: "4.6%",
+              transform: "translate(-50%, -50%)",
+              fontSize: `${ty.rarity.size}cqw`,
+              letterSpacing: ty.rarity.ls,
+              ...engrave,
+            }}
+          >
+            {RARITY_LABEL[c.rarity][locale]}
+          </span>
+          <span
+            className="absolute flex items-center justify-center text-center leading-none opacity-90"
+            style={{
+              left: "50%", top: "14.2%", width: "26%",
+              transform: "translate(-50%, -50%)",
+              fontSize: `${ty.caption.size}cqw`,
+              letterSpacing: ty.caption.ls,
+              ...engrave,
+            }}
+          >
+            {CARD_LABEL.rarity[locale]}
+          </span>
+
           {/* element icon, engraved into its medallion */}
           <span
             className="absolute"
@@ -167,50 +259,98 @@ export function CharacterCard({ character }: { character: Character }) {
               <path d={ELEMENT_PATH[el]} fill={`url(#el-${c.id})`} />
             </svg>
           </span>
+          <span
+            className="absolute flex items-center justify-center text-center leading-none opacity-90"
+            style={{
+              left: "13.5%", top: "17.6%", width: "20%",
+              transform: "translate(-50%, -50%)",
+              fontSize: `${ty.caption.size}cqw`,
+              letterSpacing: ty.caption.ls,
+              ...engrave,
+            }}
+          >
+            {CARD_LABEL.element[locale]}
+          </span>
 
           {/* name */}
           <span
-            className="absolute flex items-center justify-center text-center font-display font-bold uppercase leading-none"
+            className="absolute flex items-center justify-center px-[1cqw] text-center font-bold leading-none"
             style={{
               left: "59.4%",
               top: "15.6%",
               width: "30.4%",
               height: "7.2%",
               fontSize: `${nameSize}cqw`,
-              lineHeight: 1.08,
-              letterSpacing: locale === "ar" ? "0" : "0.05em",
+              lineHeight: ty.nameLh,
+              letterSpacing: ty.nameLs,
               ...engrave,
             }}
           >
-            {name}
+            <span className="line-clamp-2">{name}</span>
           </span>
 
-          {/* stat rows */}
-          {rows.map((r) => (
-            <span
-              key={r.y}
-              className="absolute flex items-center font-display leading-none"
-              style={{
-                left: "64.6%",
-                top: `${r.y}%`,
-                width: "15.8%",
-                height: "5.4%",
-                transform: "translateY(-50%)",
-                justifyContent: "flex-end",
-                textAlign: "end",
-                fontSize: "2.15cqw",
-                lineHeight: 1.15,
-                letterSpacing: "0.02em",
-                ...engrave,
-              }}
-            >
-              <span className="line-clamp-2 w-full overflow-hidden">{r.v}</span>
+          {/* stat rows — label above, value beneath, always aligned to the
+              inner edge of the plaque in both writing directions */}
+          {rows.map((r, i) => (
+            <span key={r.label} aria-hidden={false}>
+              <span
+                className="absolute flex items-center justify-end leading-none opacity-80"
+                style={{
+                  left: "69%", top: `${LABEL_Y[i]}%`, width: "25.5%", height: "3.4%",
+                  transform: "translateY(-50%)",
+                  fontSize: `${ty.label.size}cqw`,
+                  letterSpacing: ty.label.ls,
+                  ...engrave,
+                }}
+              >
+                {r.label}
+              </span>
+              <span
+                className="absolute flex items-center justify-end text-end leading-none"
+                style={{
+                  left: "69%", top: `${VALUE_Y[i]}%`, width: "25.5%", height: "4.2%",
+                  transform: "translateY(-50%)",
+                  fontSize: `${ty.value.size}cqw`,
+                  letterSpacing: ty.value.ls,
+                  lineHeight: ty.value.lh,
+                  ...engrave,
+                  textTransform: "none",
+                }}
+              >
+                <span className="line-clamp-2 w-full overflow-hidden">{r.value}</span>
+              </span>
             </span>
           ))}
 
+          {/* rating + stars captions */}
+          <span
+            className="absolute flex items-center justify-center text-center leading-none opacity-90"
+            style={{
+              left: "30.4%", top: "82.6%", width: "22%",
+              transform: "translate(-50%, -50%)",
+              fontSize: `${ty.caption.size}cqw`,
+              letterSpacing: ty.caption.ls,
+              ...engrave,
+            }}
+          >
+            {CARD_LABEL.rating[locale]}
+          </span>
+          <span
+            className="absolute flex items-center justify-center text-center leading-none opacity-90"
+            style={{
+              left: "70%", top: "82.6%", width: "22%",
+              transform: "translate(-50%, -50%)",
+              fontSize: `${ty.caption.size}cqw`,
+              letterSpacing: ty.caption.ls,
+              ...engrave,
+            }}
+          >
+            {CARD_LABEL.stars[locale]}
+          </span>
+
           {/* rating */}
           <span
-            className="absolute flex items-center justify-center font-display font-black leading-none"
+            className="absolute flex items-center justify-center font-black leading-none"
             style={{
               left: "30.4%",
               top: "89.4%",
@@ -218,6 +358,7 @@ export function CharacterCard({ character }: { character: Character }) {
               transform: "translate(-50%, -50%)",
               fontSize: "9.2cqw",
               ...engrave,
+              fontFamily: "'Cinzel', serif",
             }}
           >
             {c.overall}
@@ -254,14 +395,31 @@ export function CharacterCard({ character }: { character: Character }) {
         >
           <img src={tpl} alt="" aria-hidden className="h-full w-full scale-x-[-1] object-cover blur-[2px] brightness-[0.55]" />
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-[3cqw] px-[10%] text-center">
-            <span className="font-display text-[7cqw] font-black uppercase" style={engrave}>
+            <span
+              className="font-black"
+              style={{ fontSize: `${nameSize + 2}cqw`, lineHeight: ty.nameLh, letterSpacing: ty.nameLs, ...engrave }}
+            >
               {name}
             </span>
-            <span className="text-[3cqw] uppercase tracking-[0.4em]" style={engrave}>
-              {ELEMENT_LABEL[el][locale]} · {t("overall")} {c.overall}
+            <span
+              style={{
+                fontSize: `${ty.caption.size + 0.6}cqw`,
+                letterSpacing: ty.caption.ls,
+                ...engrave,
+              }}
+            >
+              {ELEMENT_LABEL[el][locale]} · {CARD_LABEL.rating[locale]} {c.overall}
             </span>
-            <span className="text-[2.6cqw] leading-relaxed opacity-90" style={{ color: ink }}>
-              {c.race ?? "—"}
+            <span
+              style={{
+                fontSize: `${ty.value.size + 0.3}cqw`,
+                lineHeight: ty.value.lh,
+                color: ink,
+                fontFamily: ty.family,
+                opacity: 0.9,
+              }}
+            >
+              {c.race ? localizeRace(c.race, locale) : "—"}
             </span>
           </div>
         </div>

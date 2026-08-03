@@ -32,11 +32,11 @@ export const RARITY_WEIGHTS: Record<Rarity, number> = {
 
 export const RARITY_LABEL: Record<Rarity, { en: string; ar: string }> = {
   common: { en: "Common", ar: "عادي" },
-  uncommon: { en: "Uncommon", ar: "غير مألوف" },
+  uncommon: { en: "Uncommon", ar: "غير شائع" },
   rare: { en: "Rare", ar: "نادر" },
   epic: { en: "Epic", ar: "ملحمي" },
   legendary: { en: "Legendary", ar: "أسطوري" },
-  mythic: { en: "Mythic", ar: "أسطوري خارق" },
+  mythic: { en: "Mythic", ar: "خرافي" },
 };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
