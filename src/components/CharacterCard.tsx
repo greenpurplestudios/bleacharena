@@ -406,44 +406,25 @@ export function CharacterCard({
           ))}
         </div>
 
-        {/* BACK */}
+        {/* BACK — official card back for this rarity */}
         <div
-          className="absolute inset-0 overflow-hidden rounded-[3.5%]"
+          className="absolute inset-0 overflow-hidden rounded-[3.5%] bg-black"
           style={{
             aspectRatio: "1128 / 1394",
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
           }}
         >
-          <img src={tpl} alt="" aria-hidden className="h-full w-full scale-x-[-1] object-cover blur-[2px] brightness-[0.55]" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-[3cqw] px-[10%] text-center">
-            <span
-              className="font-black"
-              style={{ fontSize: `${nameSize + 2}cqw`, lineHeight: ty.nameLh, letterSpacing: ty.nameLs, ...engrave }}
-            >
-              {name}
-            </span>
-            <span
-              style={{
-                fontSize: `${ty.caption.size + 0.6}cqw`,
-                letterSpacing: ty.caption.ls,
-                ...engrave,
-              }}
-            >
-              {ELEMENT_LABEL[el][locale]} · {CARD_LABEL.rating[locale]} {c.overall}
-            </span>
-            <span
-              style={{
-                fontSize: `${ty.value.size + 0.3}cqw`,
-                lineHeight: ty.value.lh,
-                color: ink,
-                fontFamily: ty.family,
-                opacity: 0.9,
-              }}
-            >
-              {c.race ? localizeRace(c.race, locale) : "—"}
-            </span>
-          </div>
+          <img src={back} alt="" aria-hidden className="h-full w-full object-cover" />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+            style={{
+              background: `radial-gradient(circle at 50% 45%, ${glow}, transparent 65%)`,
+              mixBlendMode: "screen",
+              opacity: flipping ? 0.5 : 0,
+            }}
+          />
         </div>
       </button>
     </div>
