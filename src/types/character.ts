@@ -6,6 +6,14 @@ export type Rarity =
   | "legendary"
   | "mythic";
 
+export type ElementKey =
+  | "light"
+  | "shadow"
+  | "nature"
+  | "fire"
+  | "water"
+  | "lightning";
+
 export interface Character {
   id: string;
   slug: string;
@@ -19,6 +27,8 @@ export interface Character {
   bankai?: string | null;
   image?: string | null;
   gender?: "male" | "female" | "other";
+  /** Combat element. Derived from the element map at data-load time. */
+  element?: ElementKey;
   /** Derived from `overall` at data-load time. Do NOT set manually. */
   rarity: Rarity;
   overall: number;

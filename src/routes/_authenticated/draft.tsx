@@ -56,6 +56,8 @@ function DraftPage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [potion, setPotion] = useState<ActivePotion>({ active: false, luck: 0 });
   const [nowTs, setNowTs] = useState(() => Date.now());
+  const [revealed, setRevealed] = useState(false);
+  const [flash, setFlash] = useState<string | null>(null);
 
   useEffect(() => {
     fetchActivePotion().then(setPotion);
@@ -86,12 +88,24 @@ function DraftPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool, phase, filled, rerollKey]);
 
-  // Play a reveal / rare flourish whenever a new card is presented.
+  // Every new card arrives face-down.
   useEffect(() => {
-    if (!current) return;
-    if (current.rarity === "mythic" || current.rarity === "legendary") play("rare");
-    else play("reveal");
+    setRevealed(false);
   }, [current?.id, rerollKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onReveal = useCallback(() => {
+    if (!current) return;
+    setRevealed(true);
+    const epic = current.rarity === "mythic" || current.rarity === "legendary";
+    if (epic) {
+      play("rare");
+      setTimeout(() => play("success"), 260);
+      setFlash(current.rarity === "mythic" ? "oklch(0.72 0.24 25)" : "oklch(0.82 0.18 80)");
+      setTimeout(() => setFlash(null), 950);
+    } else {
+      play("reveal");
+    }
+  }, [current]);
 
   const commitPick = useCallback(
     (c: Character) => {
@@ -131,6 +145,12 @@ function DraftPage() {
     <>
       <ReiatsuBackground count={22} />
       <SiteHeader />
+      {flash && (
+        <span
+          className="ba-reveal-flash"
+          style={{ background: `radial-gradient(ellipse at center, ${flash}, transparent 70%)` }}
+        />
+      )}
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
         {potionRunning && (
           <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-2.5">
@@ -169,17 +189,28 @@ function DraftPage() {
 
             {current ? (
               <div key={current.id + rerollKey} className="w-full max-w-sm">
-                <CharacterCard character={current} />
+                <CharacterCard
+                  character={current}
+                  faceDown={!revealed}
+                  onFlip={onReveal}
+                  opening={revealed}
+                />
+                {!revealed && (
+                  <p className="mt-3 text-center text-[11px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+                    {locale === "ar" ? "اضغط للكشف" : "Tap to reveal"}
+                  </p>
+                )}
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <button
                     onClick={() => commitPick(current)}
-                    className="glow-orange rounded-xl bg-primary px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary-foreground transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                    disabled={!revealed}
+                    className="glow-orange rounded-xl bg-primary px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary-foreground transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {t("add")}
                   </button>
                   <button
                     onClick={onSkip}
-                    disabled={skipsLeft <= 0}
+                    disabled={skipsLeft <= 0 || !revealed}
                     className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-foreground transition-all hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {skipsLeft > 0 ? t("skip") : t("outOfSkips")}
