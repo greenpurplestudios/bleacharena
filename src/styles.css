@@ -332,19 +332,19 @@ body {
 }
 
 /* name plate */
-.ba-plate { position: absolute; left: 8%; right: 8%; top: 79%; bottom: 4.5%; display: flex; flex-direction: column; gap: 0.6cqw; }
+.ba-plate { position: absolute; left: 8%; right: 8%; top: 78.5%; bottom: 6%; display: flex; flex-direction: column; gap: 0.3cqw; }
 .ba-name {
   font-family: var(--font-display, inherit); font-weight: 900;
-  font-size: 5.6cqw; line-height: 1.05; text-align: center;
+  font-size: 5.2cqw; line-height: 1.05; text-align: center;
   color: oklch(0.98 0 0);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   text-shadow: 0 0 10px color-mix(in oklab, var(--rc) 40%, transparent);
 }
-.ba-sub { font-size: 2.7cqw; line-height: 1.1; text-align: center; color: color-mix(in oklab, var(--rc) 70%, white 30%); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ba-meta { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5cqw 1cqw; }
-.ba-meta-cell { display: flex; align-items: baseline; gap: 0.8cqw; min-width: 0; border-top: 1px solid color-mix(in oklab, var(--rc) 22%, transparent); padding-top: 0.5cqw; }
-.ba-meta-cell dt { flex: none; font-size: 2.2cqw; text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in oklab, var(--rc) 65%, white 20%); }
-.ba-meta-cell dd { min-width: 0; flex: 1; font-size: 2.5cqw; font-weight: 600; color: oklch(0.95 0 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: end; }
+.ba-sub { font-size: 2.5cqw; line-height: 1.1; text-align: center; color: color-mix(in oklab, var(--rc) 70%, white 30%); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ba-meta { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 0.3cqw 1cqw; }
+.ba-meta-cell { display: flex; align-items: baseline; gap: 0.8cqw; min-width: 0; border-top: 1px solid color-mix(in oklab, var(--rc) 22%, transparent); padding-top: 0.35cqw; }
+.ba-meta-cell dt { flex: none; font-size: 2.1cqw; text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in oklab, var(--rc) 65%, white 20%); }
+.ba-meta-cell dd { min-width: 0; flex: 1; font-size: 2.4cqw; font-weight: 600; color: oklch(0.95 0 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: end; }
 
 /* particles */
 .ba-particles { position: absolute; inset: 6% 8% 20% 8%; overflow: hidden; pointer-events: none; }
