@@ -133,5 +133,6 @@ export function currentWeekLabel(locale: "en" | "ar"): string {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   });
 }

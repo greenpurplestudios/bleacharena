@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Atmosphere } from "@/components/Atmosphere";
 import { SiteHeader } from "@/components/SiteHeader";
 import { UraharaGuide } from "@/components/UraharaGuide";
+import { NewsFeed, NewsNotification } from "@/components/NewsFeed";
 import { BleachLogo } from "@/components/BleachLogo";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { play, startAmbient } from "@/lib/sound";
@@ -97,6 +98,9 @@ function HomeHub() {
           <span aria-hidden className="relative font-display text-4xl sm:text-5xl">卍</span>
         </Link>
 
+        {/* Latest announcement */}
+        <NewsNotification className="mt-5" />
+
         {/* Urahara guide */}
         <UraharaGuide className="mt-5" />
 
@@ -133,6 +137,7 @@ function HomeHub() {
             </Link>
           ))}
         </section>
+        <NewsFeed className="mt-12" />
       </main>
     </>
   );
