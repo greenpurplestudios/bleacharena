@@ -88,6 +88,8 @@ export function GameCard({ character: c, faceDown = false, onFlip, opening, clas
 
         {/* FRONT */}
         <div className="ba-face ba-front">
+          <img src={CARD_FRONT[c.rarity]} alt="" className="ba-frame" draggable={false} />
+
           <div className="ba-art">
             {c.image ? (
               <img src={c.image} alt={c.name[locale]} loading="lazy" draggable={false} />
@@ -98,8 +100,6 @@ export function GameCard({ character: c, faceDown = false, onFlip, opening, clas
             )}
             <span className="ba-art-veil" />
           </div>
-
-          <img src={CARD_FRONT[c.rarity]} alt="" className="ba-frame" draggable={false} />
 
           {/* element badge — top left */}
           <span className="ba-element" aria-label={el[locale]}>
