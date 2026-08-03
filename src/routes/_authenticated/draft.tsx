@@ -88,12 +88,24 @@ function DraftPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool, phase, filled, rerollKey]);
 
-  // Play a reveal / rare flourish whenever a new card is presented.
+  // Every new card arrives face-down.
   useEffect(() => {
-    if (!current) return;
-    if (current.rarity === "mythic" || current.rarity === "legendary") play("rare");
-    else play("reveal");
+    setRevealed(false);
   }, [current?.id, rerollKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onReveal = useCallback(() => {
+    if (!current) return;
+    setRevealed(true);
+    const epic = current.rarity === "mythic" || current.rarity === "legendary";
+    if (epic) {
+      play("rare");
+      setTimeout(() => play("success"), 260);
+      setFlash(current.rarity === "mythic" ? "oklch(0.72 0.24 25)" : "oklch(0.82 0.18 80)");
+      setTimeout(() => setFlash(null), 950);
+    } else {
+      play("reveal");
+    }
+  }, [current]);
 
   const commitPick = useCallback(
     (c: Character) => {
