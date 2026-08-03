@@ -6,6 +6,7 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { useI18n } from "@/lib/i18n";
 import { characters } from "@/data/characters";
 import { RARITY_COLOR } from "@/lib/rarity";
+import { CharacterCard } from "@/components/CharacterCard";
 import { fetchMyCollection } from "@/lib/packs";
 import { trackMission } from "@/lib/missions";
 import { addXp, bumpProfileStats, ratingTierUnlocks, trackAchievement, XP } from "@/lib/progression";
