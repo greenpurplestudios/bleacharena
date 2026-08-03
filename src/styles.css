@@ -332,7 +332,7 @@ body {
 }
 
 /* name plate */
-.ba-plate { position: absolute; left: 8%; right: 8%; top: 78.5%; bottom: 6%; display: flex; flex-direction: column; gap: 0.3cqw; }
+.ba-plate { position: absolute; left: 8%; right: 8%; top: 78%; bottom: 7.5%; display: flex; flex-direction: column; gap: 0.3cqw; }
 .ba-name {
   font-family: var(--font-display, inherit); font-weight: 900;
   font-size: 5.2cqw; line-height: 1.05; text-align: center;
