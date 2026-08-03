@@ -1,3 +1,4 @@
+import { msUntilServerMidnight } from "@/lib/server-time";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -35,9 +36,7 @@ function useResetCountdown() {
     return () => clearInterval(t);
   }, []);
   return useMemo(() => {
-    const d = new Date(now);
-    const next = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1, 0, 0, 0);
-    const ms = next - now;
+    const ms = msUntilServerMidnight(now);
     const h = Math.floor(ms / 3_600_000);
     const m = Math.floor((ms % 3_600_000) / 60_000);
     return { h, m };

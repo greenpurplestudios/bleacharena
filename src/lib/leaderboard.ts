@@ -1,3 +1,4 @@
+import { serverWeekStart } from "@/lib/server-time";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -127,11 +128,7 @@ export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
 }
 
 export function currentWeekLabel(locale: "en" | "ar"): string {
-  const now = new Date();
-  const day = now.getUTCDay();
-  const diff = (day + 6) % 7; // Monday = 0
-  const monday = new Date(now);
-  monday.setUTCDate(now.getUTCDate() - diff);
+  const monday = serverWeekStart();
   return monday.toLocaleDateString(locale === "ar" ? "ar" : "en-US", {
     month: "short",
     day: "numeric",

@@ -1,3 +1,4 @@
+import { formatHMS, msUntilServerMidnight } from "@/lib/server-time";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -22,13 +23,7 @@ export const Route = createFileRoute("/_authenticated/daily")({
 function useCountdownUTC() {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
-  const d = new Date(now);
-  const next = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1);
-  const ms = Math.max(0, next - now);
-  const h = Math.floor(ms / 3_600_000);
-  const m = Math.floor((ms % 3_600_000) / 60_000);
-  const s = Math.floor((ms % 60_000) / 1000);
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return formatHMS(msUntilServerMidnight(now));
 }
 
 function DailyPage() {
