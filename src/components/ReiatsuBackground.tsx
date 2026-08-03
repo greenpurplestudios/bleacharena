@@ -4,12 +4,18 @@ export function ReiatsuBackground({ count = 28 }: { count?: number }) {
   const particles = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => {
-        const size = 2 + Math.random() * 4;
-        const left = Math.random() * 100;
-        const delay = Math.random() * 14;
-        const duration = 12 + Math.random() * 14;
-        const drift = (Math.random() - 0.5) * 120;
-        const blue = Math.random() > 0.55;
+        // deterministic pseudo-random so SSR and client markup match
+        let seed = (i + 1) * 9301;
+        const rnd = () => {
+          seed = (seed * 9301 + 49297) % 233280;
+          return seed / 233280;
+        };
+        const size = 2 + rnd() * 4;
+        const left = rnd() * 100;
+        const delay = rnd() * 14;
+        const duration = 12 + rnd() * 14;
+        const drift = (rnd() - 0.5) * 120;
+        const blue = rnd() > 0.55;
         return { i, size, left, delay, duration, drift, blue };
       }),
     [count],
