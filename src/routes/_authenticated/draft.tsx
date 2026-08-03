@@ -55,6 +55,7 @@ function DraftPage() {
   const [rerollKey, setRerollKey] = useState(0);
   const [confirmReset, setConfirmReset] = useState(false);
   const [potion, setPotion] = useState<ActivePotion>({ active: false, luck: 0 });
+  const [revealed, setRevealed] = useState(false);
   const [nowTs, setNowTs] = useState(() => Date.now());
 
   useEffect(() => {
@@ -169,17 +170,27 @@ function DraftPage() {
 
             {current ? (
               <div key={current.id + rerollKey} className="w-full max-w-sm">
-                <CharacterCard character={current} />
+                <CharacterCard
+                  character={current}
+                  faceDown
+                  onReveal={() => setRevealed(true)}
+                />
+                {!revealed && (
+                  <p className="mt-3 text-center text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                    {t("tapToReveal")}
+                  </p>
+                )}
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => commitPick(current)}
-                    className="glow-orange rounded-xl bg-primary px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary-foreground transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                    onClick={() => { setRevealed(false); commitPick(current); }}
+                    disabled={!revealed}
+                    className="glow-orange rounded-xl bg-primary px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary-foreground transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {t("add")}
                   </button>
                   <button
-                    onClick={onSkip}
-                    disabled={skipsLeft <= 0}
+                    onClick={() => { setRevealed(false); onSkip(); }}
+                    disabled={skipsLeft <= 0 || !revealed}
                     className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-foreground transition-all hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {skipsLeft > 0 ? t("skip") : t("outOfSkips")}
