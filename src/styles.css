@@ -249,3 +249,150 @@ body {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
+
+/* ============================================================
+   Official card system (Bleach Arena)
+   ============================================================ */
+.ba-card {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 500 / 862;
+  perspective: 1400px;
+  animation: ba-float 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 14px color-mix(in oklab, var(--rc) 35%, transparent));
+  will-change: transform, filter;
+}
+.ba-card[data-open="true"] { animation: ba-open 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) both, ba-float 6s 0.7s ease-in-out infinite; }
+.ba-card[data-rarity="legendary"] { filter: drop-shadow(0 0 20px color-mix(in oklab, var(--rc) 55%, transparent)); }
+.ba-card[data-rarity="mythic"] {
+  filter: drop-shadow(0 0 26px color-mix(in oklab, var(--rc) 65%, transparent));
+  animation: ba-float 6s ease-in-out infinite, ba-breathe 2.6s ease-in-out infinite;
+}
+
+.ba-card-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.75s cubic-bezier(0.2, 0.85, 0.2, 1);
+}
+.ba-card-inner.is-down { transform: rotateY(180deg); }
+@media (hover: hover) {
+  .ba-card-inner:hover { transform: translateY(-6px) rotateX(5deg) rotateY(-4deg) scale(1.02); }
+  .ba-card-inner.is-down:hover { transform: rotateY(180deg) translateY(-6px) rotateX(5deg) scale(1.02); }
+}
+.ba-card-inner.is-pressed { transform: scale(0.985); }
+.ba-card-inner.is-down.is-pressed { transform: rotateY(180deg) scale(0.985); }
+
+.ba-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 4cqw;
+  overflow: hidden;
+}
+.ba-back { transform: rotateY(180deg); }
+.ba-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+
+.ba-art { position: absolute; inset: 4% 14% 38% 7%; overflow: hidden; border-radius: 2cqw; background: linear-gradient(160deg, oklch(0.2 0.02 260), oklch(0.1 0.02 260)); }
+.ba-art img { width: 100%; height: 100%; object-fit: cover; }
+.ba-initials { display: flex; height: 100%; width: 100%; align-items: center; justify-content: center; font-family: var(--font-display, inherit); font-weight: 900; font-size: 20cqw; color: var(--rc); }
+.ba-art-veil { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 120%, color-mix(in oklab, var(--rc) 22%, transparent), transparent 60%), linear-gradient(to bottom, transparent 55%, oklch(0.08 0.01 260 / 0.85)); }
+
+/* element badge */
+.ba-element {
+  position: absolute; left: 2.2%; top: 3.4%;
+  width: 15%; aspect-ratio: 1;
+  display: grid; place-items: center;
+  color: var(--ec);
+  filter: drop-shadow(0 0 6px var(--eg));
+  animation: ba-breathe 3.4s ease-in-out infinite;
+}
+.ba-element-icon { width: 55%; height: 55%; }
+
+/* stars rail */
+.ba-stars { position: absolute; right: 3.2%; top: 13.5%; width: 9%; height: 33%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+.ba-star { width: 62%; aspect-ratio: 1; background: currentColor; color: oklch(1 0 0 / 0.12); clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%); }
+.ba-star.on { color: var(--rc); filter: drop-shadow(0 0 3px var(--rc)); }
+
+/* OVR + rarity notches */
+.ba-ovr {
+  position: absolute; left: 4%; top: 63.5%; width: 19%; height: 11%;
+  display: grid; place-items: center;
+  font-family: var(--font-display, inherit); font-weight: 900; font-size: 9cqw; line-height: 1;
+  color: oklch(0.98 0 0); text-shadow: 0 0 8px var(--rc);
+}
+.ba-rarity {
+  position: absolute; right: 3%; top: 64.5%; width: 22%; height: 9%;
+  display: grid; place-items: center; text-align: center;
+  font-weight: 800; font-size: 3.4cqw; line-height: 1.05;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--rc); text-shadow: 0 0 8px color-mix(in oklab, var(--rc) 45%, transparent);
+}
+
+/* name plate */
+.ba-plate { position: absolute; left: 7%; right: 7%; top: 76.5%; bottom: 3.5%; display: flex; flex-direction: column; gap: 0.6cqw; }
+.ba-name {
+  font-family: var(--font-display, inherit); font-weight: 900;
+  font-size: 6.6cqw; line-height: 1.05; text-align: center;
+  color: oklch(0.98 0 0);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 0 10px color-mix(in oklab, var(--rc) 40%, transparent);
+}
+.ba-sub { font-size: 3.1cqw; line-height: 1.1; text-align: center; color: color-mix(in oklab, var(--rc) 70%, white 30%); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ba-meta { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5cqw 1cqw; }
+.ba-meta-cell { display: flex; align-items: baseline; gap: 0.8cqw; min-width: 0; border-top: 1px solid color-mix(in oklab, var(--rc) 22%, transparent); padding-top: 0.5cqw; }
+.ba-meta-cell dt { flex: none; font-size: 2.5cqw; text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in oklab, var(--rc) 65%, white 20%); }
+.ba-meta-cell dd { min-width: 0; flex: 1; font-size: 2.8cqw; font-weight: 600; color: oklch(0.95 0 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: end; }
+
+/* particles */
+.ba-particles { position: absolute; inset: 6% 8% 20% 8%; overflow: hidden; pointer-events: none; }
+.ba-particles i { position: absolute; bottom: -4%; border-radius: 999px; background: var(--ec); box-shadow: 0 0 6px var(--eg); opacity: 0; animation-name: ba-rise; animation-iteration-count: infinite; animation-timing-function: linear; }
+
+/* rarity flourishes */
+.ba-sheen { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+.ba-card[data-rarity="legendary"] .ba-sheen,
+.ba-card[data-rarity="mythic"] .ba-sheen {
+  opacity: 1;
+  background: linear-gradient(105deg, transparent 40%, oklch(1 0 0 / 0.22) 50%, transparent 60%);
+  background-size: 250% 100%;
+  animation: ba-sheen 3.6s linear infinite;
+  mix-blend-mode: screen;
+}
+.ba-aura { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+.ba-card[data-rarity="mythic"] .ba-aura {
+  opacity: 1;
+  background: radial-gradient(ellipse at 50% 50%, transparent 55%, color-mix(in oklab, var(--rc) 45%, transparent) 100%);
+  animation: ba-aura 2.4s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes ba-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.4%); } }
+@keyframes ba-breathe { 0%, 100% { opacity: 0.85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.015); } }
+@keyframes ba-sheen { 0% { background-position: 200% 0; } 100% { background-position: -60% 0; } }
+@keyframes ba-aura { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes ba-rise {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  15% { opacity: 0.9; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(-320%) scale(1.15); opacity: 0; }
+}
+@keyframes ba-open {
+  0% { transform: scale(0.86); filter: brightness(1.6) drop-shadow(0 0 30px var(--rc)); }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+@keyframes ba-flash {
+  0% { opacity: 0; }
+  25% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+.ba-reveal-flash {
+  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  animation: ba-flash 0.9s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ba-card, .ba-card[data-rarity="mythic"], .ba-element, .ba-particles i, .ba-sheen, .ba-aura { animation: none !important; }
+}
