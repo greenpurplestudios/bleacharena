@@ -3,6 +3,9 @@
 
 export type SfxKind =
   | "tap"
+  | "press"
+  | "sword"
+  | "whoosh"
   | "reveal"
   | "pick"
   | "skip"
@@ -16,9 +19,10 @@ export interface SoundPrefs {
   sfx: boolean;
   music: boolean;
   volume: number; // 0..1
+  ambient?: boolean;
 }
 
-const defaults: SoundPrefs = { sfx: true, music: false, volume: 0.6 };
+const defaults: SoundPrefs = { sfx: true, music: false, volume: 0.6, ambient: true };
 
 export function loadPrefs(): SoundPrefs {
   if (typeof window === "undefined") return defaults;
@@ -70,6 +74,21 @@ export function play(kind: SfxKind) {
   switch (kind) {
     case "tap":
       tone(660, 0.06, "triangle", 0.08 * v); break;
+    case "press":
+      tone(300, 0.05, "triangle", 0.09 * v);
+      tone(900, 0.07, "sine", 0.05 * v, 0.02);
+      break;
+    case "sword":
+      // Quick metallic slash: bright high partials decaying fast.
+      tone(2200, 0.09, "sawtooth", 0.035 * v);
+      tone(3300, 0.07, "square", 0.02 * v, 0.01);
+      tone(1400, 0.14, "triangle", 0.03 * v, 0.02);
+      break;
+    case "whoosh":
+      // Spiritual-pressure swell.
+      tone(180, 0.4, "sine", 0.05 * v);
+      tone(240, 0.5, "sine", 0.04 * v, 0.05);
+      break;
     case "reveal":
       tone(520, 0.12, "sine", 0.1 * v);
       tone(780, 0.15, "sine", 0.09 * v, 0.06);
@@ -95,4 +114,54 @@ export function play(kind: SfxKind) {
       );
       break;
   }
+}
+
+/* ---------- Ambient bed (no music autoplay; user opt-in) ---------- */
+
+let ambientNodes: { osc: OscillatorNode[]; gain: GainNode } | null = null;
+
+export function stopAmbient() {
+  if (!ambientNodes) return;
+  const c = getCtx();
+  const { osc, gain } = ambientNodes;
+  ambientNodes = null;
+  if (!c) return;
+  gain.gain.cancelScheduledValues(c.currentTime);
+  gain.gain.setTargetAtTime(0, c.currentTime, 0.4);
+  setTimeout(() => osc.forEach((o) => { try { o.stop(); } catch {} }), 2000);
+}
+
+/**
+ * Very soft reiatsu hum. Only starts on an explicit user gesture and only
+ * when the user's prefs allow it. Never called automatically at page load.
+ */
+export function startAmbient() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx && !prefs.music) return;
+  if (prefs.ambient === false) return;
+  if (ambientNodes) return;
+  const c = getCtx();
+  if (!c) return;
+  if (c.state === "suspended") c.resume().catch(() => {});
+  const gain = c.createGain();
+  gain.gain.setValueAtTime(0, c.currentTime);
+  gain.gain.linearRampToValueAtTime(0.018 * prefs.volume, c.currentTime + 2.5);
+  gain.connect(c.destination);
+  const osc = [110, 164.81, 220].map((f, i) => {
+    const o = c.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(f, c.currentTime);
+    const g = c.createGain();
+    g.gain.setValueAtTime(i === 0 ? 1 : 0.35, c.currentTime);
+    o.connect(g).connect(gain);
+    o.start();
+    return o;
+  });
+  ambientNodes = { osc, gain };
+}
+
+export function syncAmbientToPrefs() {
+  const prefs = loadPrefs();
+  if (prefs.music && prefs.ambient !== false) startAmbient();
+  else stopAmbient();
 }
