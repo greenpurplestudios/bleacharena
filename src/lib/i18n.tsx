@@ -22,6 +22,7 @@ export const dict = {
   },
   homeExplore: { en: "Explore the Arena", ar: "استكشف الساحة" },
   news: { en: "News", ar: "الأخبار" },
+  viewAll: { en: "View all", ar: "عرض الكل" },
   newsSubtitle: { en: "Latest from the Arena", ar: "آخر أخبار الساحة" },
   newsEmpty: { en: "No news yet.", ar: "لا توجد أخبار بعد." },
   newsNew: { en: "New", ar: "جديد" },
