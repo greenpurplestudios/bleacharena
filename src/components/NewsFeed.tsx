@@ -144,7 +144,7 @@ export function NewsFeed({ className = "", limit = 6 }: { className?: string; li
                 {t(CAT_LABEL[n.category] ?? "newsCatUpdate")}
               </span>
               {n.pinned && (
-                <span aria-hidden className="text-[10px] text-primary">📌</span>
+                <span className="rounded-full border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-primary">★</span>
               )}
               <span className="ms-auto text-[10px] uppercase tracking-widest text-muted-foreground">
                 {fmt(n.publishedAt, locale)}

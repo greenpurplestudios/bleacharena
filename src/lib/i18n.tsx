@@ -332,7 +332,7 @@ export const dict = {
   // Missions (Phase 4)
   missions: { en: "Missions", ar: "المهام" },
   missionsSub: { en: "Daily objectives", ar: "أهداف يومية" },
-  missionsDesc: { en: "Complete daily objectives to earn Souls. Resets every 24h (UTC).", ar: "أكمل الأهداف اليومية لكسب الأرواح. يعاد ضبطها كل ٢٤ ساعة." },
+  missionsDesc: { en: "Complete daily objectives to earn Souls. Resets daily at 00:00 (UTC+3).", ar: "أكمل الأهداف اليومية لكسب الأرواح. يعاد ضبطها كل ٢٤ ساعة." },
   dailyMissions: { en: "Daily Missions", ar: "المهام اليومية" },
   claim: { en: "Claim", ar: "استلام" },
   claimed: { en: "Claimed", ar: "تم الاستلام" },
