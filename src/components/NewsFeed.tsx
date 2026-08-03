@@ -163,7 +163,7 @@ export function NewsFeed({ className = "", limit = 6 }: { className?: string; li
           onClick={() => setExpanded(true)}
           className="tactile mt-3 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-white/10"
         >
-          {t("viewAll") ?? "…"}
+          {t("viewAll")}
         </button>
       )}
     </section>
