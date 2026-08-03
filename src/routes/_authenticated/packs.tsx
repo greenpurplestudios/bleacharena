@@ -334,59 +334,39 @@ function PackResultCard({ result, onClose }: { result: OpenPackResult; onClose: 
       </div>
     );
   }
-  const rarityColor = RARITY_COLOR[result.rarity];
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="w-full max-w-sm overflow-hidden rounded-3xl border bg-card text-center"
-      style={{
-        borderColor: `${rarityColor}66`,
-        boxShadow: `0 0 80px -10px ${rarityColor}`,
-        animation: "card-in 0.45s ease-out both",
-      }}
+      className="w-full max-w-xs text-center"
+      style={{ animation: "card-in 0.45s ease-out both" }}
     >
-      <div
-        className="relative aspect-square w-full overflow-hidden"
-        style={{ background: `radial-gradient(circle at 50% 30%, ${rarityColor}55, transparent 70%)` }}
-      >
-        {char.image ? (
-          <img
-            src={char.image}
-            alt={char.name[locale]}
-            className="h-full w-full object-cover"
-            style={{ animation: "card-in 0.6s 0.05s ease-out both" }}
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center font-display text-6xl text-primary">
-            {char.name.en.split(" ").slice(0, 2).map((s) => s[0]).join("")}
-          </div>
-        )}
-        <span
-          className="absolute left-3 top-3 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest backdrop-blur-md"
-          style={{ borderColor: rarityColor, color: rarityColor, background: `${rarityColor}22` }}
-        >
-          {RARITY_LABEL[result.rarity][locale]}
-        </span>
-        <span className="absolute right-3 top-3 rounded-lg bg-black/60 px-2 py-1 font-display text-xs font-black text-white backdrop-blur-md">
-          #{result.overall}
-        </span>
-      </div>
-      <div className="p-5">
-        <h3 className="font-display text-xl font-black">{char.name[locale]}</h3>
-        {result.duplicate ? (
-          <p className="mt-2 text-sm text-accent">
-            {t("duplicate")} — +{result.soulsAwarded} {t("souls")}
-          </p>
-        ) : (
-          <p className="mt-2 text-sm text-emerald-400">{t("newCharacter")}</p>
-        )}
-        <button
-          onClick={onClose}
-          className="glow-orange mt-5 w-full rounded-xl bg-primary px-5 py-3 font-display text-sm font-black uppercase tracking-widest text-primary-foreground"
-        >
-          {t("keepOpening")}
-        </button>
-      </div>
+      <CharacterCard
+        character={char}
+        faceDown
+        onReveal={() => setRevealed(true)}
+        className="w-full"
+      />
+      {revealed ? (
+        <>
+          {result.duplicate ? (
+            <p className="mt-4 text-sm text-accent">
+              {t("duplicate")} — +{result.soulsAwarded} {t("souls")}
+            </p>
+          ) : (
+            <p className="mt-4 text-sm text-emerald-400">{t("newCharacter")}</p>
+          )}
+          <button
+            onClick={onClose}
+            className="glow-orange mt-3 w-full rounded-xl bg-primary px-5 py-3 font-display text-sm font-black uppercase tracking-widest text-primary-foreground"
+          >
+            {t("keepOpening")}
+          </button>
+        </>
+      ) : (
+        <p className="mt-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          {t("tapToOpen")}
+        </p>
+      )}
     </div>
   );
 }
