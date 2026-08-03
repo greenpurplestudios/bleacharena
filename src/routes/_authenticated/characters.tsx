@@ -5,6 +5,10 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { characters } from "@/data/characters";
 import { RARITY_COLOR, RARITY_LABEL, RARITY_ORDER } from "@/lib/rarity";
 import { useI18n } from "@/lib/i18n";
+import { CharacterCard } from "@/components/CharacterCard";
+import { ElementGuide } from "@/components/ElementGuide";
+import { ElementIcon, ELEMENT_COLOR } from "@/components/ElementIcon";
+import { elementOf, ELEMENT_LABEL, type ElementKey } from "@/lib/elements";
 import type { Rarity } from "@/types/character";
 
 export const Route = createFileRoute("/_authenticated/characters")({
@@ -23,23 +27,28 @@ export const Route = createFileRoute("/_authenticated/characters")({
 
 type SortKey = "rating" | "name";
 
+const ELEMENTS: ElementKey[] = ["fire", "water", "nature", "lightning", "shadow", "light"];
+
 function CharactersPage() {
   const { t, locale } = useI18n();
   const [query, setQuery] = useState("");
   const [rarity, setRarity] = useState<Rarity | "all">("all");
+  const [element, setElement] = useState<ElementKey | "all">("all");
+  const [guideOpen, setGuideOpen] = useState(false);
   const [sort, setSort] = useState<SortKey>("rating");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = characters.slice();
     if (rarity !== "all") list = list.filter((c) => c.rarity === rarity);
+    if (element !== "all") list = list.filter((c) => elementOf(c.slug) === element);
     if (q) list = list.filter(
       (c) => c.name.en.toLowerCase().includes(q) || c.name.ar.includes(q),
     );
     if (sort === "rating") list.sort((a, b) => b.overall - a.overall);
     else list.sort((a, b) => a.name.en.localeCompare(b.name.en));
     return list;
-  }, [query, rarity, sort]);
+  }, [query, rarity, element, sort]);
 
   return (
     <>
@@ -91,53 +100,65 @@ function CharactersPage() {
               {t("sortName")}
             </FilterChip>
           </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              {locale === "ar" ? "العنصر" : "Element"}
+            </span>
+            <FilterChip active={element === "all"} onClick={() => setElement("all")}>
+              {t("all")}
+            </FilterChip>
+            {ELEMENTS.map((e) => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => setElement(e)}
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
+                  element === e
+                    ? "bg-white/10"
+                    : "border-white/10 bg-white/5 text-muted-foreground hover:bg-white/10"
+                }`}
+                style={element === e ? { borderColor: ELEMENT_COLOR[e], color: ELEMENT_COLOR[e] } : undefined}
+              >
+                <ElementIcon element={e} className="h-3.5 w-3.5" />
+                {ELEMENT_LABEL[e][locale]}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setGuideOpen((v) => !v)}
+              className="rounded-full border border-primary/50 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+            >
+              {locale === "ar" ? "دليل العناصر" : "Element Guide"}
+            </button>
+          </div>
         </div>
+
+        {guideOpen && (
+          <div className="mt-4" style={{ animation: "card-in 0.35s ease-out both" }}>
+            <ElementGuide />
+          </div>
+        )}
 
         {filtered.length === 0 ? (
           <p className="mt-10 rounded-xl border border-white/10 bg-white/5 px-4 py-10 text-center text-sm text-muted-foreground">
             {t("noResults")}
           </p>
         ) : (
-          <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {filtered.map((c, i) => {
               const color = RARITY_COLOR[c.rarity];
               return (
                 <li
                   key={c.id}
-                  className="group overflow-hidden rounded-2xl border border-white/10 bg-card/60 backdrop-blur-md transition-transform hover:-translate-y-0.5"
-                  style={{
-                    boxShadow: `0 0 0 1px ${color.replace(")", " / 0.35)")} inset`,
-                    animation: `card-in 0.35s ${Math.min(i, 12) * 0.02}s ease-out both`,
-                  }}
+                  style={{ animation: `card-in 0.35s ${Math.min(i, 12) * 0.02}s ease-out both` }}
                 >
-                  <div
-                    className="relative aspect-[4/5] w-full overflow-hidden"
-                    style={{
-                      background:
-                        `radial-gradient(circle at 30% 20%, ${color.replace(")", " / 0.35)")}, transparent 60%),` +
-                        "linear-gradient(160deg, oklch(0.2 0.02 260), oklch(0.12 0.02 260))",
-                    }}
-                  >
-                    {c.image ? (
-                      <img src={c.image} alt={c.name[locale]} loading="lazy" className="h-full w-full object-cover" />
-                    ) : (
-                      <span
-                        className="flex h-full w-full items-center justify-center font-display text-5xl font-black"
-                        style={{ color, textShadow: `0 0 20px ${color}` }}
-                      >
-                        {c.name.en.split(" ").slice(0, 2).map((n) => n[0]).join("")}
-                      </span>
-                    )}
-                    <span
-                      className="absolute right-2 top-2 rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest"
-                      style={{ color, background: color.replace(")", " / 0.15)"), border: `1px solid ${color.replace(")", " / 0.5)")}` }}
-                    >
-                      {RARITY_LABEL[c.rarity][locale]}
+                  <CharacterCard character={c} className="w-full" />
+                  <div className="mt-1.5 flex items-center justify-between gap-2">
+                    <p className="min-w-0 truncate text-xs font-semibold">{c.name[locale]}</p>
+                    <span className="font-display text-sm font-black" style={{ color }}>
+                      {c.overall}
                     </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-2 p-3">
-                    <p className="min-w-0 truncate text-sm font-semibold">{c.name[locale]}</p>
-                    <span className="font-display text-lg font-black text-primary">{c.overall}</span>
                   </div>
                 </li>
               );
