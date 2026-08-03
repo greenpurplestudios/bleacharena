@@ -206,19 +206,11 @@ function RivalsPage() {
               return (
                 <div
                   key={i}
-                  className="aspect-[3/4] overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]"
-                  style={c ? { boxShadow: `0 0 20px -12px ${RARITY_COLOR[c.rarity]}` } : undefined}
+                  className={c ? "" : "aspect-[1128/1394] overflow-hidden rounded-xl border border-dashed border-white/10 bg-white/[0.03]"}
                 >
                   {c ? (
-                    <button onClick={() => toggleSlot(c.id)} className="relative block h-full w-full">
-                      {c.image ? (
-                        <img src={c.image} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center font-display text-2xl text-primary">
-                          {c.name.en.split(" ").slice(0, 2).map((n) => n[0]).join("")}
-                        </div>
-                      )}
-                      <span className="absolute right-1 top-1 rounded bg-black/70 px-1 font-display text-[10px] font-black text-white">#{c.overall}</span>
+                    <button onClick={() => toggleSlot(c.id)} className="block w-full">
+                      <CharacterCard character={c} interactive={false} className="w-full" />
                     </button>
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-2xl text-muted-foreground/40">+</div>
@@ -244,21 +236,14 @@ function RivalsPage() {
                     key={c.id}
                     onClick={() => toggleSlot(c.id)}
                     className={
-                      "group relative aspect-[3/4] overflow-hidden rounded-lg border transition-all " +
+                      "group relative block overflow-hidden rounded-lg border transition-all " +
                       (active
                         ? "border-primary/80 ring-2 ring-primary/40"
                         : "border-white/10 hover:border-white/30")
                     }
                     style={{ boxShadow: `0 0 14px -12px ${RARITY_COLOR[c.rarity]}` }}
                   >
-                    {c.image ? (
-                      <img src={c.image} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center font-display text-lg text-primary">
-                        {c.name.en.split(" ").slice(0, 2).map((n) => n[0]).join("")}
-                      </div>
-                    )}
-                    <span className="absolute right-1 top-1 rounded bg-black/70 px-1 font-display text-[9px] font-black text-white">#{c.overall}</span>
+                    <CharacterCard character={c} interactive={false} className="w-full" />
                     {active && (
                       <span className="absolute inset-x-0 bottom-0 bg-primary/80 py-0.5 text-center font-display text-[10px] font-black text-primary-foreground">
                         ✓ {t("picked")}
@@ -301,17 +286,10 @@ function RivalsPage() {
               <div className="mt-3 grid grid-cols-5 gap-2">
                 {opponent.team.map((id) => {
                   const c = characterById.get(id);
-                  if (!c) return <div key={id} className="aspect-[3/4] rounded-lg border border-white/10 bg-white/5" />;
+                  if (!c) return <div key={id} className="aspect-[1128/1394] rounded-lg border border-white/10 bg-white/5" />;
                   return (
-                    <div key={id} className="relative aspect-[3/4] overflow-hidden rounded-lg border border-white/10">
-                      {c.image ? (
-                        <img src={c.image} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center font-display text-sm text-primary">
-                          {c.name.en.split(" ").slice(0, 2).map((n) => n[0]).join("")}
-                        </div>
-                      )}
-                      <span className="absolute right-1 top-1 rounded bg-black/70 px-1 font-display text-[9px] font-black text-white">#{c.overall}</span>
+                    <div key={id} className="relative">
+                      <CharacterCard character={c} interactive={false} className="w-full" />
                     </div>
                   );
                 })}
