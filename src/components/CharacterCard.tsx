@@ -191,9 +191,9 @@ export function CharacterCard({ character }: { character: Character }) {
               key={r.y}
               className="absolute flex items-center font-display leading-none"
               style={{
-                left: "63.2%",
+                left: "64.6%",
                 top: `${r.y}%`,
-                width: "17.4%",
+                width: "15.8%",
                 height: "5.4%",
                 transform: "translateY(-50%)",
                 justifyContent: "flex-end",
