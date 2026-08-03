@@ -187,7 +187,12 @@ export function CharacterCard({
         {/* FRONT */}
         <div
           className="relative w-full overflow-hidden rounded-[3.5%] bg-black"
-          style={{ aspectRatio: "1128 / 1394", backfaceVisibility: "hidden" }}
+          style={{
+            aspectRatio: "1128 / 1394",
+            backfaceVisibility: "hidden",
+            opacity: showBack ? 0 : 1,
+            transition: "opacity 0.35s ease-out 0.3s",
+          }}
         >
           {/* portrait, framed inside the art window */}
           {c.image ? (
