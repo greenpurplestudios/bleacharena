@@ -553,6 +553,45 @@ export type Database = {
         }
         Relationships: []
       }
+      news: {
+        Row: {
+          body_ar: string
+          body_en: string
+          category: string
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          pinned: boolean
+          published_at: string
+          title_ar: string
+          title_en: string
+        }
+        Insert: {
+          body_ar: string
+          body_en: string
+          category?: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          pinned?: boolean
+          published_at?: string
+          title_ar: string
+          title_en: string
+        }
+        Update: {
+          body_ar?: string
+          body_en?: string
+          category?: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          pinned?: boolean
+          published_at?: string
+          title_ar?: string
+          title_en?: string
+        }
+        Relationships: []
+      }
       player_levels: {
         Row: {
           level: number
@@ -1065,6 +1104,7 @@ export type Database = {
       current_season_key: { Args: never; Returns: string }
       delete_global_message: { Args: { p_id: string }; Returns: Json }
       disband_clan: { Args: never; Returns: Json }
+      ensure_weekly_announcement: { Args: never; Returns: undefined }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
       get_active_potion: { Args: never; Returns: Json }
@@ -1295,6 +1335,19 @@ export type Database = {
       get_my_rival_stats: { Args: never; Returns: Json }
       get_my_rival_team: { Args: never; Returns: Json }
       get_my_weekly_reward: { Args: never; Returns: Json }
+      get_news: {
+        Args: { p_limit?: number }
+        Returns: {
+          body_ar: string
+          body_en: string
+          category: string
+          id: string
+          pinned: boolean
+          published_at: string
+          title_ar: string
+          title_en: string
+        }[]
+      }
       get_public_profile: { Args: { p_user_id: string }; Returns: Json }
       get_rival_leaderboard: {
         Args: { p_limit?: number }
