@@ -295,7 +295,7 @@ body {
 .ba-back { transform: rotateY(180deg); }
 .ba-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
 
-.ba-art { position: absolute; inset: 4% 14% 38% 7%; overflow: hidden; border-radius: 2cqw; background: linear-gradient(160deg, oklch(0.2 0.02 260), oklch(0.1 0.02 260)); }
+.ba-art { position: absolute; inset: 5.5% 15.5% 39.5% 8.5%; overflow: hidden; border-radius: 2cqw; background: linear-gradient(160deg, oklch(0.2 0.02 260), oklch(0.1 0.02 260)); }
 .ba-art img { width: 100%; height: 100%; object-fit: cover; }
 .ba-initials { display: flex; height: 100%; width: 100%; align-items: center; justify-content: center; font-family: var(--font-display, inherit); font-weight: 900; font-size: 20cqw; color: var(--rc); }
 .ba-art-veil { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 120%, color-mix(in oklab, var(--rc) 22%, transparent), transparent 60%), linear-gradient(to bottom, transparent 55%, oklch(0.08 0.01 260 / 0.85)); }
@@ -313,12 +313,12 @@ body {
 
 /* stars rail */
 .ba-stars { position: absolute; right: 3.2%; top: 13.5%; width: 9%; height: 33%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
-.ba-star { width: 62%; aspect-ratio: 1; background: currentColor; color: oklch(1 0 0 / 0.12); clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%); }
-.ba-star.on { color: var(--rc); filter: drop-shadow(0 0 3px var(--rc)); }
+.ba-star { width: 92%; aspect-ratio: 1; border-radius: 50%; background: oklch(0.07 0.01 260 / 0.88); }
+.ba-star.on { background: transparent; box-shadow: 0 0 8px -1px var(--rc); }
 
 /* OVR + rarity notches */
 .ba-ovr {
-  position: absolute; left: 4%; top: 63.5%; width: 19%; height: 11%;
+  position: absolute; left: 3.5%; top: 64%; width: 19%; height: 10%;
   display: grid; place-items: center;
   font-family: var(--font-display, inherit); font-weight: 900; font-size: 9cqw; line-height: 1;
   color: oklch(0.98 0 0); text-shadow: 0 0 8px var(--rc);
@@ -332,19 +332,19 @@ body {
 }
 
 /* name plate */
-.ba-plate { position: absolute; left: 7%; right: 7%; top: 76.5%; bottom: 3.5%; display: flex; flex-direction: column; gap: 0.6cqw; }
+.ba-plate { position: absolute; left: 8%; right: 8%; top: 79%; bottom: 4.5%; display: flex; flex-direction: column; gap: 0.6cqw; }
 .ba-name {
   font-family: var(--font-display, inherit); font-weight: 900;
-  font-size: 6.6cqw; line-height: 1.05; text-align: center;
+  font-size: 5.6cqw; line-height: 1.05; text-align: center;
   color: oklch(0.98 0 0);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   text-shadow: 0 0 10px color-mix(in oklab, var(--rc) 40%, transparent);
 }
-.ba-sub { font-size: 3.1cqw; line-height: 1.1; text-align: center; color: color-mix(in oklab, var(--rc) 70%, white 30%); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ba-sub { font-size: 2.7cqw; line-height: 1.1; text-align: center; color: color-mix(in oklab, var(--rc) 70%, white 30%); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ba-meta { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5cqw 1cqw; }
 .ba-meta-cell { display: flex; align-items: baseline; gap: 0.8cqw; min-width: 0; border-top: 1px solid color-mix(in oklab, var(--rc) 22%, transparent); padding-top: 0.5cqw; }
-.ba-meta-cell dt { flex: none; font-size: 2.5cqw; text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in oklab, var(--rc) 65%, white 20%); }
-.ba-meta-cell dd { min-width: 0; flex: 1; font-size: 2.8cqw; font-weight: 600; color: oklch(0.95 0 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: end; }
+.ba-meta-cell dt { flex: none; font-size: 2.2cqw; text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in oklab, var(--rc) 65%, white 20%); }
+.ba-meta-cell dd { min-width: 0; flex: 1; font-size: 2.5cqw; font-weight: 600; color: oklch(0.95 0 0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: end; }
 
 /* particles */
 .ba-particles { position: absolute; inset: 6% 8% 20% 8%; overflow: hidden; pointer-events: none; }
