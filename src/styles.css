@@ -197,6 +197,53 @@
   0%, 100% { box-shadow: 0 0 30px -8px oklch(0.75 0.18 55 / 0.5); }
   50% { box-shadow: 0 0 60px -8px oklch(0.75 0.18 55 / 0.9); }
 }
+@keyframes orb-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 4vw 3vh; }
+}
+@keyframes guide-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes gate-sweep {
+  0% { transform: translateX(-120%) skewX(-12deg); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateX(240%) skewX(-12deg); opacity: 0; }
+}
+
+/* Smooth page transition applied by route shells */
+@utility page-enter {
+  animation: page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Premium interactive feel: lift on hover, press-in + glow on tap */
+@utility tactile {
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+  &:hover {
+    transform: translateY(-3px) scale(1.015);
+    box-shadow: 0 14px 40px -18px oklch(0.75 0.18 55 / 0.65);
+  }
+  &:active {
+    transform: scale(0.975);
+    box-shadow: 0 0 26px -6px oklch(0.75 0.18 55 / 0.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
 
 [dir="rtl"] body { font-family: "Cairo", var(--font-sans); }
 
