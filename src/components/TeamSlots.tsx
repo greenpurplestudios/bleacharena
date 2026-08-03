@@ -1,6 +1,7 @@
 import type { Character } from "@/types/character";
 import { RARITY_COLOR } from "@/lib/rarity";
 import { useI18n } from "@/lib/i18n";
+import { CharacterCard } from "@/components/CharacterCard";
 
 export function TeamSlots({ team }: { team: (Character | null)[] }) {
   const { t, locale } = useI18n();
@@ -18,33 +19,23 @@ export function TeamSlots({ team }: { team: (Character | null)[] }) {
         {team.map((c, i) => {
           const color = c ? RARITY_COLOR[c.rarity] : "oklch(1 0 0 / 0.15)";
           return (
-            <li
-              key={i}
-              className="relative flex aspect-[3/4] flex-col items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] p-2 text-center transition-all"
-              style={{
-                boxShadow: c ? `0 0 0 1px ${color} inset, 0 10px 30px -12px ${color}` : undefined,
-                animation: c ? "card-in 0.4s ease-out both" : undefined,
-              }}
-            >
-              <span className="absolute top-1 left-1 rounded-md bg-black/40 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-muted-foreground">
-                {t("slot")} {i + 1}
-              </span>
+            <li key={i} className="relative">
               {c ? (
                 <>
-                  <span
-                    className="mt-2 font-display text-2xl font-black"
-                    style={{ color, textShadow: `0 0 16px ${color}` }}
-                  >
-                    {c.name.en.split(" ").slice(0, 2).map((n) => n[0]).join("")}
-                  </span>
-                  <span className="mt-1 line-clamp-2 text-[10px] leading-tight font-medium">
+                  <CharacterCard character={c} interactive={false} className="w-full" />
+                  <p className="mt-1 line-clamp-1 text-center text-[10px] font-semibold leading-tight">
                     {c.name[locale]}
-                  </span>
+                  </p>
                 </>
               ) : (
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60">
-                  {t("empty")}
-                </span>
+                <div
+                  className="flex aspect-[1128/1394] w-full items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/[0.03] text-center"
+                  style={{ boxShadow: `0 0 0 1px ${color} inset` }}
+                >
+                  <span className="px-1 text-[9px] uppercase tracking-widest text-muted-foreground/60">
+                    {t("slot")} {i + 1}
+                  </span>
+                </div>
               )}
             </li>
           );
