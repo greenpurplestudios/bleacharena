@@ -5,6 +5,18 @@ import { RARITY_COLOR, RARITY_LABEL } from "@/lib/rarity";
 import { ELEMENT_META } from "@/lib/elements";
 import { useI18n } from "@/lib/i18n";
 import { CARD_FRONT, CARD_BACK, RARITY_STARS } from "./frames";
+import { getComposition } from "./composition";
+
+function StarGlyph({ on }: { on: boolean }) {
+  return (
+    <svg className={"ba-star" + (on ? " on" : "")} viewBox="0 0 24 24" aria-hidden>
+      <path
+        className="ba-star-shape"
+        d="M12 1.6l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 16.8 5.9 20.2l1.4-6.8L2.2 8.7l6.9-.8z"
+      />
+    </svg>
+  );
+}
 
 const ICONS = { sun: Sun, moon: Moon, leaf: Leaf, flame: Flame, drop: Droplet, bolt: Zap };
 
@@ -39,6 +51,11 @@ export function GameCard({ character: c, faceDown = false, onFlip, opening, clas
   const element = c.element ?? "shadow";
   const el = ELEMENT_META[element];
   const stars = RARITY_STARS[c.rarity];
+  const comp = getComposition(c.slug);
+  const artStyle = {
+    objectPosition: `${comp.x}% ${comp.y}%`,
+    "--z": comp.z,
+  } as React.CSSProperties;
 
   const particles = useMemo(
     () =>
@@ -90,26 +107,48 @@ export function GameCard({ character: c, faceDown = false, onFlip, opening, clas
         <div className="ba-face ba-front">
           <img src={CARD_FRONT[c.rarity]} alt="" className="ba-frame" draggable={false} />
 
+          {/* artwork bleeds past the window; the frame border re-overlays on top */}
           <div className="ba-art">
             {c.image ? (
-              <img src={c.image} alt={c.name[locale]} loading="lazy" draggable={false} />
+              <img
+                src={c.image}
+                alt={c.name[locale]}
+                className="ba-art-img"
+                style={artStyle}
+                loading="lazy"
+                draggable={false}
+              />
             ) : (
               <span className="ba-initials">
                 {c.name.en.split(" ").slice(0, 2).map((n) => n[0]).join("")}
               </span>
             )}
             <span className="ba-art-veil" />
+            <span className="ba-art-inner-shadow" aria-hidden />
           </div>
+
+          <img src={CARD_FRONT[c.rarity]} alt="" className="ba-frame ba-frame-top" draggable={false} />
+
+          {/* the same artwork, unclipped, breaking out over the frame edge */}
+          {c.image && (
+            <span className="ba-break" aria-hidden>
+              <img src={c.image} alt="" className="ba-art-img" style={artStyle} draggable={false} />
+            </span>
+          )}
+
+          {/* unified lighting pass over frame + art */}
+          <span className="ba-grade" aria-hidden />
 
           {/* element badge — top left */}
           <span className="ba-element" aria-label={el[locale]}>
+            <span className="ba-element-ring" aria-hidden />
             <ElementIcon element={element} className="ba-element-icon" />
           </span>
 
           {/* stars — right rail */}
           <span className="ba-stars">
             {Array.from({ length: 6 }).map((_, i) => (
-              <i key={i} className={"ba-star" + (i < stars ? " on" : "")} />
+              <StarGlyph key={i} on={i < stars} />
             ))}
           </span>
 
@@ -117,7 +156,9 @@ export function GameCard({ character: c, faceDown = false, onFlip, opening, clas
           <span className="ba-ovr">{c.overall}</span>
 
           {/* rarity — right notch */}
-          <span className="ba-rarity">{RARITY_LABEL[c.rarity][locale]}</span>
+          <span className="ba-rarity">
+            <b>{RARITY_LABEL[c.rarity][locale]}</b>
+          </span>
 
           {/* name plate */}
           <div className="ba-plate">
