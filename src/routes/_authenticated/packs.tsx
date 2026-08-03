@@ -17,6 +17,9 @@ import {
 } from "@/lib/packs";
 import { characters } from "@/data/characters";
 import { RARITY_COLOR, RARITY_LABEL } from "@/lib/rarity";
+import { CharacterCard } from "@/components/CharacterCard";
+import { ElementIcon } from "@/components/ElementIcon";
+import { elementOf } from "@/lib/elements";
 import { play } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
 import { trackMission } from "@/lib/missions";
@@ -268,6 +271,7 @@ function BulkResultCard({ bulk, onClose }: {
               ) : (
                 <span className="h-9 w-9 flex-none rounded-md bg-white/10" />
               )}
+              {char && <ElementIcon element={elementOf(char.slug)} className="h-4 w-4 flex-none" />}
               <span className="min-w-0 flex-1 truncate text-sm font-bold">{char?.name[locale] ?? r.characterId}</span>
               <span className="rounded-md border px-2 py-0.5 text-[10px] font-black uppercase tracking-widest"
                 style={{ borderColor: `${rc}66`, color: rc, background: `${rc}1a` }}>
