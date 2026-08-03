@@ -24,6 +24,7 @@ import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
 import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated/levels'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedFriendsRouteImport } from './routes/_authenticated/friends'
 import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/draft'
 import { Route as AuthenticatedDailyRouteImport } from './routes/_authenticated/daily'
@@ -111,6 +112,11 @@ const AuthenticatedLeaderboardRoute =
     path: '/leaderboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFriendsRoute = AuthenticatedFriendsRouteImport.update({
   id: '/friends',
   path: '/friends',
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/friends': typeof AuthenticatedFriendsRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/friends': typeof AuthenticatedFriendsRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/_authenticated/daily': typeof AuthenticatedDailyRoute
   '/_authenticated/draft': typeof AuthenticatedDraftRoute
   '/_authenticated/friends': typeof AuthenticatedFriendsRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/levels': typeof AuthenticatedLevelsRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/daily'
     | '/draft'
     | '/friends'
+    | '/home'
     | '/leaderboard'
     | '/levels'
     | '/missions'
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/daily'
     | '/draft'
     | '/friends'
+    | '/home'
     | '/leaderboard'
     | '/levels'
     | '/missions'
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/_authenticated/daily'
     | '/_authenticated/draft'
     | '/_authenticated/friends'
+    | '/_authenticated/home'
     | '/_authenticated/leaderboard'
     | '/_authenticated/levels'
     | '/_authenticated/missions'
@@ -452,6 +464,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLeaderboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/friends': {
       id: '/_authenticated/friends'
       path: '/friends'
@@ -542,6 +561,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDailyRoute: typeof AuthenticatedDailyRoute
   AuthenticatedDraftRoute: typeof AuthenticatedDraftRoute
   AuthenticatedFriendsRoute: typeof AuthenticatedFriendsRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedLevelsRoute: typeof AuthenticatedLevelsRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
@@ -566,6 +586,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDailyRoute: AuthenticatedDailyRoute,
   AuthenticatedDraftRoute: AuthenticatedDraftRoute,
   AuthenticatedFriendsRoute: AuthenticatedFriendsRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedLevelsRoute: AuthenticatedLevelsRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
