@@ -294,11 +294,83 @@ body {
 }
 .ba-back { transform: rotateY(180deg); }
 .ba-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+/* second copy of the official frame, painted OVER the artwork with the
+   window punched out, so the border ornament overlaps the illustration. */
+.ba-frame-top {
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 0 4.5%, transparent 8.5% 57%, #000 63% 100%),
+    linear-gradient(to right, #000 0 5.5%, transparent 10.5% 82%, #000 87.5% 100%);
+  mask-image:
+    linear-gradient(to bottom, #000 0 4.5%, transparent 8.5% 57%, #000 63% 100%),
+    linear-gradient(to right, #000 0 5.5%, transparent 10.5% 82%, #000 87.5% 100%);
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+  filter: drop-shadow(0 0.4cqw 0.9cqw oklch(0.03 0.01 260 / 0.75));
+}
 
-.ba-art { position: absolute; inset: 5.5% 15.5% 39.5% 8.5%; overflow: hidden; border-radius: 2cqw; background: linear-gradient(160deg, oklch(0.2 0.02 260), oklch(0.1 0.02 260)); }
-.ba-art img { width: 100%; height: 100%; object-fit: cover; }
+/* Shared art geometry: the illustration is laid out on an OVERSIZED box that
+   bleeds past the frame window. `.ba-art` clips it, `.ba-break` repeats the
+   exact same geometry unclipped so hair / blades / smoke cross the frame. */
+.ba-art,
+.ba-break {
+  position: absolute;
+  inset: 4.2% 14.2% 38.2% 7.2%;
+  border-radius: 2cqw;
+}
+.ba-art {
+  overflow: hidden;
+  background: linear-gradient(160deg, oklch(0.2 0.02 260), oklch(0.1 0.02 260));
+  /* feather the illustration into the frame instead of a hard rectangle */
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 90%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 90%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.ba-art-img {
+  position: absolute;
+  left: -9%; top: -14%; right: auto; bottom: auto;
+  width: 118%; height: 120%;
+  object-fit: cover;
+  transform: scale(var(--z, 1.08));
+  transform-origin: 50% 30%;
+  filter: saturate(1.06) contrast(1.05);
+}
+.ba-break {
+  overflow: visible;
+  pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 0%, #000 15%, rgba(0,0,0,0.55) 24%, transparent 38%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  mask-image:
+    linear-gradient(to bottom, #000 0%, #000 15%, rgba(0,0,0,0.55) 24%, transparent 38%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  filter: drop-shadow(0 1.4cqw 1.6cqw oklch(0.05 0.01 260 / 0.65));
+}
+/* depth where the frame sits on top of the illustration */
+.ba-art-inner-shadow {
+  position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow:
+    inset 0 0 2.4cqw 0.6cqw oklch(0.04 0.01 260 / 0.72),
+    inset 0 0.6cqw 1.2cqw oklch(0.04 0.01 260 / 0.5),
+    inset 0 0 0 0.35cqw color-mix(in oklab, var(--rc) 30%, transparent);
+}
+/* one lighting pass across frame + artwork so they read as one illustration */
+.ba-grade {
+  position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 28% 12%, oklch(1 0 0 / 0.14), transparent 55%),
+    radial-gradient(ellipse at 50% 108%, color-mix(in oklab, var(--rc) 22%, transparent), transparent 62%),
+    linear-gradient(196deg, transparent 45%, oklch(0.05 0.01 260 / 0.4) 100%);
+  mix-blend-mode: soft-light;
+}
 .ba-initials { display: flex; height: 100%; width: 100%; align-items: center; justify-content: center; font-family: var(--font-display, inherit); font-weight: 900; font-size: 20cqw; color: var(--rc); }
-.ba-art-veil { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 120%, color-mix(in oklab, var(--rc) 22%, transparent), transparent 60%), linear-gradient(to bottom, transparent 55%, oklch(0.08 0.01 260 / 0.85)); }
+.ba-art-veil { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 120%, color-mix(in oklab, var(--rc) 26%, transparent), transparent 58%), linear-gradient(to bottom, transparent 52%, oklch(0.08 0.01 260 / 0.55) 78%, oklch(0.06 0.01 260 / 0.96) 97%); }
 
 /* element badge */
 .ba-element {
@@ -309,27 +381,49 @@ body {
   filter: drop-shadow(0 0 6px var(--eg));
   animation: ba-breathe 3.4s ease-in-out infinite;
 }
-.ba-element-icon { width: 55%; height: 55%; }
+.ba-element > * { grid-area: 1 / 1; }
+.ba-element-ring {
+  width: 86%; height: 86%; border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, oklch(0.28 0.02 260 / 0.9), oklch(0.08 0.01 260 / 0.92));
+  box-shadow:
+    inset 0 0 0 0.35cqw color-mix(in oklab, var(--ec) 62%, transparent),
+    inset 0 0 1.4cqw color-mix(in oklab, var(--ec) 45%, transparent),
+    0 0.3cqw 0.9cqw oklch(0.04 0.01 260 / 0.7);
+}
+.ba-element-icon { width: 46%; height: 46%; filter: drop-shadow(0 0 0.5cqw var(--eg)); }
 
 /* stars rail */
 .ba-stars { position: absolute; right: 3.2%; top: 13.5%; width: 9%; height: 33%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
-.ba-star { width: 92%; aspect-ratio: 1; border-radius: 50%; background: oklch(0.07 0.01 260 / 0.88); }
-.ba-star.on { background: transparent; box-shadow: 0 0 8px -1px var(--rc); }
+.ba-star { width: 96%; aspect-ratio: 1; display: block; }
+.ba-star .ba-star-shape {
+  fill: oklch(0.1 0.01 260 / 0.85);
+  stroke: oklch(0.55 0.02 260 / 0.55);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+.ba-star.on .ba-star-shape {
+  fill: color-mix(in oklab, var(--rc) 82%, white 18%);
+  stroke: oklch(1 0 0 / 0.75);
+}
+.ba-star.on { filter: drop-shadow(0 0 0.7cqw var(--rc)) drop-shadow(0 0 0.25cqw oklch(1 0 0 / 0.6)); }
 
 /* OVR + rarity notches */
 .ba-ovr {
   position: absolute; left: 3.5%; top: 64%; width: 19%; height: 10%;
   display: grid; place-items: center;
   font-family: var(--font-display, inherit); font-weight: 900; font-size: 9cqw; line-height: 1;
-  color: oklch(0.98 0 0); text-shadow: 0 0 8px var(--rc);
+  color: oklch(0.99 0 0);
+  text-shadow: 0 0.25cqw 0.5cqw oklch(0.04 0.01 260 / 0.85), 0 0 1.2cqw var(--rc);
 }
 .ba-rarity {
   position: absolute; right: 3%; top: 64.5%; width: 22%; height: 9%;
   display: grid; place-items: center; text-align: center;
   font-weight: 800; font-size: 3.4cqw; line-height: 1.05;
   letter-spacing: 0.04em; text-transform: uppercase;
-  color: var(--rc); text-shadow: 0 0 8px color-mix(in oklab, var(--rc) 45%, transparent);
+  color: color-mix(in oklab, var(--rc) 72%, white 28%);
+  text-shadow: 0 0.2cqw 0.4cqw oklch(0.04 0.01 260 / 0.8), 0 0 1cqw color-mix(in oklab, var(--rc) 55%, transparent);
 }
+.ba-rarity b { font-weight: 900; }
 
 /* name plate */
 .ba-plate { position: absolute; left: 8%; right: 8%; top: 78%; bottom: 7.5%; display: flex; flex-direction: column; gap: 0.3cqw; }
