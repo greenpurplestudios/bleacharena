@@ -139,6 +139,9 @@ export function GameCard({ character: c, faceDown = false, onFlip, opening, clas
           {/* unified lighting pass over frame + art */}
           <span className="ba-grade" aria-hidden />
 
+          {/* printed card-stock material pass */}
+          <span className="ba-texture" aria-hidden />
+
           {/* element badge — top left */}
           <span className="ba-element" aria-label={el[locale]}>
             <span className="ba-element-ring" aria-hidden />
