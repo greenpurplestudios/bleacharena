@@ -56,6 +56,8 @@ function DraftPage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [potion, setPotion] = useState<ActivePotion>({ active: false, luck: 0 });
   const [nowTs, setNowTs] = useState(() => Date.now());
+  const [revealed, setRevealed] = useState(false);
+  const [flash, setFlash] = useState<string | null>(null);
 
   useEffect(() => {
     fetchActivePotion().then(setPotion);
