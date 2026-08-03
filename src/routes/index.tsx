@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { BleachLogo } from "@/components/BleachLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { Atmosphere } from "@/components/Atmosphere";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
 
@@ -12,9 +13,16 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { t } = useI18n();
   const { user } = useSession();
+  const nav = useNavigate();
+
+  // Signed-in players land on the hub, not straight into Draft.
+  useEffect(() => {
+    if (user) nav({ to: "/home", replace: true });
+  }, [user, nav]);
+
   return (
     <>
-      <ReiatsuBackground count={34} />
+      <Atmosphere variant="reiatsu" count={30} />
       <header className="relative z-10 mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <BleachLogo size="sm" />
         <div className="flex items-center gap-2">
@@ -31,7 +39,7 @@ function Home() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col items-center justify-center px-4 pb-16 text-center">
+      <main className="page-enter relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col items-center justify-center px-4 pb-16 text-center">
         <div
           className="mb-6 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] uppercase tracking-[0.4em] text-muted-foreground backdrop-blur-md"
           style={{ animation: "card-in 0.6s ease-out both" }}
@@ -52,7 +60,7 @@ function Home() {
 
         <Link
           to="/draft"
-          className="glow-orange group mt-10 inline-flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 font-display text-base font-black uppercase tracking-[0.25em] text-primary-foreground transition-transform hover:scale-[1.03] active:scale-[0.98] sm:text-lg"
+          className="glow-orange tactile group mt-10 inline-flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 font-display text-base font-black uppercase tracking-[0.25em] text-primary-foreground sm:text-lg"
           style={{ animation: "pulse-glow 2.8s ease-in-out infinite, card-in 0.9s 0.2s ease-out both" }}
         >
           <span aria-hidden>卍</span>
@@ -87,6 +95,7 @@ function Home() {
         >
           {[
             { to: "/draft", key: "draft", desc: "bleachDraftDesc", icon: "卍" },
+            { to: "/soul-duel", key: "soulDuel", desc: "soulDuelShort", icon: "⚔" },
             { to: "/packs", key: "packs", desc: "packsDesc", icon: "✦" },
             { to: "/collection", key: "collection", desc: "collectionDesc", icon: "▦" },
             { to: "/store", key: "store", desc: "storeDesc", icon: "✧" },
@@ -103,7 +112,7 @@ function Home() {
             <Link
               key={m.to}
               to={m.to as "/draft"}
-              className="group rounded-2xl border border-white/10 bg-card/60 p-5 text-start backdrop-blur-md transition-all hover:border-primary/40 hover:bg-white/[0.06]"
+              className="tactile group rounded-2xl border border-white/10 bg-card/60 p-5 text-start backdrop-blur-md hover:border-primary/40 hover:bg-white/[0.06]"
             >
               <div className="mb-2 font-display text-3xl text-primary" aria-hidden>{m.icon}</div>
               <div className="font-display text-lg font-bold">{t(m.key as "draft")}</div>

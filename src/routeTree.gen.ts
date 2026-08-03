@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthResetRouteImport } from './routes/auth.reset'
 import { Route as AuthenticatedStoreRouteImport } from './routes/_authenticated/store'
+import { Route as AuthenticatedSoulDuelRouteImport } from './routes/_authenticated/soul-duel'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
@@ -24,6 +25,7 @@ import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
 import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated/levels'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedFriendsRouteImport } from './routes/_authenticated/friends'
 import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/draft'
 import { Route as AuthenticatedDailyRouteImport } from './routes/_authenticated/daily'
@@ -63,6 +65,11 @@ const AuthResetRoute = AuthResetRouteImport.update({
 const AuthenticatedStoreRoute = AuthenticatedStoreRouteImport.update({
   id: '/store',
   path: '/store',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSoulDuelRoute = AuthenticatedSoulDuelRouteImport.update({
+  id: '/soul-duel',
+  path: '/soul-duel',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -111,6 +118,11 @@ const AuthenticatedLeaderboardRoute =
     path: '/leaderboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFriendsRoute = AuthenticatedFriendsRouteImport.update({
   id: '/friends',
   path: '/friends',
@@ -183,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/friends': typeof AuthenticatedFriendsRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
@@ -192,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
@@ -210,6 +224,7 @@ export interface FileRoutesByTo {
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/friends': typeof AuthenticatedFriendsRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
@@ -219,6 +234,7 @@ export interface FileRoutesByTo {
   '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
@@ -239,6 +255,7 @@ export interface FileRoutesById {
   '/_authenticated/daily': typeof AuthenticatedDailyRoute
   '/_authenticated/draft': typeof AuthenticatedDraftRoute
   '/_authenticated/friends': typeof AuthenticatedFriendsRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/levels': typeof AuthenticatedLevelsRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
@@ -248,6 +265,7 @@ export interface FileRoutesById {
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/_authenticated/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/_authenticated/profile/$userId': typeof AuthenticatedProfileUserIdRoute
@@ -268,6 +286,7 @@ export interface FileRouteTypes {
     | '/daily'
     | '/draft'
     | '/friends'
+    | '/home'
     | '/leaderboard'
     | '/levels'
     | '/missions'
@@ -277,6 +296,7 @@ export interface FileRouteTypes {
     | '/rewards'
     | '/rivals'
     | '/settings'
+    | '/soul-duel'
     | '/store'
     | '/auth/reset'
     | '/profile/$userId'
@@ -295,6 +315,7 @@ export interface FileRouteTypes {
     | '/daily'
     | '/draft'
     | '/friends'
+    | '/home'
     | '/leaderboard'
     | '/levels'
     | '/missions'
@@ -304,6 +325,7 @@ export interface FileRouteTypes {
     | '/rewards'
     | '/rivals'
     | '/settings'
+    | '/soul-duel'
     | '/store'
     | '/auth/reset'
     | '/profile/$userId'
@@ -323,6 +345,7 @@ export interface FileRouteTypes {
     | '/_authenticated/daily'
     | '/_authenticated/draft'
     | '/_authenticated/friends'
+    | '/_authenticated/home'
     | '/_authenticated/leaderboard'
     | '/_authenticated/levels'
     | '/_authenticated/missions'
@@ -332,6 +355,7 @@ export interface FileRouteTypes {
     | '/_authenticated/rewards'
     | '/_authenticated/rivals'
     | '/_authenticated/settings'
+    | '/_authenticated/soul-duel'
     | '/_authenticated/store'
     | '/auth/reset'
     | '/_authenticated/profile/$userId'
@@ -387,6 +411,13 @@ declare module '@tanstack/react-router' {
       path: '/store'
       fullPath: '/store'
       preLoaderRoute: typeof AuthenticatedStoreRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/soul-duel': {
+      id: '/_authenticated/soul-duel'
+      path: '/soul-duel'
+      fullPath: '/soul-duel'
+      preLoaderRoute: typeof AuthenticatedSoulDuelRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -450,6 +481,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof AuthenticatedLeaderboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/friends': {
@@ -542,6 +580,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDailyRoute: typeof AuthenticatedDailyRoute
   AuthenticatedDraftRoute: typeof AuthenticatedDraftRoute
   AuthenticatedFriendsRoute: typeof AuthenticatedFriendsRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedLevelsRoute: typeof AuthenticatedLevelsRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
@@ -551,6 +590,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSoulDuelRoute: typeof AuthenticatedSoulDuelRoute
   AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
   AuthenticatedProfileUserIdRoute: typeof AuthenticatedProfileUserIdRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
@@ -566,6 +606,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDailyRoute: AuthenticatedDailyRoute,
   AuthenticatedDraftRoute: AuthenticatedDraftRoute,
   AuthenticatedFriendsRoute: AuthenticatedFriendsRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedLevelsRoute: AuthenticatedLevelsRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
@@ -575,6 +616,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSoulDuelRoute: AuthenticatedSoulDuelRoute,
   AuthenticatedStoreRoute: AuthenticatedStoreRoute,
   AuthenticatedProfileUserIdRoute: AuthenticatedProfileUserIdRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,

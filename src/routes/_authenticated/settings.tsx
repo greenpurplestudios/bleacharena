@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { getMyProfile } from "@/lib/leaderboard";
-import { loadPrefs, savePrefs, play, type SoundPrefs } from "@/lib/sound";
+import { loadPrefs, savePrefs, play, syncAmbientToPrefs, type SoundPrefs } from "@/lib/sound";
 import { equipItem, fetchMyInventory, type InventoryItem } from "@/lib/store";
 import {
   SettingsSection,
@@ -59,6 +59,7 @@ function SettingsPage() {
     setPrefs(next);
     savePrefs(next);
     if (patch.sfx) play("tap");
+    syncAmbientToPrefs();
   };
 
   const doEquip = async (kind: "title" | "username_color", itemId: string | null) => {
@@ -101,6 +102,12 @@ function SettingsPage() {
         <SettingsSection title={t("audio")}>
           <SettingToggle label={t("soundEffects")} value={prefs.sfx} onChange={(v) => update({ sfx: v })} />
           <SettingToggle label={t("music")} value={prefs.music} onChange={(v) => update({ music: v })} />
+          <SettingToggle
+            label={t("ambientSounds")}
+            description={t("ambientSoundsDesc")}
+            value={prefs.ambient !== false}
+            onChange={(v) => update({ ambient: v })}
+          />
           <SettingSlider
             label={t("volume")}
             value={Math.round(prefs.volume * 100)}

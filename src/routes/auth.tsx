@@ -31,13 +31,14 @@ export const Route = createFileRoute("/auth")({
 type Mode = "signin" | "signup" | "reset";
 
 function safeRedirect(raw: string | undefined): string {
-  if (!raw) return "/";
+  if (!raw) return "/home";
   try {
     const url = new URL(raw, window.location.origin);
-    if (url.origin !== window.location.origin) return "/";
+    if (url.origin !== window.location.origin) return "/home";
+    if (url.pathname === "/") return "/home";
     return url.pathname + url.search + url.hash;
   } catch {
-    return raw.startsWith("/") ? raw : "/";
+    return raw.startsWith("/") ? raw : "/home";
   }
 }
 
