@@ -1,4 +1,9 @@
 import type { Character } from "@/types/character";
+import isshinImg from "@/assets/characters/isshin.jpeg.asset.json";
+import masakiImg from "@/assets/characters/masaki.jpeg.asset.json";
+import zangetsuImg from "@/assets/characters/zangetsu.jpeg.asset.json";
+import asNodtImg from "@/assets/characters/as_nodt.jpeg.asset.json";
+import gremmyImg from "@/assets/characters/gremmy.jpeg.asset.json";
 import ichigoImg from "@/assets/characters/ichigo.jpeg.asset.json";
 import uraharaImg from "@/assets/characters/urahara.jpeg.asset.json";
 import kyorakuImg from "@/assets/characters/kyoraku.jpeg.asset.json";
@@ -571,7 +576,7 @@ const raw: Omit<Character, "rarity">[] = [
     name: { en: "Isshin Kurosaki", ar: "إيسشين كوروساكي" },
     race: "Shinigami", faction: "Soul Society", division: "10th", rank: "Former Captain",
     arc: "Fake Karakura", shikai: "Engetsu", bankai: null,
-    image: null,
+    image: isshinImg.url,
     overall: 92,
   },
   {
@@ -579,7 +584,7 @@ const raw: Omit<Character, "rarity">[] = [
     name: { en: "Masaki Kurosaki", ar: "ماساكي كوروساكي" },
     race: "Quincy", faction: "Quincy", division: null, rank: "Echt Quincy",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null,
+    image: masakiImg.url,
     overall: 92, gender: "female",
   },
   {
@@ -587,7 +592,7 @@ const raw: Omit<Character, "rarity">[] = [
     name: { en: "Zangetsu", ar: "زانغيتسو" },
     race: "Zanpakutō Spirit", faction: "Allies", division: null, rank: "Inner Spirit",
     arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
-    image: null,
+    image: zangetsuImg.url,
     overall: 95, gender: "other",
   },
   {
@@ -595,7 +600,7 @@ const raw: Omit<Character, "rarity">[] = [
     name: { en: "Äs Nödt", ar: "آس نودت" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter F",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null,
+    image: asNodtImg.url,
     overall: 88,
   },
   {
@@ -603,7 +608,7 @@ const raw: Omit<Character, "rarity">[] = [
     name: { en: "Gremmy Thoumeaux", ar: "غريمي ثومو" },
     race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter V",
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
-    image: null,
+    image: gremmyImg.url,
     overall: 90,
   },
 ];
