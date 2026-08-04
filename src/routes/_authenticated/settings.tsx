@@ -7,6 +7,7 @@ import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { getMyProfile } from "@/lib/leaderboard";
 import { loadPrefs, savePrefs, play, syncAmbientToPrefs, type SoundPrefs } from "@/lib/sound";
+import { haptic } from "@/lib/haptics";
 import { equipItem, fetchMyInventory, type InventoryItem } from "@/lib/store";
 import {
   SettingsSection,
