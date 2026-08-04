@@ -6,6 +6,9 @@ import { ELEMENT_PATH } from "@/components/ElementIcon";
 import { CARD_BACK } from "@/lib/card-backs";
 import { framingOf } from "@/lib/portrait";
 import { RARITY_LABEL } from "@/lib/rarity";
+import { loadPrefs, play, playReveal } from "@/lib/sound";
+import { haptic, hapticRarity } from "@/lib/haptics";
+import { preloadCardArt } from "@/lib/card-preload";
 import {
   CARD_LABEL, localizeArc, localizeBlade, localizeDivision,
   localizeFaction, localizeRank,
@@ -90,9 +93,13 @@ export function CharacterCard({
   interactive?: boolean;
 }) {
   const { locale } = useI18n();
+  const flipEnabled = () => loadPrefs().flipReveal !== false;
   const [showBack, setShowBack] = useState(faceDown);
   const [flipping, setFlipping] = useState(false);
-  useEffect(() => { setShowBack(faceDown); }, [faceDown, character.id]);
+  useEffect(() => { preloadCardArt(); }, []);
+  useEffect(() => {
+    setShowBack(faceDown && flipEnabled());
+  }, [faceDown, character.id]);
   const c = character;
   const ink = INK[c.rarity];
   const glow = GLOW[c.rarity];
@@ -149,8 +156,13 @@ export function CharacterCard({
     if (!interactive) return;
     setFlipping(true);
     window.setTimeout(() => setFlipping(false), 850);
+    play("flip");
+    haptic("flip");
     setShowBack((v) => {
-      if (v && onReveal) onReveal();
+      if (v) {
+        window.setTimeout(() => { playReveal(c.rarity); hapticRarity(c.rarity); }, 320);
+        onReveal?.();
+      }
       return !v;
     });
   };
@@ -181,6 +193,7 @@ export function CharacterCard({
           style={{
             background: `radial-gradient(ellipse at center, ${glow}, transparent 70%)`,
             opacity: flipping ? 1 : 0.7,
+            animation: "rarity-glow 3.6s ease-in-out infinite",
           }}
         />
 
