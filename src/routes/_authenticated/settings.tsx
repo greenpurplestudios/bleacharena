@@ -118,6 +118,7 @@ function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection title={t("profile")}>
+          {null}
           <SettingRow
             label={<span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("username")}</span>}
             description={
