@@ -9,6 +9,11 @@ export interface PortraitFraming {
 const DEFAULT: PortraitFraming = { x: 50, y: 26, scale: 1.06 };
 
 const MAP: Record<string, Partial<PortraitFraming>> = {
+  "isshin-kurosaki": { x: 56, y: 14, scale: 1.18 },
+  "masaki-kurosaki": { x: 60, y: 32, scale: 1.3 },
+  zangetsu: { x: 50, y: 34, scale: 1.02 },
+  "as-nodt": { x: 46, y: 10, scale: 1.25 },
+  "gremmy-thoumeaux": { x: 22, y: 26, scale: 1.35 },
   "ichigo-kurosaki": { y: 22, scale: 1.1 },
   "rukia-kuchiki": { y: 20 },
   "byakuya-kuchiki": { y: 22 },
