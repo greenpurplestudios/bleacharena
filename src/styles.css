@@ -360,3 +360,9 @@ body {
   filter: blur(6px);
   animation: nf-mist-drift 6s ease-in-out infinite;
 }
+
+/* Subtle animated rarity aura behind cards. */
+@keyframes rarity-glow {
+  0%, 100% { opacity: 0.55; transform: scale(0.98); }
+  50% { opacity: 0.95; transform: scale(1.03); }
+}
