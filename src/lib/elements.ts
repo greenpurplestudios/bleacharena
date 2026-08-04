@@ -13,20 +13,21 @@ const BY_ELEMENT: Record<ElementKey, string[]> = {
   light: [
     "soul-king", "tite-kubo", "orihime-inoue", "lille-barro", "jugram-haschwalth",
     "ichibei-hyosube", "senjumaru-shutara", "kirio-hikifune", "tenjiro-kirinji",
-    "jushiro-ukitake", "oetsu-nimaiya",
+    "jushiro-ukitake", "oetsu-nimaiya", "masaki-kurosaki",
   ],
   shadow: [
     "yhwach", "aizen-sosuke", "mayuri-kurotsuchi", "baraggan-louisenbairn",
     "szayelaporro-granz", "tokinada-tsunayashiro", "askin-nakk-le-vaar",
     "pernida-parnkgjas", "kugo-ginjo", "don-kanonji", "shunsui-kyoraku",
+    "as-nodt", "gremmy-thoumeaux",
   ],
   fire: [
     "genryusai-yamamoto", "bazz-b", "renji-abarai", "ikkaku-madarame",
-    "ganju-shiba", "kenpachi-zaraki",
+    "ganju-shiba", "kenpachi-zaraki", "isshin-kurosaki",
   ],
   water: [
     "ichigo-kurosaki", "rukia-kuchiki", "toshiro-hitsugaya", "grimmjow-jaegerjaquez",
-    "nelliel-tu-odelschwanck", "coyote-starrk", "hanataro-yamada",
+    "nelliel-tu-odelschwanck", "coyote-starrk", "hanataro-yamada", "zangetsu",
   ],
   lightning: [
     "kisuke-urahara", "yoruichi-shihoin", "soi-fon", "gin-ichimaru", "uryu-ishida",

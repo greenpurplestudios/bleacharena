@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import { claimDailyLogin, DAILY_CALENDAR, getDailyLoginState, trackAchievement, type DailyLoginState } from "@/lib/progression";
 import { useSouls } from "@/hooks/use-souls";
@@ -41,6 +42,7 @@ function DailyPage() {
     if (claiming || !state?.can_claim) return;
     setClaiming(true);
     play("rare");
+    haptic("reward");
     const r = await claimDailyLogin();
     setClaiming(false);
     if (r.ok) {

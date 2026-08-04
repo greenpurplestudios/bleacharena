@@ -8,12 +8,13 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { TeamSlots } from "@/components/TeamSlots";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
+import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import { submitScore, getMyProfile } from "@/lib/leaderboard";
 import { awardPackFromScore, PACK_LABEL, PACK_COLOR, type PackTier } from "@/lib/packs";
 import { trackMission } from "@/lib/missions";
 import { addXp, bumpProfileStats, trackAchievement, XP } from "@/lib/progression";
-import { play } from "@/lib/sound";
+import { play, loadPrefs } from "@/lib/sound";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -55,7 +56,7 @@ function DraftPage() {
   const [rerollKey, setRerollKey] = useState(0);
   const [confirmReset, setConfirmReset] = useState(false);
   const [potion, setPotion] = useState<ActivePotion>({ active: false, luck: 0 });
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(() => loadPrefs().flipReveal === false);
   const [nowTs, setNowTs] = useState(() => Date.now());
 
   useEffect(() => {
@@ -90,6 +91,7 @@ function DraftPage() {
   // Play a reveal / rare flourish whenever a new card is presented.
   useEffect(() => {
     if (!current) return;
+    haptic("draft");
     if (current.rarity === "mythic" || current.rarity === "legendary") play("rare");
     else play("reveal");
   }, [current?.id, rerollKey]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -97,6 +99,7 @@ function DraftPage() {
   const commitPick = useCallback(
     (c: Character) => {
       play("pick");
+      haptic("press");
       setTeam((prev) => {
         const next = [...prev];
         const idx = next.findIndex((x) => x === null);
@@ -182,14 +185,14 @@ function DraftPage() {
                 )}
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => { setRevealed(false); commitPick(current); }}
+                    onClick={() => { setRevealed(loadPrefs().flipReveal === false); commitPick(current); }}
                     disabled={!revealed}
                     className="glow-orange rounded-xl bg-primary px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary-foreground transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {t("add")}
                   </button>
                   <button
-                    onClick={() => { setRevealed(false); onSkip(); }}
+                    onClick={() => { setRevealed(loadPrefs().flipReveal === false); onSkip(); }}
                     disabled={skipsLeft <= 0 || !revealed}
                     className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-foreground transition-all hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                   >

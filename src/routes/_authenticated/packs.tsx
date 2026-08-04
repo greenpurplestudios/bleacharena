@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import {
   PACK_TIERS,
@@ -21,6 +22,7 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { ElementIcon } from "@/components/ElementIcon";
 import { elementOf } from "@/lib/elements";
 import { play } from "@/lib/sound";
+import { loadPrefs } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
 import { trackMission } from "@/lib/missions";
 import { addXp, bumpProfileStats, trackAchievement, XP } from "@/lib/progression";
@@ -71,6 +73,7 @@ function PacksPage() {
     await new Promise((r) => setTimeout(r, 900));
     const res = await openPack(tier);
     if (res.ok) {
+      haptic("pack");
       if (res.rarity === "mythic" || res.rarity === "legendary") play("rare");
       else play("success");
       trackMission("pack_open", 1);
@@ -313,7 +316,7 @@ function PackOpeningAnim({ tier }: { tier: PackTier }) {
 
 function PackResultCard({ result, onClose }: { result: OpenPackResult; onClose: () => void }) {
   const { t } = useI18n();
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(() => loadPrefs().flipReveal === false);
   const char = useMemo(
     () => characters.find((c) => c.id === result.characterId) ?? null,
     [result.characterId],

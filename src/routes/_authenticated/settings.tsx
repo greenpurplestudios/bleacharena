@@ -7,6 +7,7 @@ import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { getMyProfile } from "@/lib/leaderboard";
 import { loadPrefs, savePrefs, play, syncAmbientToPrefs, type SoundPrefs } from "@/lib/sound";
+import { haptic } from "@/lib/haptics";
 import { equipItem, fetchMyInventory, type InventoryItem } from "@/lib/store";
 import {
   SettingsSection,
@@ -114,6 +115,21 @@ function SettingsPage() {
             formatValue={(v) => `${v}%`}
             onChange={(v) => update({ volume: v / 100 })}
             onCommit={() => play("reveal")}
+          />
+        </SettingsSection>
+
+        <SettingsSection title={t("animations")}>
+          <SettingToggle
+            label={t("flipReveal")}
+            description={t("flipRevealDesc")}
+            value={prefs.flipReveal !== false}
+            onChange={(v) => update({ flipReveal: v })}
+          />
+          <SettingToggle
+            label={t("haptics")}
+            description={t("hapticsDesc")}
+            value={prefs.haptics !== false}
+            onChange={(v) => { update({ haptics: v }); if (v) haptic("press"); }}
           />
         </SettingsSection>
 
