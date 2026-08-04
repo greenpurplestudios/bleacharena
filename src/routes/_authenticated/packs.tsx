@@ -315,7 +315,7 @@ function PackOpeningAnim({ tier }: { tier: PackTier }) {
 
 function PackResultCard({ result, onClose }: { result: OpenPackResult; onClose: () => void }) {
   const { t } = useI18n();
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(() => loadPrefs().flipReveal === false);
   const char = useMemo(
     () => characters.find((c) => c.id === result.characterId) ?? null,
     [result.characterId],
