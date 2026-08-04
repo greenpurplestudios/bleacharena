@@ -117,8 +117,22 @@ function SettingsPage() {
           />
         </SettingsSection>
 
+        <SettingsSection title={t("animations")}>
+          <SettingToggle
+            label={t("flipReveal")}
+            description={t("flipRevealDesc")}
+            value={prefs.flipReveal !== false}
+            onChange={(v) => update({ flipReveal: v })}
+          />
+          <SettingToggle
+            label={t("haptics")}
+            description={t("hapticsDesc")}
+            value={prefs.haptics !== false}
+            onChange={(v) => { update({ haptics: v }); if (v) haptic("press"); }}
+          />
+        </SettingsSection>
+
         <SettingsSection title={t("profile")}>
-          {null}
           <SettingRow
             label={<span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("username")}</span>}
             description={
