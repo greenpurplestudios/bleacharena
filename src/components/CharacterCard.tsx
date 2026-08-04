@@ -433,7 +433,21 @@ export function CharacterCard({
             transform: "rotateY(180deg)",
           }}
         >
-          <img src={back} alt="" aria-hidden className="h-full w-full object-cover" />
+          {/* Blurred fill keeps the frame identical to the front while the
+              sharp layer above preserves the artwork's exact aspect ratio. */}
+          <img
+            src={back}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl"
+          />
+          <img
+            src={back}
+            alt=""
+            aria-hidden
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-contain"
+          />
           <span
             aria-hidden
             className="pointer-events-none absolute inset-0 transition-opacity duration-500"
