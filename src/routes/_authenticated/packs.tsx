@@ -22,6 +22,7 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { ElementIcon } from "@/components/ElementIcon";
 import { elementOf } from "@/lib/elements";
 import { play } from "@/lib/sound";
+import { loadPrefs } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
 import { trackMission } from "@/lib/missions";
 import { addXp, bumpProfileStats, trackAchievement, XP } from "@/lib/progression";
