@@ -566,6 +566,46 @@ const raw: Omit<Character, "rarity">[] = [
     overall: 1,
     tags: ["developer", "secret"],
   },
+  {
+    id: "c-068", slug: "isshin-kurosaki",
+    name: { en: "Isshin Kurosaki", ar: "إيسشين كوروساكي" },
+    race: "Shinigami", faction: "Soul Society", division: "10th", rank: "Former Captain",
+    arc: "Fake Karakura", shikai: "Engetsu", bankai: null,
+    image: null,
+    overall: 92,
+  },
+  {
+    id: "c-069", slug: "masaki-kurosaki",
+    name: { en: "Masaki Kurosaki", ar: "ماساكي كوروساكي" },
+    race: "Quincy", faction: "Quincy", division: null, rank: "Echt Quincy",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: null,
+    overall: 92, gender: "female",
+  },
+  {
+    id: "c-070", slug: "zangetsu",
+    name: { en: "Zangetsu", ar: "زانغيتسو" },
+    race: "Zanpakutō Spirit", faction: "Allies", division: null, rank: "Inner Spirit",
+    arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
+    image: null,
+    overall: 95, gender: "other",
+  },
+  {
+    id: "c-071", slug: "as-nodt",
+    name: { en: "Äs Nödt", ar: "آس نودت" },
+    race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter F",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: null,
+    overall: 88,
+  },
+  {
+    id: "c-072", slug: "gremmy-thoumeaux",
+    name: { en: "Gremmy Thoumeaux", ar: "غريمي ثومو" },
+    race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter V",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: null,
+    overall: 90,
+  },
 ];
 
 export const characters: Character[] = raw.map((c) => ({
