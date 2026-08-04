@@ -11,7 +11,8 @@ export type SfxKind =
   | "skip"
   | "success"
   | "error"
-  | "rare";
+  | "rare"
+  | "flip";
 
 const PREFS_KEY = "ba:sound-prefs";
 
@@ -20,9 +21,16 @@ export interface SoundPrefs {
   music: boolean;
   volume: number; // 0..1
   ambient?: boolean;
+  /** Cards start face-down and flip to reveal. */
+  flipReveal?: boolean;
+  /** Vibration feedback on supported devices. */
+  haptics?: boolean;
 }
 
-const defaults: SoundPrefs = { sfx: true, music: false, volume: 0.6, ambient: true };
+const defaults: SoundPrefs = {
+  sfx: true, music: false, volume: 0.6, ambient: true,
+  flipReveal: true, haptics: true,
+};
 
 export function loadPrefs(): SoundPrefs {
   if (typeof window === "undefined") return defaults;
@@ -65,6 +73,47 @@ function tone(freq: number, dur: number, type: OscillatorType, gain: number, del
   osc.connect(g).connect(c.destination);
   osc.start(t0);
   osc.stop(t0 + dur + 0.02);
+}
+
+/** A tone that glides between two pitches — used for swells and risers. */
+function sweep(from: number, to: number, dur: number, type: OscillatorType, gain: number, delay = 0) {
+  const c = getCtx();
+  if (!c) return;
+  const t0 = c.currentTime + delay;
+  const osc = c.createOscillator();
+  const g = c.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(from, t0);
+  osc.frequency.exponentialRampToValueAtTime(Math.max(20, to), t0 + dur);
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(gain, t0 + Math.min(0.08, dur * 0.3));
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(g).connect(c.destination);
+  osc.start(t0);
+  osc.stop(t0 + dur + 0.02);
+}
+
+/** Filtered white noise — paper/air textures for flips and impacts. */
+function noise(dur: number, gain: number, freq: number, q: number, delay = 0) {
+  const c = getCtx();
+  if (!c) return;
+  const t0 = c.currentTime + delay;
+  const frames = Math.max(1, Math.floor(c.sampleRate * dur));
+  const buf = c.createBuffer(1, frames, c.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < frames; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / frames);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const filt = c.createBiquadFilter();
+  filt.type = "bandpass";
+  filt.frequency.setValueAtTime(freq, t0);
+  filt.Q.setValueAtTime(q, t0);
+  const g = c.createGain();
+  g.gain.setValueAtTime(gain, t0);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(filt).connect(g).connect(c.destination);
+  src.start(t0);
+  src.stop(t0 + dur + 0.02);
 }
 
 export function play(kind: SfxKind) {
@@ -112,6 +161,68 @@ export function play(kind: SfxKind) {
       [392, 523, 659, 784, 987, 1174].forEach((f, i) =>
         tone(f, 0.35, "sine", 0.08 * v, i * 0.06),
       );
+      break;
+    case "flip":
+      // Card leaving the hand: a short paper swish with a soft landing.
+      noise(0.16, 0.05 * v, 2600, 1.1);
+      noise(0.1, 0.035 * v, 900, 1.4, 0.16);
+      tone(220, 0.08, "triangle", 0.05 * v, 0.24);
+      break;
+  }
+}
+
+/* ---------- Rarity reveal stings ---------- */
+
+export type RarityKey = "common" | "uncommon" | "rare" | "epic" | "legendary" | "mythic";
+
+/**
+ * Premium reveal sting per rarity. Each tier adds layers — Mythic is the most
+ * cinematic (riser, choir-like stack, impact and a long shimmering tail).
+ */
+export function playReveal(rarity: RarityKey) {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  switch (rarity) {
+    case "common":
+      tone(440, 0.14, "sine", 0.07 * v);
+      tone(660, 0.16, "sine", 0.05 * v, 0.06);
+      break;
+    case "uncommon":
+      [523, 659, 784].forEach((f, i) => tone(f, 0.2, "sine", 0.07 * v, i * 0.06));
+      noise(0.18, 0.02 * v, 4200, 1.2, 0.1);
+      break;
+    case "rare":
+      sweep(260, 620, 0.28, "triangle", 0.05 * v);
+      [587, 740, 880].forEach((f, i) => tone(f, 0.3, "sine", 0.08 * v, 0.16 + i * 0.07));
+      noise(0.25, 0.025 * v, 5200, 1.1, 0.18);
+      break;
+    case "epic":
+      sweep(200, 900, 0.42, "sawtooth", 0.035 * v);
+      tone(110, 0.5, "sine", 0.09 * v, 0.34);
+      [622, 784, 932, 1245].forEach((f, i) => tone(f, 0.45, "sine", 0.075 * v, 0.36 + i * 0.07));
+      noise(0.4, 0.03 * v, 6000, 0.9, 0.34);
+      break;
+    case "legendary":
+      sweep(160, 1200, 0.7, "sawtooth", 0.04 * v);
+      noise(0.5, 0.045 * v, 3000, 0.7, 0.62);
+      tone(82, 0.9, "sine", 0.11 * v, 0.62);
+      [523, 659, 784, 988, 1319].forEach((f, i) =>
+        tone(f, 0.8, "sine", 0.075 * v, 0.66 + i * 0.08),
+      );
+      [1568, 2093].forEach((f, i) => tone(f, 0.6, "triangle", 0.03 * v, 1.1 + i * 0.12));
+      break;
+    case "mythic":
+      // Cinematic: long riser, sub impact, choir stack, bell tail.
+      sweep(120, 1600, 1.1, "sawtooth", 0.045 * v);
+      sweep(90, 1400, 1.1, "square", 0.018 * v, 0.05);
+      noise(0.9, 0.05 * v, 2200, 0.6, 1.0);
+      tone(55, 1.6, "sine", 0.13 * v, 1.02);
+      tone(110, 1.2, "sine", 0.08 * v, 1.02);
+      [392, 523, 659, 784, 988, 1175, 1568].forEach((f, i) =>
+        tone(f, 1.2, "sine", 0.07 * v, 1.06 + i * 0.07),
+      );
+      [2093, 2637, 3136].forEach((f, i) => tone(f, 1.0, "triangle", 0.028 * v, 1.6 + i * 0.14));
       break;
   }
 }
