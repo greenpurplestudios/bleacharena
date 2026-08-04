@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import {
   claimWeeklyReward,
@@ -43,6 +44,7 @@ function RewardsPage() {
     setBusy(false);
     if (res.ok) {
       play("rare");
+      haptic("reward");
       refreshSouls();
       load();
     } else {

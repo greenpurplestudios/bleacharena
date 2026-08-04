@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import {
   PACK_TIERS,
@@ -71,6 +72,7 @@ function PacksPage() {
     await new Promise((r) => setTimeout(r, 900));
     const res = await openPack(tier);
     if (res.ok) {
+      haptic("pack");
       if (res.rarity === "mythic" || res.rarity === "legendary") play("rare");
       else play("success");
       trackMission("pack_open", 1);

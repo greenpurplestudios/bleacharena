@@ -8,6 +8,7 @@ import { CharacterCard } from "@/components/CharacterCard";
 import { TeamSlots } from "@/components/TeamSlots";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
+import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import { submitScore, getMyProfile } from "@/lib/leaderboard";
 import { awardPackFromScore, PACK_LABEL, PACK_COLOR, type PackTier } from "@/lib/packs";
@@ -90,6 +91,7 @@ function DraftPage() {
   // Play a reveal / rare flourish whenever a new card is presented.
   useEffect(() => {
     if (!current) return;
+    haptic("draft");
     if (current.rarity === "mythic" || current.rarity === "legendary") play("rare");
     else play("reveal");
   }, [current?.id, rerollKey]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -97,6 +99,7 @@ function DraftPage() {
   const commitPick = useCallback(
     (c: Character) => {
       play("pick");
+      haptic("press");
       setTeam((prev) => {
         const next = [...prev];
         const idx = next.findIndex((x) => x === null);
