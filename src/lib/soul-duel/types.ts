@@ -65,6 +65,8 @@ export interface Placement {
   freezeReadyRound?: number;
   /** Abilities copied so far (Tokinada). */
   copies?: number;
+  /** Cards whose Rating this placement has already stolen (Yhwach). */
+  stolen?: string[];
 }
 
 export interface LaneState {
@@ -74,6 +76,35 @@ export interface LaneState {
 }
 
 export type DuelPhase = "reveal" | "play" | "resolve" | "ended";
+
+/** Opponent brains. Nightmare understands battlefields, synergies and clashes. */
+export type Difficulty = "practice" | "normal" | "nightmare";
+
+export interface GaugeState {
+  /** Reiatsu Gauge, 0–100. */
+  charge: number;
+  /** Limit Breaker overflow, 0–30. */
+  limit: number;
+  /** Ultimate queued for this round's resolution. */
+  pending: boolean;
+  /** One Ultimate per match. */
+  used: boolean;
+}
+
+export interface UltimateEvent {
+  id: string;
+  round: number;
+  kind: "single" | "clash";
+  /** Side whose Ultimate resolved (undefined on a perfect clash). */
+  side?: Side;
+  weaponId?: string;
+  /** Both weapons plus Limit Breaker values, for the clash cinematic. */
+  clash?: {
+    weapons: Record<Side, string>;
+    limits: Record<Side, number>;
+    winner: Side | null;
+  };
+}
 
 export interface DuelLogEntry {
   id: string;
@@ -109,6 +140,14 @@ export interface DuelState {
   laneBuffs: { lane: number; side: Side; amount: number }[];
   /** Hard caps on how many cards a side may hold on a battlefield. */
   laneLimits: { lane: number; side: Side; max: number }[];
+  /** Reiatsu Gauge / Limit Breaker per side. */
+  gauge: Record<Side, GaugeState>;
+  /** Ultimate Weapon equipped by each side for this match. */
+  weapons: Record<Side, string>;
+  /** Opponent intelligence for this match. */
+  difficulty: Difficulty;
+  /** Set for one resolution so the cinematic layer can stage it. */
+  ultimateEvent?: UltimateEvent | null;
   /** Set once the match ends. */
   result?: DuelResult;
 }
@@ -132,3 +171,10 @@ export const DECK_SIZE = 16;
 export const HAND_SIZE = 4;
 export const MAX_PER_LANE = 4;
 export const LANE_COUNT = 3;
+
+/** Reiatsu Gauge ceiling — Ultimates unlock here. */
+export const GAUGE_MAX = 100;
+/** Limit Breaker ceiling, filled by overflow charge. */
+export const LIMIT_MAX = 30;
+/** Limit Breaker difference required to win a Reiatsu Clash. */
+export const CLASH_MARGIN = 10;
