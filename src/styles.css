@@ -366,3 +366,17 @@ body {
   0%, 100% { opacity: 0.55; transform: scale(0.98); }
   50% { opacity: 0.95; transform: scale(1.03); }
 }
+
+/* ---------------------------------------- Soul Duel status effect motion */
+@keyframes status-flicker {
+  0%, 100% { filter: brightness(1); transform: translateY(0); }
+  50% { filter: brightness(1.5); transform: translateY(-1px); }
+}
+@keyframes status-shimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.6) saturate(1.3); }
+}
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
