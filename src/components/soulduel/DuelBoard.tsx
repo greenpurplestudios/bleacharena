@@ -91,7 +91,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
   return (
     <div className="relative overflow-x-clip">
       {/* header */}
-      <div className="sticky top-0 z-20 -mx-4 mb-3 border-b border-white/10 bg-background/80 px-4 py-2 backdrop-blur-md">
+      <div className="sticky top-0 z-20 mb-3 rounded-b-2xl border border-white/10 bg-background/80 px-3 py-2 backdrop-blur-md">
         <div className="flex items-center justify-between gap-2">
           <button
             type="button"
