@@ -67,12 +67,30 @@ export interface Placement {
   copies?: number;
   /** Cards whose Rating this placement has already stolen (Yhwach). */
   stolen?: string[];
+  /** Rating is forced to 0 while this round number has not passed. */
+  zeroUntilRound?: number;
+  /** Sakanade: this card's ability now serves the opposing side. */
+  hijacked?: boolean;
 }
 
 export interface LaneState {
   def: BattlefieldDef;
   revealed: boolean;
   closed: boolean;
+}
+
+/** Match-wide modifiers written by Ultimate Weapons. Keyed by affected side. */
+export interface DuelMods {
+  /** This side sees through every concealment up to and including the round. */
+  revealUntil: Partial<Record<Side, number>>;
+  /** This side cannot see enemy cards or battlefield Ratings up to the round. */
+  blindUntil: Partial<Record<Side, number>>;
+  /** This side cannot play cards during the given round. */
+  lockedRound: Partial<Record<Side, number>>;
+  /** Flat Rating added to this side's total on every battlefield. */
+  laneBonus: Partial<Record<Side, number>>;
+  /** Character slugs whose abilities now serve `side` instead of their owner. */
+  hijack: { side: Side; slugs: string[] } | null;
 }
 
 export type DuelPhase = "reveal" | "play" | "resolve" | "ended";
