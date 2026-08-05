@@ -275,11 +275,43 @@ function drawFor(state: DuelState): DuelState {
   return { ...state, hands, decks };
 }
 
+/** End-of-round ability triggers, then status ticks (burn damage, expiry). */
+function applyAbilityTicks(state: DuelState): DuelState {
+  let next = state;
+  for (const p of state.placements) {
+    const current = next.placements.find((x) => x.uid === p.uid);
+    if (!current || isFrozen(current)) continue;
+    if (next.lanes[current.lane]?.def.rules.disableAbilities) continue;
+    const ability = abilityOf(current.card.character.slug);
+    if (ability?.onRoundEnd) next = ability.onRoundEnd(next, current);
+  }
+  return next;
+}
+
+function tickStatuses(state: DuelState): DuelState {
+  const entries: DuelLogEntry[] = [];
+  const placements = state.placements.map((p) => {
+    if (!p.statuses.length) return p;
+    let bonus = p.bonus;
+    if (hasStatus(p, "burn") && !immuneToModifiers(p)) {
+      bonus -= BURN_DAMAGE;
+      entries.push(log(state, "logBurn", p.lane, p.card.character.slug));
+    }
+    const statuses = p.statuses
+      .map((s) => ({ ...s, remaining: s.remaining - 1 }))
+      .filter((s) => s.remaining > 0 && STATUS_DEFS[s.kind]);
+    return { ...p, bonus, statuses };
+  });
+  return { ...state, placements, log: [...state.log, ...entries] };
+}
+
 /** End of round: resolve battlefield effects, then advance or finish. */
 export function resolveRound(state: DuelState): DuelState {
-  let next = applyDrift(state);
+  let next = applyAbilityTicks(state);
+  next = applyDrift(next);
   next = applySwap(next);
   next = applyClosures(next);
+  next = tickStatuses(next);
 
   if (next.round >= MAX_ROUNDS) {
     next = applyImprisonment(next);
