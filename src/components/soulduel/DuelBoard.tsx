@@ -1,29 +1,69 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Character } from "@/types/character";
 import { useI18n } from "@/lib/i18n";
 import { haptic } from "@/lib/haptics";
 import { play, playDuelClash, playDuelPlace } from "@/lib/sound";
 import { takeOpponentTurn } from "@/lib/soul-duel/ai";
+import { awardFragments, fragmentReward } from "@/lib/forge";
+import { ultimateOf } from "@/lib/soul-duel/ultimates";
 import {
-  canMove, canPlay, createDuel, isHidden, laneTotals, moveCard, playCard,
+  activateUltimate, canActivateUltimate, canMove, canPlay, cancelUltimate, createDuel,
+  isHidden, laneTotals, moveCard, playCard,
   ratingOf as ratingFor, remainingReiatsu, resolveRound, revealLane,
 } from "@/lib/soul-duel/engine";
 import {
-  LANE_COUNT, MAX_ROUNDS, type DuelState, type Placement,
+  LANE_COUNT, MAX_ROUNDS, type Difficulty, type DuelState, type Placement,
 } from "@/lib/soul-duel/types";
 import { BattlefieldCard } from "./BattlefieldCard";
 import { BattlefieldReveal } from "./BattlefieldReveal";
 import { DuelHandCard } from "./DuelHandCard";
 import { DuelLane } from "./DuelLane";
 import { DuelResultPanel } from "./DuelResultPanel";
+import { ReiatsuGauge } from "./ReiatsuGauge";
+import { UltimateOverlay } from "./UltimateOverlay";
 
-export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => void }) {
+export function DuelBoard({
+  pool,
+  onExit,
+  difficulty = "normal",
+  weaponId,
+}: {
+  pool: Character[];
+  onExit: () => void;
+  difficulty?: Difficulty;
+  weaponId?: string;
+}) {
   const { t, locale } = useI18n();
-  const [state, setState] = useState<DuelState>(() => createDuel(pool));
+  const [state, setState] = useState<DuelState>(() => createDuel(pool, { difficulty, weaponId }));
   const [selected, setSelected] = useState<string | null>(null);
   const [mover, setMover] = useState<string | null>(null);
   const [inspect, setInspect] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const [cinematic, setCinematic] = useState<DuelState["ultimateEvent"]>(null);
+  const [fragments, setFragments] = useState<number | null>(null);
+  const rewarded = useRef(false);
+
+  const weapon = ultimateOf(state.weapons.player);
+  const gauge = state.gauge.player;
+  const ultReady = canActivateUltimate(state, "player");
+
+  /* Play the cinematic whenever the engine emits an Ultimate event. */
+  useEffect(() => {
+    if (state.ultimateEvent) setCinematic(state.ultimateEvent);
+  }, [state.ultimateEvent?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* Broken Sword Fragments are awarded once, when the match ends. */
+  useEffect(() => {
+    if (!state.result || rewarded.current) return;
+    rewarded.current = true;
+    const amount = fragmentReward(
+      state.difficulty,
+      state.result.winner === "player",
+      state.result.winner === "tie",
+    );
+    setFragments(amount);
+    void awardFragments(amount);
+  }, [state.result, state.difficulty]);
 
   const scores = useMemo(
     () => state.lanes.map((_, i) => laneTotals(state, i)),
@@ -95,11 +135,13 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
   }, [busy, state.phase]);
 
   const rematch = useCallback(() => {
-    setState(createDuel(pool));
+    rewarded.current = false;
+    setFragments(null);
+    setState(createDuel(pool, { difficulty, weaponId }));
     setSelected(null);
     setMover(null);
     play("reveal");
-  }, [pool]);
+  }, [pool, difficulty, weaponId]);
 
   const revealIndex = state.phase === "reveal" ? Math.min(state.round, LANE_COUNT) - 1 : -1;
 
@@ -136,6 +178,42 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
             />
           ))}
         </div>
+        <div className="mt-2 flex items-center gap-2">
+          <ReiatsuGauge gauge={gauge} />
+          <button
+            type="button"
+            onClick={() => {
+              if (gauge.pending) {
+                setState((s) => cancelUltimate(s, "player"));
+                play("tap");
+                return;
+              }
+              if (!ultReady) return;
+              setState((s) => activateUltimate(s, "player"));
+              play("reveal");
+              haptic("flip");
+            }}
+            disabled={!ultReady && !gauge.pending}
+            aria-label={t("sdUltActivate")}
+            className="tactile shrink-0 rounded-xl border px-3 py-2 font-display text-[9px] font-black uppercase tracking-[0.18em] disabled:opacity-40 rtl:tracking-normal"
+            style={{
+              borderColor: gauge.pending ? weapon.visual.glow : "oklch(1 0 0 / 0.12)",
+              color: ultReady || gauge.pending ? weapon.visual.glow : undefined,
+              boxShadow: ultReady && !gauge.pending ? `0 0 18px ${weapon.visual.glow}55` : undefined,
+              animation: ultReady && !gauge.pending ? "gauge-pulse 1.8s ease-in-out infinite" : undefined,
+            }}
+          >
+            {gauge.used ? t("sdUltSpent")
+              : gauge.pending ? t("sdUltCancel")
+              : ultReady ? t("sdUltReady")
+              : t("sdUltCharging")}
+          </button>
+        </div>
+        {gauge.pending ? (
+          <p className="mt-1 text-center text-[10px] font-bold" style={{ color: weapon.visual.glow }}>
+            {t("sdUltArmed")} — {weapon.name[locale]}
+          </p>
+        ) : null}
       </div>
 
       {/* lanes */}
@@ -259,8 +337,17 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
         </button>
       ) : null}
 
-      {state.result ? (
-        <DuelResultPanel state={state} result={state.result} onRematch={rematch} />
+      {cinematic ? (
+        <UltimateOverlay event={cinematic} onDone={() => setCinematic(null)} />
+      ) : null}
+
+      {state.result && !cinematic ? (
+        <DuelResultPanel
+          state={state}
+          result={state.result}
+          onRematch={rematch}
+          fragments={fragments ?? undefined}
+        />
       ) : null}
     </div>
   );
