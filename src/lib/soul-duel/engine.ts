@@ -1,7 +1,7 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
 import { abilityOf, duelDefOf } from "./abilities";
-import { canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
+import { asOwner, canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
 import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import { ultimateOf, STARTER_WEAPON } from "./ultimates";
 import {
