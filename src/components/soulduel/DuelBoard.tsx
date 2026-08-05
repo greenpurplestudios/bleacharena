@@ -142,7 +142,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
       </div>
 
       {/* hand */}
-      <div className="mt-4">
+      <div className="mt-4 w-full min-w-0">
         <div className="mb-1.5 flex items-center justify-between">
           <h2 className="font-display text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground rtl:tracking-normal">
             {t("sdHand")}
@@ -151,7 +151,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
             {t("sdDeck")}: {state.decks.player.length}
           </span>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex w-full min-w-0 gap-2 overflow-x-auto pb-2">
           {state.hands.player.map((c) => (
             <DuelHandCard
               key={c.uid}
