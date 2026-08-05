@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Atmosphere } from "@/components/Atmosphere";
 import { SiteHeader } from "@/components/SiteHeader";
 import { DuelBoard } from "@/components/soulduel/DuelBoard";
@@ -9,6 +9,9 @@ import { characters } from "@/data/characters";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { play } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
+import { fetchForge, type ForgeState } from "@/lib/forge";
+import { ULTIMATE_EFFECT_TEXT, ultimateOf } from "@/lib/soul-duel/ultimates";
+import type { Difficulty } from "@/lib/soul-duel/types";
 
 export const Route = createFileRoute("/_authenticated/soul-duel")({
   head: () => ({
@@ -30,9 +33,25 @@ export const Route = createFileRoute("/_authenticated/soul-duel")({
 
 const HOW: TKey[] = ["sdHow1", "sdHow2", "sdHow3", "sdHow4"];
 
+const DIFFICULTIES: { id: Difficulty; label: TKey; desc: TKey; color: string }[] = [
+  { id: "practice", label: "sdPractice", desc: "sdPracticeDesc", color: "oklch(0.75 0.14 160)" },
+  { id: "normal", label: "sdNormal", desc: "sdNormalDesc", color: "oklch(0.8 0.16 220)" },
+  { id: "nightmare", label: "sdNightmare", desc: "sdNightmareDesc", color: "oklch(0.65 0.22 20)" },
+];
+
 function SoulDuelPage() {
   const { t, locale } = useI18n();
   const [playing, setPlaying] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
+  const [forge, setForge] = useState<ForgeState | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void fetchForge().then((f) => { if (alive) setForge(f); });
+    return () => { alive = false; };
+  }, []);
+
+  const weapon = ultimateOf(forge?.equipped);
 
   if (playing) {
     return (
@@ -40,7 +59,12 @@ function SoulDuelPage() {
         <Atmosphere variant="sparks" count={16} parallax={false} />
         <SiteHeader />
         <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
-          <DuelBoard pool={characters} onExit={() => setPlaying(false)} />
+          <DuelBoard
+            pool={characters}
+            onExit={() => setPlaying(false)}
+            difficulty={difficulty}
+            weaponId={forge?.equipped}
+          />
         </main>
       </>
     );
@@ -79,6 +103,73 @@ function SoulDuelPage() {
               {t("sdStart")}
             </button>
           </div>
+        </section>
+
+        {/* difficulty */}
+        <section className="mt-6">
+          <h2 className="mb-3 font-display text-sm font-bold uppercase tracking-[0.3em] text-muted-foreground rtl:tracking-normal">
+            {t("sdDifficulty")}
+          </h2>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {DIFFICULTIES.map((d) => {
+              const on = difficulty === d.id;
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => { setDifficulty(d.id); play("tap"); haptic("tap"); }}
+                  aria-pressed={on}
+                  className="tactile rounded-2xl border p-3 text-start transition-colors"
+                  style={{
+                    borderColor: on ? d.color : "oklch(1 0 0 / 0.1)",
+                    background: on ? `${d.color}1a` : "oklch(1 0 0 / 0.02)",
+                    boxShadow: on ? `0 0 24px -10px ${d.color}` : undefined,
+                  }}
+                >
+                  <p className="font-display text-sm font-black" style={{ color: on ? d.color : undefined }}>
+                    {t(d.label)}
+                  </p>
+                  <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{t(d.desc)}</p>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* loadout */}
+        <section className="mt-6 rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur-md">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-sm font-bold uppercase tracking-[0.3em] text-muted-foreground rtl:tracking-normal">
+              {t("sdLoadout")}
+            </h2>
+            <Link
+              to="/forge"
+              onClick={() => play("tap")}
+              className="tactile rounded-xl border border-accent/40 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-accent rtl:tracking-normal"
+            >
+              {t("forge")}
+            </Link>
+          </div>
+          <div className="mt-3 flex items-center gap-4">
+            <img
+              src={weapon.art}
+              alt={weapon.name[locale]}
+              className="w-20 shrink-0 rounded-xl border border-white/15"
+              style={{ boxShadow: `0 0 26px -10px ${weapon.visual.glow}` }}
+            />
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground rtl:tracking-normal">
+                {t("sdUltimate")}
+              </p>
+              <p className="font-display text-base font-black" style={{ color: weapon.visual.glow }}>
+                {weapon.name[locale]}
+              </p>
+              <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+                {ULTIMATE_EFFECT_TEXT[weapon.id]?.[locale]}
+              </p>
+            </div>
+          </div>
+          <p className="mt-3 text-[11px] text-muted-foreground">{t("sdUltOnce")}</p>
         </section>
 
         <section className="mt-6 rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur-md">
