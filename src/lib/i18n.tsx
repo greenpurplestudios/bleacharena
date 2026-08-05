@@ -709,8 +709,6 @@ export const dict = {
   sdNoStatuses: { en: "None", ar: "لا شيء" },
   sdElement: { en: "Element", ar: "العنصر" },
   sdFaction: { en: "Faction", ar: "الانتماء" },
-  sdAbility: { en: "Ability", ar: "القدرة" },
-  sdNoAbility: { en: "Rating-only card — no ability.", ar: "بطاقة تقييم فقط — بلا قدرة." },
   sdReturnHand: { en: "Return to hand", ar: "أعدها لليد" },
   sdRelocateCard: { en: "Relocate", ar: "انقلها" },
   sdCloseCard: { en: "Close", ar: "إغلاق" },
