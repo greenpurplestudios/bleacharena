@@ -338,9 +338,11 @@ function raceMatches(character: Character, races: string[]): boolean {
 /** Final rating of a single placed card, with every active modifier applied. */
 export function ratingOf(state: DuelState, p: Placement): number {
   if (p.imprisoned) return 0;
+  const base = p.override ?? p.card.character.overall;
+  if (immuneToModifiers(p)) return Math.max(0, Math.round(base));
   const lane = state.lanes[p.lane];
   const rules = lane?.def.rules ?? {};
-  let rating = p.card.character.overall;
+  let rating = base + p.bonus;
 
   if (rules.globalRating) rating += rules.globalRating;
   if (rules.factionBuff && raceMatches(p.card.character, rules.factionBuff.races)) {
@@ -356,10 +358,10 @@ export function ratingOf(state: DuelState, p: Placement): number {
   if (!rules.disableAbilities) {
     const mult = rules.doubleAbilities ? 2 : 1;
     const board = state.placements;
-    const own = abilityOf(p.card.character.slug);
+    const own = isFrozen(p) ? undefined : abilityOf(p.card.character.slug);
     if (own?.selfRating) rating += mult * own.selfRating({ self: p, state, board });
     for (const other of board) {
-      if (other.uid === p.uid) continue;
+      if (other.uid === p.uid || isFrozen(other)) continue;
       const otherRules = state.lanes[other.lane]?.def.rules ?? {};
       if (otherRules.disableAbilities) continue;
       const ab = abilityOf(other.card.character.slug);
