@@ -11,8 +11,8 @@ function Slots({
   ratingOf,
   hiddenSide,
   round,
-  onUndo,
-  onPick,
+  onCard,
+  interactive,
   picked,
 }: {
   cards: Placement[];
@@ -20,8 +20,8 @@ function Slots({
   ratingOf: (p: Placement) => number;
   hiddenSide: boolean;
   round: number;
-  onUndo?: (uid: string) => void;
-  onPick?: (uid: string) => void;
+  onCard?: (p: Placement) => void;
+  interactive?: boolean;
   picked?: string | null;
 }) {
   return (
@@ -45,15 +45,11 @@ function Slots({
             imprisoned={p.imprisoned}
             entering={p.round === round}
             statuses={hiddenSide ? [] : p.statuses}
-            movable={picked === p.uid || (!!onPick && canRelocate(p) && state.phase === "play")}
+            movable={picked === p.uid || (!!interactive && canRelocate(p) && state.phase === "play")}
           />
         );
-        return onUndo && p.round === round && state.phase === "play" ? (
-          <button key={p.uid} type="button" onClick={() => onUndo(p.uid)} className="tactile">
-            {token}
-          </button>
-        ) : onPick && canRelocate(p) && state.phase === "play" ? (
-          <button key={p.uid} type="button" onClick={() => onPick(p.uid)} className="tactile">
+        return onCard && !hiddenSide ? (
+          <button key={p.uid} type="button" onClick={() => onCard(p)} className="tactile">
             {token}
           </button>
         ) : (
@@ -74,8 +70,7 @@ export const DuelLane = memo(function DuelLane({
   canPlace,
   onPlace,
   onInspect,
-  onUndo,
-  onPickMover,
+  onInspectCard,
   mover,
 }: {
   state: DuelState;
@@ -86,8 +81,7 @@ export const DuelLane = memo(function DuelLane({
   canPlace: boolean;
   onPlace: () => void;
   onInspect: () => void;
-  onUndo: (uid: string) => void;
-  onPickMover?: (uid: string) => void;
+  onInspectCard: (p: Placement) => void;
   mover?: string | null;
 }) {
   const { t } = useI18n();
@@ -104,6 +98,7 @@ export const DuelLane = memo(function DuelLane({
         ratingOf={ratingOf}
         hiddenSide={hiddenOpponent}
         round={state.round}
+        onCard={onInspectCard}
       />
 
       <button
@@ -139,8 +134,8 @@ export const DuelLane = memo(function DuelLane({
         ratingOf={ratingOf}
         hiddenSide={false}
         round={state.round}
-        onUndo={onUndo}
-        onPick={onPickMover}
+        onCard={onInspectCard}
+        interactive
         picked={mover}
       />
     </div>
