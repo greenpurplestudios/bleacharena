@@ -284,6 +284,7 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
   const card = state.hands[side].find((c) => c.uid === cardUid);
   if (!card || !canPlay(state, side, card, lane)) return state;
   const buff = state.laneBuffs.find((b) => b.lane === lane && b.side === side);
+  const hijack = state.mods.hijack;
   const placement: Placement = {
     uid: card.uid,
     card,
@@ -294,6 +295,8 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
     bonus: buff ? buff.amount : 0,
     movesUsed: 0,
     stolen: [],
+    hijacked:
+      !!hijack && hijack.side !== side && hijack.slugs.includes(card.character.slug),
   };
   const next: DuelState = {
     ...state,
@@ -304,7 +307,7 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
   };
   const ability = abilityOf(card.character.slug);
   const played = next.placements[next.placements.length - 1];
-  return ability?.onPlay ? ability.onPlay(next, played) : next;
+  return ability?.onPlay ? ability.onPlay(next, asOwner(played)) : next;
 }
 
 /** Abilities with a move budget (Urahara, Yoruichi) relocate a placed card. */
