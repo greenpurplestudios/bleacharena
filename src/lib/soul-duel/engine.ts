@@ -427,11 +427,13 @@ function tickStatuses(state: DuelState): DuelState {
 
 /** End of round: resolve battlefield effects, then advance or finish. */
 export function resolveRound(state: DuelState): DuelState {
-  let next = applyAbilityTicks(state);
+  let next = resolveUltimates(state);
+  next = applyAbilityTicks(next);
   next = applyDrift(next);
   next = applySwap(next);
   next = applyClosures(next);
   next = tickStatuses(next);
+  next = chargeRound(next);
 
   if (next.round >= MAX_ROUNDS) {
     next = applyImprisonment(next);
