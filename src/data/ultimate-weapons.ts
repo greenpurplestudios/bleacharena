@@ -37,7 +37,7 @@ export const ULTIMATE_WEAPONS: UltimateWeaponDef[] = [
     owner: "ichigo-kurosaki",
     art: zangetsu.url,
     cost: 5,
-    name: { en: "Zangetsu", ar: "زانغيتسو" },
+    name: { en: "True Zangetsu", ar: "زانغيتسو الحقيقي" },
     description: { en: "", ar: "" },
   },
   {
