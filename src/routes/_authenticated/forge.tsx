@@ -9,6 +9,10 @@ import { play } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
 import { equipWeapon, fetchForge, forgeWeapon, type ForgeState } from "@/lib/forge";
 import { ULTIMATE_EFFECT_TEXT, ultimateOf } from "@/lib/soul-duel/ultimates";
+import nimaiya from "@/assets/soulduel/nimaiya.jpeg.asset.json";
+
+/** Ōetsu Nimaiya greets the player with one of his lines on every visit. */
+const NIMAIYA_LINES = ["nimaiyaLine1", "nimaiyaLine2", "nimaiyaLine3", "nimaiyaLine4"] as const;
 
 export const Route = createFileRoute("/_authenticated/forge")({
   head: () => ({
@@ -33,6 +37,7 @@ function ForgePage() {
   const [forge, setForge] = useState<ForgeState | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [cinematic, setCinematic] = useState<string | null>(null);
+  const [line] = useState(() => NIMAIYA_LINES[Math.floor(Math.random() * NIMAIYA_LINES.length)]);
 
   const refresh = useCallback(async () => setForge(await fetchForge()), []);
 
@@ -95,6 +100,21 @@ function ForgePage() {
               </span>
             </div>
             <p className="mt-3 text-[11px] text-muted-foreground">{t("forgeEarnHint")}</p>
+
+            <div className="mx-auto mt-6 flex max-w-md items-center gap-3 rounded-2xl border border-accent/25 bg-black/30 p-3 text-start">
+              <img
+                src={nimaiya.url}
+                alt="Ōetsu Nimaiya"
+                className="h-16 w-16 shrink-0 rounded-full border-2 border-accent/50 object-cover"
+                style={{ objectPosition: "50% 25%", boxShadow: "0 0 24px -8px oklch(0.75 0.18 55)" }}
+              />
+              <div className="min-w-0">
+                <p className="font-display text-[10px] font-black uppercase tracking-[0.25em] text-accent rtl:tracking-normal">
+                  Ōetsu Nimaiya
+                </p>
+                <p className="mt-1 text-sm font-bold leading-snug">{t(line)}</p>
+              </div>
+            </div>
           </div>
         </section>
 
