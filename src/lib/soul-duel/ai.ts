@@ -1,6 +1,6 @@
 import {
   activateUltimate, canActivateUltimate, canPlay, laneIsOpen, laneTotals, playCard,
-  remainingReiatsu,
+  remainingReiatsu, isBlinded, isLockedOut,
 } from "./engine";
 import { CLASH_MARGIN, GAUGE_MAX, MAX_ROUNDS, type DuelState } from "./types";
 
@@ -15,6 +15,13 @@ import { CLASH_MARGIN, GAUGE_MAX, MAX_ROUNDS, type DuelState } from "./types";
 export function takeOpponentTurn(state: DuelState): DuelState {
   let next = decideUltimate(state);
   const { difficulty } = next;
+  if (isLockedOut(next, "opponent")) return next;
+  // Enma Kōrogi: the AI cannot read the player's board while blinded.
+  const blind = isBlinded(next, "opponent");
+  const totals = (s: DuelState, lane: number) => {
+    const t = laneTotals(s, lane);
+    return blind ? { ...t, player: 0 } : t;
+  };
   const maxPlays = difficulty === "practice" ? 2 : 8;
   let guard = 0;
   while (guard++ < maxPlays) {
@@ -28,9 +35,9 @@ export function takeOpponentTurn(state: DuelState): DuelState {
     for (const card of pool) {
       for (let lane = 0; lane < next.lanes.length; lane++) {
         if (!laneIsOpen(next, lane, "opponent") || !canPlay(next, "opponent", card, lane)) continue;
-        const before = laneTotals(next, lane);
+        const before = totals(next, lane);
         const played = playCard(next, "opponent", card.uid, lane);
-        const after = laneTotals(played, lane);
+        const after = totals(played, lane);
         const deficit = Math.max(0, before.player - before.opponent);
         // Prefer lanes that are close to flipping, then raw rating gained.
         let gain = after.opponent - before.opponent;
