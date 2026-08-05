@@ -99,6 +99,7 @@ export const DuelLane = memo(function DuelLane({
           borderRadius: 12,
           animation: canPlace ? "pulse-glow 1.8s ease-in-out infinite" : undefined,
         }}
+        data-duel-lane-drop={canPlace ? "1" : undefined}
         aria-label={l.def.name.en}
       >
         <BattlefieldCard def={l.def} revealed={l.revealed} closed={l.closed} className="w-full" />
