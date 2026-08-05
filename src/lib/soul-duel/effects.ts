@@ -32,6 +32,16 @@ export function isFrozen(p: Placement): boolean {
   return hasStatus(p, "freeze");
 }
 
+/**
+ * Sakanade hands an enemy ability to its caster. Abilities always read
+ * `self.side`, so a hijacked card is handed to them with its side flipped —
+ * the card stays where it is, only its ability changes allegiance.
+ */
+export function asOwner(p: Placement): Placement {
+  if (!p.hijacked) return p;
+  return { ...p, side: p.side === "player" ? "opponent" : "player" };
+}
+
 export function enemiesIn(state: DuelState, self: Placement): Placement[] {
   return state.placements.filter((p) => p.lane === self.lane && p.side !== self.side);
 }
