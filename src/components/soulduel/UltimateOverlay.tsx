@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { haptic } from "@/lib/haptics";
 import { playReiatsuClash, playUltimate } from "@/lib/sound";
-import { ultimateOf } from "@/lib/soul-duel/ultimates";
+import { ULTIMATE_EFFECT_TEXT, ultimateOf } from "@/lib/soul-duel/ultimates";
 import type { UltimateEvent } from "@/lib/soul-duel/types";
 
 /**
@@ -168,7 +168,7 @@ export function UltimateOverlay({
                 style={{ animation: "fade-in 0.4s ease-out both" }}
               >
                 {event.side === "player" ? "" : "⚔ "}
-                {weapon.description[locale] || ""}
+                {ULTIMATE_EFFECT_TEXT[weapon.id]?.[locale] ?? ""}
               </p>
             ) : null}
           </>
