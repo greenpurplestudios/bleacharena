@@ -161,9 +161,10 @@ function addCharge(state: DuelState, side: Side, amount: number): DuelState {
 }
 
 /**
- * Gauge growth rewards performance: holding battlefields and out-rating the
- * opponent fills it faster. Even play reaches 100 in round 6, strong play in
- * round 5 and exceptional play in round 4.
+ * Gauge growth rewards performance. Everyone charges enough for one Ultimate
+ * by the final round; holding battlefields and out-rating the opponent gets
+ * there by round 5 — or round 4 for a dominant board — and the overflow feeds
+ * the Limit Breaker that decides a Reiatsu Clash.
  */
 function chargeRound(state: DuelState): DuelState {
   let next = state;
@@ -174,7 +175,7 @@ function chargeRound(state: DuelState): DuelState {
       (n, t) => n + (side === "player" ? t.player - t.opponent : t.opponent - t.player),
       0,
     );
-    const gain = Math.min(26, 10 + led * 5 + Math.max(0, Math.min(8, Math.floor(advantage / 15))));
+    const gain = Math.min(30, 17 + led * 4 + Math.max(0, Math.min(8, Math.floor(advantage / 15))));
     next = addCharge(next, side, gain);
   });
   return next;
