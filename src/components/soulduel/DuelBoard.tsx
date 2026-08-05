@@ -8,7 +8,7 @@ import { awardFragments, fragmentReward } from "@/lib/forge";
 import { ultimateOf } from "@/lib/soul-duel/ultimates";
 import {
   activateUltimate, canActivateUltimate, canMove, canPlay, cancelUltimate, createDuel,
-  isHidden, laneTotals, moveCard, playCard,
+  isBlinded, isHidden, isLockedOut, laneTotals, moveCard, playCard,
   ratingOf as ratingFor, remainingReiatsu, resolveRound, revealLane,
 } from "@/lib/soul-duel/engine";
 import {
@@ -65,15 +65,21 @@ export function DuelBoard({
     void awardFragments(amount);
   }, [state.result, state.difficulty]);
 
+  /* Enma Kōrogi blinds a side: enemy cards and lane Ratings go dark. */
+  const blinded = isBlinded(state, "player");
   const scores = useMemo(
-    () => state.lanes.map((_, i) => laneTotals(state, i)),
-    [state],
+    () =>
+      state.lanes.map((_, i) => {
+        return laneTotals(state, i);
+      }),
+    [state, blinded],
   );
   const rate = useCallback((p: Placement) => ratingFor(state, p), [state]);
   const hiddenFor = useCallback(
     (lane: number) =>
+      blinded ||
       state.placements.some((p) => p.lane === lane && p.side === "opponent" && isHidden(state, p)),
-    [state],
+    [state, blinded],
   );
 
   const reiatsu = remainingReiatsu(state, "player");
@@ -94,7 +100,7 @@ export function DuelBoard({
         haptic("press");
         return;
       }
-      if (!selectedCard || !canPlay(state, "player", selectedCard, lane)) {
+      if (isLockedOut(state, "player") || !selectedCard || !canPlay(state, "player", selectedCard, lane)) {
         play("error");
         haptic("error");
         return;

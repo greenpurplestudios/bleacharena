@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { DuelBoard } from "@/components/soulduel/DuelBoard";
 import { BattlefieldCard } from "@/components/soulduel/BattlefieldCard";
 import { BATTLEFIELDS } from "@/data/battlefields";
-import { characters } from "@/data/characters";
+import { DUEL_ROSTER } from "@/data/soul-duel-roster";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { play } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
@@ -60,7 +60,7 @@ function SoulDuelPage() {
         <SiteHeader />
         <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
           <DuelBoard
-            pool={characters}
+            pool={DUEL_ROSTER}
             onExit={() => setPlaying(false)}
             difficulty={difficulty}
             weaponId={forge?.equipped}

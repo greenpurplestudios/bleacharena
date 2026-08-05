@@ -6,7 +6,6 @@ import ichimonji from "@/assets/weapons/ichimonji_ultimate_weapon_card.jpg.asset
 import hyorinmaru from "@/assets/weapons/daigren_hyorinmaru_ultimate_weapon.jpg.asset.json";
 import enmaKorogi from "@/assets/weapons/enma_krogi_ultimate_weapon.jpg.asset.json";
 import kannonBiraki from "@/assets/weapons/kannon_biraki_ultimate_weapon.jpg.asset.json";
-import kyokaSuigetsu from "@/assets/weapons/kyoka_suigetsu_ultimate_weapon.jpg.asset.json";
 import sakanade from "@/assets/weapons/sakanade_ultimate_weapon.jpg.asset.json";
 
 /**
@@ -38,7 +37,7 @@ export const ULTIMATE_WEAPONS: UltimateWeaponDef[] = [
     owner: "ichigo-kurosaki",
     art: zangetsu.url,
     cost: 5,
-    name: { en: "Zangetsu", ar: "زانغيتسو" },
+    name: { en: "True Zangetsu", ar: "زانغيتسو الحقيقي" },
     description: { en: "", ar: "" },
   },
   {
@@ -78,14 +77,6 @@ export const ULTIMATE_WEAPONS: UltimateWeaponDef[] = [
     art: kannonBiraki.url,
     cost: 5,
     name: { en: "Kannonbiraki Benihime Aratame", ar: "كانون بيراكي بينيهيمي" },
-    description: { en: "", ar: "" },
-  },
-  {
-    id: "kyoka-suigetsu",
-    owner: "aizen-sosuke",
-    art: kyokaSuigetsu.url,
-    cost: 5,
-    name: { en: "Kyōka Suigetsu", ar: "كيوكا سويغيتسو" },
     description: { en: "", ar: "" },
   },
   {

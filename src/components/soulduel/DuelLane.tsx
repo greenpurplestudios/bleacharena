@@ -32,7 +32,8 @@ function Slots({
           return (
             <div
               key={i}
-              className="aspect-[3/4] w-full rounded-lg border border-dashed border-white/8 bg-white/[0.02]"
+              className="w-full rounded-lg border border-dashed border-white/8 bg-white/[0.02]"
+              style={{ aspectRatio: "1128 / 1394" }}
             />
           );
         }
@@ -119,7 +120,9 @@ export const DuelLane = memo(function DuelLane({
       >
         <BattlefieldCard def={l.def} revealed={l.revealed} closed={l.closed} className="w-full" />
         <span className="mt-1 flex items-center justify-center gap-1 font-display text-[10px] font-black">
-          <span style={{ color: score.winner === "opponent" ? accent : undefined }}>{score.opponent}</span>
+          <span style={{ color: score.winner === "opponent" ? accent : undefined }}>
+            {hiddenOpponent ? "?" : score.opponent}
+          </span>
           <span className="text-muted-foreground">·</span>
           <span style={{ color: score.winner === "player" ? accent : undefined }}>{score.player}</span>
         </span>

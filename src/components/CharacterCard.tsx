@@ -110,6 +110,7 @@ export function CharacterCard({
   const ty = TYPO[locale];
   const rtl = locale === "ar";
 
+  const Shell = (interactive ? "button" : "div") as "button";
   const name = c.name[locale];
   const nameSize = ty.nameSize(name.length);
 
@@ -174,11 +175,12 @@ export function CharacterCard({
       dir={rtl ? "rtl" : "ltr"}
       lang={locale}
     >
-      <button
-        type="button"
+      <Shell
+        {...(interactive
+          ? { type: "button" as const, onClick: toggle }
+          : { role: "img" as const })}
         aria-label={name}
-        onClick={toggle}
-        className="group relative block w-full cursor-pointer hover:-translate-y-1"
+        className={`group relative block w-full ${interactive ? "cursor-pointer hover:-translate-y-1" : ""}`}
         style={{
           transformStyle: "preserve-3d",
           transform: showBack ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -458,7 +460,7 @@ export function CharacterCard({
             }}
           />
         </div>
-      </button>
+      </Shell>
     </div>
   );
 }

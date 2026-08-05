@@ -1,7 +1,7 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
 import { abilityOf, duelDefOf } from "./abilities";
-import { canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
+import { asOwner, canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
 import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import { ultimateOf, STARTER_WEAPON } from "./ultimates";
 import {
@@ -74,10 +74,18 @@ export interface DuelOptions {
 const AI_WEAPONS: Record<Difficulty, string[]> = {
   practice: ["zangetsu", "hado-90"],
   normal: ["hado-90", "sakanade", "enma-korogi", "daiguren-hyorinmaru"],
-  nightmare: ["the-almighty", "kyoka-suigetsu", "ichimonji", "kannon-biraki"],
+  nightmare: ["the-almighty", "ichimonji", "kannon-biraki", "daiguren-hyorinmaru"],
 };
 
 const emptyGauge = () => ({ charge: 0, limit: 0, pending: false, used: false });
+
+export const emptyMods = (): DuelState["mods"] => ({
+  revealUntil: {},
+  blindUntil: {},
+  lockedRound: {},
+  laneBonus: {},
+  hijack: null,
+});
 
 export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState {
   const difficulty: Difficulty = opts.difficulty ?? "normal";
@@ -112,6 +120,7 @@ export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState
     },
     difficulty,
     ultimateEvent: null,
+    mods: emptyMods(),
   };
 }
 
@@ -229,16 +238,29 @@ function resolveUltimates(state: DuelState): DuelState {
 export function canPlay(state: DuelState, side: Side, card: DuelCard, lane: number): boolean {
   return (
     state.phase === "play" &&
+    !isLockedOut(state, side) &&
     laneIsOpen(state, lane, side) &&
     card.cost <= remainingReiatsu(state, side)
   );
 }
 
-/** Opponent cards on a hidden battlefield stay concealed until its reveal round. */
-export function isHidden(state: DuelState, p: Placement): boolean {
-  if (p.side === "player") return false;
+/** Daiguren Hyōrinmaru freezes a side out of playing for one round. */
+export function isLockedOut(state: DuelState, side: Side): boolean {
+  return state.mods.lockedRound[side] === state.round;
+}
+
+/** Enma Kōrogi blinds a side: it cannot read enemy cards or battlefield Ratings. */
+export function isBlinded(state: DuelState, viewer: Side): boolean {
+  return state.phase !== "ended" && (state.mods.blindUntil[viewer] ?? 0) >= state.round;
+}
+
+/** Enemy cards concealed by a battlefield rule, The Almighty or Enma Kōrogi. */
+export function isHidden(state: DuelState, p: Placement, viewer: Side = "player"): boolean {
+  if (p.side === viewer || state.phase === "ended") return false;
+  if ((state.mods.revealUntil[viewer] ?? 0) >= state.round) return false;
+  if (isBlinded(state, viewer)) return true;
   const until = state.lanes[p.lane]?.def.rules.hiddenUntilRound;
-  return !!until && state.round < until && state.phase !== "ended";
+  return !!until && state.round < until;
 }
 
 /* ---------------------------------------------------------------- mutation */
@@ -262,6 +284,7 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
   const card = state.hands[side].find((c) => c.uid === cardUid);
   if (!card || !canPlay(state, side, card, lane)) return state;
   const buff = state.laneBuffs.find((b) => b.lane === lane && b.side === side);
+  const hijack = state.mods.hijack;
   const placement: Placement = {
     uid: card.uid,
     card,
@@ -272,6 +295,8 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
     bonus: buff ? buff.amount : 0,
     movesUsed: 0,
     stolen: [],
+    hijacked:
+      !!hijack && hijack.side !== side && hijack.slugs.includes(card.character.slug),
   };
   const next: DuelState = {
     ...state,
@@ -282,7 +307,7 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
   };
   const ability = abilityOf(card.character.slug);
   const played = next.placements[next.placements.length - 1];
-  return ability?.onPlay ? ability.onPlay(next, played) : next;
+  return ability?.onPlay ? ability.onPlay(next, asOwner(played)) : next;
 }
 
 /** Abilities with a move budget (Urahara, Yoruichi) relocate a placed card. */
@@ -404,7 +429,7 @@ function applyAbilityTicks(state: DuelState): DuelState {
     if (!current || isFrozen(current)) continue;
     if (next.lanes[current.lane]?.def.rules.disableAbilities) continue;
     const ability = abilityOf(current.card.character.slug);
-    if (ability?.onRoundEnd) next = ability.onRoundEnd(next, current);
+    if (ability?.onRoundEnd) next = ability.onRoundEnd(next, asOwner(current));
   }
   return next;
 }
@@ -461,6 +486,7 @@ function raceMatches(character: Character, races: string[]): boolean {
 /** Final rating of a single placed card, with every active modifier applied. */
 export function ratingOf(state: DuelState, p: Placement): number {
   if (p.imprisoned) return 0;
+  if ((p.zeroUntilRound ?? 0) >= state.round) return 0;
   const base = p.override ?? p.card.character.overall;
   if (immuneToModifiers(p)) return Math.max(0, Math.round(base));
   const lane = state.lanes[p.lane];
@@ -481,8 +507,12 @@ export function ratingOf(state: DuelState, p: Placement): number {
   if (!rules.disableAbilities) {
     const mult = rules.doubleAbilities ? 2 : 1;
     const board = state.placements;
+    const owned = asOwner(p);
     const own = isFrozen(p) ? undefined : abilityOf(p.card.character.slug);
-    if (own?.selfRating) rating += mult * own.selfRating({ self: p, state, board });
+    // A hijacked card no longer boosts itself for its original owner.
+    if (own?.selfRating && !p.hijacked) {
+      rating += mult * own.selfRating({ self: owned, state, board });
+    }
     for (const other of board) {
       if (other.uid === p.uid || isFrozen(other)) continue;
       const otherRules = state.lanes[other.lane]?.def.rules ?? {};
@@ -490,7 +520,7 @@ export function ratingOf(state: DuelState, p: Placement): number {
       const ab = abilityOf(other.card.character.slug);
       if (!ab?.aura) continue;
       const otherMult = otherRules.doubleAbilities ? 2 : 1;
-      rating += otherMult * ab.aura({ self: other, state, board }, p);
+      rating += otherMult * ab.aura({ self: asOwner(other), state, board }, p);
     }
   }
 
@@ -499,7 +529,8 @@ export function ratingOf(state: DuelState, p: Placement): number {
 
 export function laneTotals(state: DuelState, lane: number): LaneScore {
   const sum = (side: Side) =>
-    laneCards(state, lane, side).reduce((n, p) => n + ratingOf(state, p), 0);
+    laneCards(state, lane, side).reduce((n, p) => n + ratingOf(state, p), 0) +
+    (state.mods.laneBonus[side] ?? 0);
   const player = sum("player");
   const opponent = sum("opponent");
   return {
