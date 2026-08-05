@@ -429,7 +429,7 @@ function applyAbilityTicks(state: DuelState): DuelState {
     if (!current || isFrozen(current)) continue;
     if (next.lanes[current.lane]?.def.rules.disableAbilities) continue;
     const ability = abilityOf(current.card.character.slug);
-    if (ability?.onRoundEnd) next = ability.onRoundEnd(next, current);
+    if (ability?.onRoundEnd) next = ability.onRoundEnd(next, asOwner(current));
   }
   return next;
 }
@@ -486,6 +486,7 @@ function raceMatches(character: Character, races: string[]): boolean {
 /** Final rating of a single placed card, with every active modifier applied. */
 export function ratingOf(state: DuelState, p: Placement): number {
   if (p.imprisoned) return 0;
+  if ((p.zeroUntilRound ?? 0) >= state.round) return 0;
   const base = p.override ?? p.card.character.overall;
   if (immuneToModifiers(p)) return Math.max(0, Math.round(base));
   const lane = state.lanes[p.lane];
@@ -506,8 +507,12 @@ export function ratingOf(state: DuelState, p: Placement): number {
   if (!rules.disableAbilities) {
     const mult = rules.doubleAbilities ? 2 : 1;
     const board = state.placements;
+    const owned = asOwner(p);
     const own = isFrozen(p) ? undefined : abilityOf(p.card.character.slug);
-    if (own?.selfRating) rating += mult * own.selfRating({ self: p, state, board });
+    // A hijacked card no longer boosts itself for its original owner.
+    if (own?.selfRating && !p.hijacked) {
+      rating += mult * own.selfRating({ self: owned, state, board });
+    }
     for (const other of board) {
       if (other.uid === p.uid || isFrozen(other)) continue;
       const otherRules = state.lanes[other.lane]?.def.rules ?? {};
@@ -515,7 +520,7 @@ export function ratingOf(state: DuelState, p: Placement): number {
       const ab = abilityOf(other.card.character.slug);
       if (!ab?.aura) continue;
       const otherMult = otherRules.doubleAbilities ? 2 : 1;
-      rating += otherMult * ab.aura({ self: other, state, board }, p);
+      rating += otherMult * ab.aura({ self: asOwner(other), state, board }, p);
     }
   }
 
@@ -524,7 +529,8 @@ export function ratingOf(state: DuelState, p: Placement): number {
 
 export function laneTotals(state: DuelState, lane: number): LaneScore {
   const sum = (side: Side) =>
-    laneCards(state, lane, side).reduce((n, p) => n + ratingOf(state, p), 0);
+    laneCards(state, lane, side).reduce((n, p) => n + ratingOf(state, p), 0) +
+    (state.mods.laneBonus[side] ?? 0);
   const player = sum("player");
   const opponent = sum("opponent");
   return {
