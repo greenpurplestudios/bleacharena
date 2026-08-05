@@ -1,4 +1,5 @@
 import type { Character, Locale } from "@/types/character";
+import type { StatusInstance } from "./status";
 
 export type Side = "player" | "opponent";
 
@@ -50,6 +51,20 @@ export interface Placement {
   round: number;
   /** Set when Prison seals this card on the final round. */
   imprisoned?: boolean;
+  /** Active status effects rendered on the card. */
+  statuses: StatusInstance[];
+  /** Persistent rating adjustments from abilities and status ticks. */
+  bonus: number;
+  /** Replaces the character's base rating (rating swaps / balance abilities). */
+  override?: number;
+  /** How many times this card relocated (abilities with a move budget). */
+  movesUsed: number;
+  /** Round until which negative effects cannot land (exclusive). */
+  immuneUntilRound?: number;
+  /** Round from which Freeze may be applied again. */
+  freezeReadyRound?: number;
+  /** Abilities copied so far (Tokinada). */
+  copies?: number;
 }
 
 export interface LaneState {
@@ -73,7 +88,13 @@ export type DuelLogKey =
   | "logDrift"
   | "logSwap"
   | "logImprison"
-  | "logRevealed";
+  | "logRevealed"
+  | "logBurn"
+  | "logFreeze"
+  | "logShield"
+  | "logAbility"
+  | "logMove"
+  | "logSummon";
 
 export interface DuelState {
   round: number;
@@ -84,6 +105,10 @@ export interface DuelState {
   decks: Record<Side, DuelCard[]>;
   spent: Record<Side, number>;
   log: DuelLogEntry[];
+  /** Queued buffs granted to the next card a side plays on a battlefield. */
+  laneBuffs: { lane: number; side: Side; amount: number }[];
+  /** Hard caps on how many cards a side may hold on a battlefield. */
+  laneLimits: { lane: number; side: Side; max: number }[];
   /** Set once the match ends. */
   result?: DuelResult;
 }

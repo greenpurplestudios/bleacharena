@@ -1,6 +1,8 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
-import { abilityOf } from "./abilities";
+import { abilityOf, duelDefOf } from "./abilities";
+import { canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
+import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import {
   DECK_SIZE, HAND_SIZE, LANE_COUNT, MAX_PER_LANE, MAX_ROUNDS, REIATSU_BY_ROUND,
   type DuelCard, type DuelLogEntry, type DuelLogKey, type DuelResult,
@@ -14,7 +16,7 @@ const COST_BY_RARITY: Record<Rarity, number> = {
 };
 
 export function costOf(c: Character): number {
-  return COST_BY_RARITY[c.rarity] ?? 3;
+  return duelDefOf(c.slug)?.cost ?? COST_BY_RARITY[c.rarity] ?? 3;
 }
 
 export function reiatsuForRound(round: number): number {
@@ -79,6 +81,8 @@ export function createDuel(pool: Character[]): DuelState {
     decks: { player: p.rest, opponent: o.rest },
     spent: { player: 0, opponent: 0 },
     log: [],
+    laneBuffs: [],
+    laneLimits: [],
   };
 }
 
@@ -90,7 +94,10 @@ export function laneCards(state: DuelState, lane: number, side: Side): Placement
 
 export function laneIsOpen(state: DuelState, lane: number, side: Side): boolean {
   const l = state.lanes[lane];
-  return !!l && l.revealed && !l.closed && laneCards(state, lane, side).length < MAX_PER_LANE;
+  const cap = state.laneLimits
+    .filter((x) => x.lane === lane && x.side === side)
+    .reduce((n, x) => Math.min(n, x.max), MAX_PER_LANE);
+  return !!l && l.revealed && !l.closed && laneCards(state, lane, side).length < cap;
 }
 
 export function remainingReiatsu(state: DuelState, side: Side): number {
@@ -132,14 +139,44 @@ export function revealLane(state: DuelState, lane: number): DuelState {
 export function playCard(state: DuelState, side: Side, cardUid: string, lane: number): DuelState {
   const card = state.hands[side].find((c) => c.uid === cardUid);
   if (!card || !canPlay(state, side, card, lane)) return state;
-  return {
+  const buff = state.laneBuffs.find((b) => b.lane === lane && b.side === side);
+  const placement: Placement = {
+    uid: card.uid,
+    card,
+    side,
+    lane,
+    round: state.round,
+    statuses: [],
+    bonus: buff ? buff.amount : 0,
+    movesUsed: 0,
+  };
+  const next: DuelState = {
     ...state,
     hands: { ...state.hands, [side]: state.hands[side].filter((c) => c.uid !== cardUid) },
     spent: { ...state.spent, [side]: state.spent[side] + card.cost },
-    placements: [
-      ...state.placements,
-      { uid: card.uid, card, side, lane, round: state.round },
-    ],
+    placements: [...state.placements, placement],
+    laneBuffs: buff ? state.laneBuffs.filter((b) => b !== buff) : state.laneBuffs,
+  };
+  const ability = abilityOf(card.character.slug);
+  const played = next.placements[next.placements.length - 1];
+  return ability?.onPlay ? ability.onPlay(next, played) : next;
+}
+
+/** Abilities with a move budget (Urahara, Yoruichi) relocate a placed card. */
+export function canMove(state: DuelState, uid: string, lane: number): boolean {
+  const p = state.placements.find((x) => x.uid === uid);
+  if (!p || state.phase !== "play" || p.lane === lane) return false;
+  return canRelocate(p) && laneIsOpen(state, lane, p.side);
+}
+
+export function moveCard(state: DuelState, uid: string, lane: number): DuelState {
+  if (!canMove(state, uid, lane)) return state;
+  return {
+    ...state,
+    placements: state.placements.map((p) =>
+      p.uid === uid ? { ...p, lane, movesUsed: p.movesUsed + 1 } : p,
+    ),
+    log: [...state.log, log(state, "logMove", lane)],
   };
 }
 
@@ -236,11 +273,43 @@ function drawFor(state: DuelState): DuelState {
   return { ...state, hands, decks };
 }
 
+/** End-of-round ability triggers, then status ticks (burn damage, expiry). */
+function applyAbilityTicks(state: DuelState): DuelState {
+  let next = state;
+  for (const p of state.placements) {
+    const current = next.placements.find((x) => x.uid === p.uid);
+    if (!current || isFrozen(current)) continue;
+    if (next.lanes[current.lane]?.def.rules.disableAbilities) continue;
+    const ability = abilityOf(current.card.character.slug);
+    if (ability?.onRoundEnd) next = ability.onRoundEnd(next, current);
+  }
+  return next;
+}
+
+function tickStatuses(state: DuelState): DuelState {
+  const entries: DuelLogEntry[] = [];
+  const placements = state.placements.map((p) => {
+    if (!p.statuses.length) return p;
+    let bonus = p.bonus;
+    if (hasStatus(p, "burn") && !immuneToModifiers(p)) {
+      bonus -= BURN_DAMAGE;
+      entries.push(log(state, "logBurn", p.lane, p.card.character.slug));
+    }
+    const statuses = p.statuses
+      .map((s) => ({ ...s, remaining: s.remaining - 1 }))
+      .filter((s) => s.remaining > 0 && STATUS_DEFS[s.kind]);
+    return { ...p, bonus, statuses };
+  });
+  return { ...state, placements, log: [...state.log, ...entries] };
+}
+
 /** End of round: resolve battlefield effects, then advance or finish. */
 export function resolveRound(state: DuelState): DuelState {
-  let next = applyDrift(state);
+  let next = applyAbilityTicks(state);
+  next = applyDrift(next);
   next = applySwap(next);
   next = applyClosures(next);
+  next = tickStatuses(next);
 
   if (next.round >= MAX_ROUNDS) {
     next = applyImprisonment(next);
@@ -267,9 +336,11 @@ function raceMatches(character: Character, races: string[]): boolean {
 /** Final rating of a single placed card, with every active modifier applied. */
 export function ratingOf(state: DuelState, p: Placement): number {
   if (p.imprisoned) return 0;
+  const base = p.override ?? p.card.character.overall;
+  if (immuneToModifiers(p)) return Math.max(0, Math.round(base));
   const lane = state.lanes[p.lane];
   const rules = lane?.def.rules ?? {};
-  let rating = p.card.character.overall;
+  let rating = base + p.bonus;
 
   if (rules.globalRating) rating += rules.globalRating;
   if (rules.factionBuff && raceMatches(p.card.character, rules.factionBuff.races)) {
@@ -285,10 +356,10 @@ export function ratingOf(state: DuelState, p: Placement): number {
   if (!rules.disableAbilities) {
     const mult = rules.doubleAbilities ? 2 : 1;
     const board = state.placements;
-    const own = abilityOf(p.card.character.slug);
+    const own = isFrozen(p) ? undefined : abilityOf(p.card.character.slug);
     if (own?.selfRating) rating += mult * own.selfRating({ self: p, state, board });
     for (const other of board) {
-      if (other.uid === p.uid) continue;
+      if (other.uid === p.uid || isFrozen(other)) continue;
       const otherRules = state.lanes[other.lane]?.def.rules ?? {};
       if (otherRules.disableAbilities) continue;
       const ab = abilityOf(other.card.character.slug);

@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { useI18n } from "@/lib/i18n";
 import { MAX_PER_LANE, type DuelState, type LaneScore, type Placement } from "@/lib/soul-duel/types";
+import { canRelocate } from "@/lib/soul-duel/effects";
 import { BattlefieldCard } from "./BattlefieldCard";
 import { DuelMiniCard } from "./DuelMiniCard";
 
@@ -11,6 +12,8 @@ function Slots({
   hiddenSide,
   round,
   onUndo,
+  onPick,
+  picked,
 }: {
   cards: Placement[];
   state: DuelState;
@@ -18,6 +21,8 @@ function Slots({
   hiddenSide: boolean;
   round: number;
   onUndo?: (uid: string) => void;
+  onPick?: (uid: string) => void;
+  picked?: string | null;
 }) {
   return (
     <div className="grid grid-cols-2 gap-1">
@@ -38,10 +43,16 @@ function Slots({
             hidden={hiddenSide}
             imprisoned={p.imprisoned}
             entering={p.round === round}
+            statuses={hiddenSide ? [] : p.statuses}
+            movable={picked === p.uid || (!!onPick && canRelocate(p) && state.phase === "play")}
           />
         );
         return onUndo && p.round === round && state.phase === "play" ? (
           <button key={p.uid} type="button" onClick={() => onUndo(p.uid)} className="tactile">
+            {token}
+          </button>
+        ) : onPick && canRelocate(p) && state.phase === "play" ? (
+          <button key={p.uid} type="button" onClick={() => onPick(p.uid)} className="tactile">
             {token}
           </button>
         ) : (
@@ -63,6 +74,8 @@ export const DuelLane = memo(function DuelLane({
   onPlace,
   onInspect,
   onUndo,
+  onPickMover,
+  mover,
 }: {
   state: DuelState;
   lane: number;
@@ -73,6 +86,8 @@ export const DuelLane = memo(function DuelLane({
   onPlace: () => void;
   onInspect: () => void;
   onUndo: (uid: string) => void;
+  onPickMover?: (uid: string) => void;
+  mover?: string | null;
 }) {
   const { t } = useI18n();
   const l = state.lanes[lane];
@@ -122,6 +137,8 @@ export const DuelLane = memo(function DuelLane({
         hiddenSide={false}
         round={state.round}
         onUndo={onUndo}
+        onPick={onPickMover}
+        picked={mover}
       />
     </div>
   );

@@ -4,6 +4,8 @@ import { RARITY_COLOR } from "@/lib/rarity";
 import { framingOf } from "@/lib/portrait";
 import { BATTLEFIELD_BACK } from "@/data/battlefields";
 import type { DuelCard } from "@/lib/soul-duel/types";
+import type { StatusInstance } from "@/lib/soul-duel/status";
+import { StatusBadges } from "./StatusIcon";
 
 /** Compact battlefield token: portrait, rarity ink and live rating. */
 export const DuelMiniCard = memo(function DuelMiniCard({
@@ -12,12 +14,16 @@ export const DuelMiniCard = memo(function DuelMiniCard({
   hidden = false,
   imprisoned = false,
   entering = false,
+  statuses = [],
+  movable = false,
 }: {
   card: DuelCard;
   rating: number;
   hidden?: boolean;
   imprisoned?: boolean;
   entering?: boolean;
+  statuses?: StatusInstance[];
+  movable?: boolean;
 }) {
   const { locale } = useI18n();
   const c = card.character;
@@ -40,7 +46,7 @@ export const DuelMiniCard = memo(function DuelMiniCard({
       className="relative aspect-[3/4] w-full overflow-hidden rounded-lg border bg-black/60"
       style={{
         borderColor: `${color}`,
-        boxShadow: `0 0 10px -2px ${color}`,
+        boxShadow: movable ? `0 0 0 2px ${color}, 0 0 14px -2px ${color}` : `0 0 10px -2px ${color}`,
         animation: entering ? "card-in 0.4s ease-out both" : undefined,
         opacity: imprisoned ? 0.55 : 1,
       }}
@@ -66,6 +72,7 @@ export const DuelMiniCard = memo(function DuelMiniCard({
       >
         {imprisoned ? 0 : rating}
       </span>
+      <StatusBadges statuses={statuses} size={10} className="absolute start-0.5 top-0.5 flex-col" />
       {imprisoned ? (
         <span aria-hidden className="pointer-events-none absolute inset-0 bg-purple-500/25" />
       ) : null}
