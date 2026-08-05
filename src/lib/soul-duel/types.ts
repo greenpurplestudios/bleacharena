@@ -162,6 +162,8 @@ export interface DuelState {
   gauge: Record<Side, GaugeState>;
   /** Ultimate Weapon equipped by each side for this match. */
   weapons: Record<Side, string>;
+  /** Ultimate Weapon modifiers currently shaping the match. */
+  mods: DuelMods;
   /** Opponent intelligence for this match. */
   difficulty: Difficulty;
   /** Set for one resolution so the cinematic layer can stage it. */
