@@ -380,3 +380,118 @@ body {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.12); }
 }
+
+/* ---------------------------------------- Soul Duel: Reiatsu Gauge & Ultimates */
+@keyframes gauge-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.45); }
+}
+@keyframes ult-wash {
+  0% { opacity: 0; transform: scale(1.25); }
+  25% { opacity: 1; }
+  100% { opacity: 0.65; transform: scale(1); }
+}
+@keyframes ult-distort {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(7px); }
+}
+@keyframes ult-zoom {
+  0% { transform: scale(1.35); opacity: 0; }
+  18% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.04); opacity: 1; }
+}
+@keyframes ult-sheen {
+  0% { transform: translateX(-120%); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+@keyframes ult-voice {
+  0% { opacity: 0; transform: translateY(10px) scale(0.94); letter-spacing: 0.3em; }
+  100% { opacity: 1; transform: translateY(0) scale(1); letter-spacing: normal; }
+}
+@keyframes ult-shake {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  20% { transform: translate3d(-6px, 2px, 0); }
+  45% { transform: translate3d(5px, -3px, 0); }
+  70% { transform: translate3d(-4px, -2px, 0); }
+}
+@keyframes ult-collide {
+  0%, 100% { transform: scale(0.85); opacity: 0.7; }
+  50% { transform: scale(1.35); opacity: 1; }
+}
+@keyframes ult-clash-start {
+  0% { transform: translateX(-60%) rotate(-8deg); opacity: 0; }
+  100% { transform: translateX(0) rotate(0); opacity: 1; }
+}
+@keyframes ult-clash-end {
+  0% { transform: translateX(60%) rotate(8deg); opacity: 0; }
+  100% { transform: translateX(0) rotate(0); opacity: 1; }
+}
+
+/* Per-weapon cinematic signatures. */
+@keyframes ult-card-slash {
+  0% { transform: translateX(-40%) rotate(-14deg) scale(1.3); opacity: 0; filter: blur(8px); }
+  35% { transform: rotate(3deg) scale(1.05); opacity: 1; filter: blur(0); }
+  100% { transform: rotate(0) scale(1); }
+}
+@keyframes ult-card-descend {
+  0% { transform: translateY(-45%) scale(1.2); opacity: 0; }
+  55% { transform: translateY(0) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes ult-card-coffin {
+  0% { transform: scaleY(0.15) scaleX(1.2); opacity: 0; }
+  45% { transform: scaleY(1.05) scaleX(0.98); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes ult-card-brush {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0.4; }
+  60% { clip-path: inset(0 0 0 0); opacity: 1; }
+  100% { clip-path: inset(0 0 0 0); transform: scale(1); }
+}
+@keyframes ult-card-frost {
+  0% { transform: scale(1.15); opacity: 0; filter: brightness(2.2) saturate(0.3); }
+  50% { opacity: 1; filter: brightness(1.3) saturate(0.7); }
+  100% { transform: scale(1); filter: none; }
+}
+@keyframes ult-card-bloom {
+  0% { transform: scale(0.6) rotate(-10deg); opacity: 0; }
+  55% { transform: scale(1.06) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes ult-card-veil {
+  0% { transform: perspective(800px) rotateY(70deg); opacity: 0; }
+  60% { transform: perspective(800px) rotateY(-6deg); opacity: 1; }
+  100% { transform: perspective(800px) rotateY(0); }
+}
+@keyframes ult-card-mirror {
+  0% { transform: scaleX(-1) scale(1.2); opacity: 0; filter: blur(6px); }
+  45% { transform: scaleX(-1) scale(1); opacity: 1; filter: blur(0); }
+  60% { transform: scaleX(1) scale(1.03); }
+  100% { transform: scaleX(1) scale(1); }
+}
+@keyframes ult-card-invert {
+  0% { transform: rotate(180deg) scale(1.2); opacity: 0; }
+  55% { transform: rotate(0) scale(1.04); opacity: 1; }
+  100% { transform: rotate(0) scale(1); }
+}
+
+/* ---------------------------------------- Nimaiya's Forge */
+@keyframes forge-flame {
+  0%, 100% { transform: translateY(4%) scaleY(0.92); opacity: 0.65; }
+  50% { transform: translateY(-4%) scaleY(1.12); opacity: 1; }
+}
+@keyframes forge-strike {
+  0%, 100% { transform: translateY(0) rotate(-18deg); }
+  45% { transform: translateY(14%) rotate(10deg); }
+  60% { transform: translateY(0) rotate(-6deg); }
+}
+@keyframes forge-spark {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--sx, 40px), var(--sy, -60px)) scale(0); opacity: 0; }
+}
+@keyframes forge-erupt {
+  0% { transform: scale(0.2); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: scale(2.6); opacity: 0; }
+}

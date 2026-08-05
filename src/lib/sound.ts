@@ -308,3 +308,100 @@ export function playDuelClash() {
   tone(1500, 0.14, "triangle", 0.035 * v, 0.03);
   tone(140, 0.3, "sine", 0.08 * v, 0.06);
 }
+
+/* ---------- Ultimate Weapons ---------- */
+
+export type UltimateAudio =
+  | "slash" | "empire" | "void" | "ink" | "ice" | "petal" | "blood" | "illusion" | "reverse";
+
+/** Shared charge-up: the world inhales before an Ultimate lands. */
+function ultimateRiser(v: number) {
+  sweep(60, 520, 1.1, "sawtooth", 0.05 * v);
+  tone(48, 1.4, "sine", 0.1 * v);
+  noise(0.9, 0.03 * v, 700, 0.6, 0.2);
+}
+
+/** Every Ultimate Weapon has its own signature. */
+export function playUltimate(kind: UltimateAudio) {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  ultimateRiser(v);
+  const t = 1.1;
+  switch (kind) {
+    case "slash": // Getsuga Tenshō — a torn, roaring crescent.
+      noise(0.35, 0.09 * v, 3000, 0.8, t);
+      sweep(1800, 120, 0.55, "sawtooth", 0.06 * v, t);
+      tone(55, 1.4, "sine", 0.14 * v, t + 0.05);
+      [196, 294, 392].forEach((f, i) => tone(f, 1.1, "triangle", 0.05 * v, t + 0.1 + i * 0.05));
+      break;
+    case "empire": // The Almighty — imperial choir and a slow toll.
+      [131, 196, 262, 330].forEach((f, i) => tone(f, 2.0, "sine", 0.07 * v, t + i * 0.06));
+      tone(65, 2.2, "sine", 0.12 * v, t);
+      tone(1046, 1.6, "triangle", 0.03 * v, t + 0.5);
+      break;
+    case "void": // Kurohitsugi — closing stone and crushing silence.
+      noise(0.5, 0.08 * v, 320, 0.5, t);
+      tone(41, 1.8, "sine", 0.15 * v, t + 0.1);
+      sweep(400, 60, 0.9, "square", 0.04 * v, t + 0.15);
+      break;
+    case "ink": // Ichimonji — brush stroke and a temple bell.
+      noise(0.4, 0.05 * v, 1400, 1.4, t);
+      tone(110, 1.8, "sine", 0.1 * v, t + 0.25);
+      [220, 330, 660].forEach((f, i) => tone(f, 1.5, "sine", 0.04 * v, t + 0.3 + i * 0.1));
+      break;
+    case "ice": // Hyōrinmaru — crystalline shatter and cold wind.
+      [1568, 2093, 2637].forEach((f, i) => tone(f, 0.5, "triangle", 0.03 * v, t + i * 0.07));
+      noise(1.0, 0.04 * v, 5200, 0.9, t);
+      tone(73, 1.6, "sine", 0.11 * v, t + 0.1);
+      break;
+    case "petal": // Enma Kōrogi — dreamlike bells drifting downward.
+      [880, 740, 587, 494].forEach((f, i) => tone(f, 1.0, "sine", 0.06 * v, t + i * 0.14));
+      tone(87, 1.6, "sine", 0.1 * v, t);
+      break;
+    case "blood": // Benihime — a scarlet blade and a resonant hum.
+      sweep(300, 1500, 0.4, "sawtooth", 0.05 * v, t);
+      noise(0.3, 0.07 * v, 2200, 1.0, t + 0.35);
+      tone(98, 1.6, "triangle", 0.1 * v, t + 0.4);
+      break;
+    case "illusion": // Kyōka Suigetsu — glass breaking, reality slipping.
+      noise(0.5, 0.06 * v, 6000, 1.6, t);
+      [1319, 1046, 784, 523].forEach((f, i) => tone(f, 0.8, "sine", 0.05 * v, t + i * 0.1));
+      sweep(220, 110, 1.2, "sine", 0.08 * v, t + 0.2);
+      break;
+    case "reverse": // Sakanade — everything inverts.
+      sweep(120, 900, 0.8, "triangle", 0.05 * v, t);
+      sweep(900, 120, 0.8, "triangle", 0.05 * v, t + 0.3);
+      tone(69, 1.5, "sine", 0.1 * v, t + 0.4);
+      break;
+  }
+}
+
+/** Reiatsu Clash — two Ultimates collide. */
+export function playReiatsuClash() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  sweep(80, 1200, 0.9, "sawtooth", 0.06 * v);
+  sweep(1200, 80, 0.9, "sawtooth", 0.06 * v);
+  noise(0.6, 0.11 * v, 1800, 0.5, 0.9);
+  tone(44, 2.2, "sine", 0.16 * v, 0.92);
+  [110, 220, 440, 880].forEach((f, i) => tone(f, 1.4, "square", 0.03 * v, 0.95 + i * 0.04));
+  noise(1.2, 0.04 * v, 400, 0.4, 1.2);
+}
+
+/** Nimaiya's Forge — fragments, flame, hammer strikes and a reveal. */
+export function playForge() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  noise(0.5, 0.05 * v, 900, 0.6, 0);           // fragments tossed in
+  sweep(120, 700, 0.9, "sawtooth", 0.05 * v, 0.3); // flames ignite
+  [0.9, 1.25, 1.6, 1.95].forEach((d, i) => {   // hammer strikes
+    tone(1800 - i * 120, 0.09, "square", 0.045 * v, d);
+    tone(90, 0.3, "sine", 0.1 * v, d + 0.01);
+    noise(0.2, 0.05 * v, 3200, 1.2, d);
+  });
+  tone(52, 1.8, "sine", 0.13 * v, 2.35);       // reiatsu eruption
+  [523, 659, 784, 1046, 1319].forEach((f, i) => tone(f, 1.2, "sine", 0.06 * v, 2.4 + i * 0.07));
+}

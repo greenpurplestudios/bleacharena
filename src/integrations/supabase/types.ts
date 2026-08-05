@@ -400,6 +400,66 @@ export type Database = {
         }
         Relationships: []
       }
+      duel_forge: {
+        Row: {
+          equipped_weapon: string
+          fragments: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          equipped_weapon?: string
+          fragments?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          equipped_weapon?: string
+          fragments?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      duel_weapon_catalog: {
+        Row: {
+          fragment_cost: number
+          soul_cost: number
+          starter: boolean
+          weapon_id: string
+        }
+        Insert: {
+          fragment_cost: number
+          soul_cost: number
+          starter?: boolean
+          weapon_id: string
+        }
+        Update: {
+          fragment_cost?: number
+          soul_cost?: number
+          starter?: boolean
+          weapon_id?: string
+        }
+        Relationships: []
+      }
+      duel_weapons: {
+        Row: {
+          unlocked_at: string
+          user_id: string
+          weapon_id: string
+        }
+        Insert: {
+          unlocked_at?: string
+          user_id: string
+          weapon_id: string
+        }
+        Update: {
+          unlocked_at?: string
+          user_id?: string
+          weapon_id?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           addressee_id: string
@@ -1087,6 +1147,7 @@ export type Database = {
     Functions: {
       activate_potion: { Args: { p_item_id: string }; Returns: Json }
       add_xp: { Args: { p_amount: number; p_source?: string }; Returns: Json }
+      award_fragments: { Args: { p_amount: number }; Returns: Json }
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
       cancel_join_request: { Args: { p_clan_id: string }; Returns: Json }
@@ -1106,7 +1167,9 @@ export type Database = {
       disband_clan: { Args: never; Returns: Json }
       ensure_weekly_announcement: { Args: never; Returns: undefined }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
+      equip_weapon: { Args: { p_weapon_id: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
+      forge_weapon: { Args: { p_weapon_id: string }; Returns: Json }
       get_active_potion: { Args: never; Returns: Json }
       get_bleachdle_today: { Args: { p_candidates: string[] }; Returns: Json }
       get_clan_leaderboard: {
@@ -1157,6 +1220,7 @@ export type Database = {
           sender_id: string
         }[]
       }
+      get_forge: { Args: never; Returns: Json }
       get_friend_status: { Args: { p_other: string }; Returns: Json }
       get_global_messages: {
         Args: { p_limit?: number }
