@@ -243,7 +243,20 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       },
     },
   },
-  { slug: "byakuya-kuchiki", cost: 4 },
+  {
+    slug: "byakuya-kuchiki",
+    cost: 4,
+    ability: {
+      slug: "senbonzakura-kageyoshi",
+      name: { en: "Senbonzakura Kageyoshi", ar: "سينبونزاكورا كاغيوشي" },
+      description: {
+        en: "Every enemy card on this battlefield loses 5 Rating.",
+        ar: "كل بطاقة معادية في هذه الساحة تفقد ٥ من التقييم.",
+      },
+      onPlay: (state, self) =>
+        enemiesIn(state, self).reduce((st, e) => addBonus(st, e.uid, -5), state),
+    },
+  },
   {
     slug: "jugram-haschwalth",
     cost: 5,
@@ -262,9 +275,55 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       },
     },
   },
-  { slug: "lille-barro", cost: 5 },
-  { slug: "askin-nakk-le-vaar", cost: 4 },
-  { slug: "mayuri-kurotsuchi", cost: 4 },
+  {
+    slug: "lille-barro",
+    cost: 5,
+    ability: {
+      slug: "x-axis",
+      name: { en: "X-Axis", ar: "المحور السيني" },
+      description: {
+        en: "Pierces every battlefield: the strongest enemy card on the board loses 15 Rating.",
+        ar: "يخترق كل الساحات: أقوى بطاقة معادية على اللوح تفقد ١٥ من التقييم.",
+      },
+      onPlay: (state, self) => {
+        const target = highestOf(state.placements.filter((p) => p.side !== self.side));
+        return target ? addBonus(state, target.uid, -15) : state;
+      },
+    },
+  },
+  {
+    slug: "askin-nakk-le-vaar",
+    cost: 4,
+    ability: {
+      slug: "gift-ball",
+      name: { en: "Gift Ball", ar: "كرة الهدية" },
+      description: {
+        en: "Burns every enemy card on this battlefield.",
+        ar: "يحرق كل بطاقة معادية في هذه الساحة.",
+      },
+      applies: ["burn"],
+      onPlay: (state, self) =>
+        enemiesIn(state, self).reduce((st, e) => applyStatus(st, e.uid, "burn"), state),
+    },
+  },
+  {
+    slug: "mayuri-kurotsuchi",
+    cost: 4,
+    ability: {
+      slug: "ashisogi-jizo",
+      name: { en: "Ashisogi Jizō", ar: "أشيسوغي جيزو" },
+      description: {
+        en: "Freezes the weakest enemy card here and gains +8 Rating.",
+        ar: "يجمّد أضعف بطاقة معادية هنا ويكسب +٨ من التقييم.",
+      },
+      applies: ["freeze"],
+      selfRating: () => 8,
+      onPlay: (state, self) => {
+        const target = lowestOf(enemiesIn(state, self));
+        return target ? applyStatus(state, target.uid, "freeze") : state;
+      },
+    },
+  },
   {
     slug: "orihime-inoue",
     cost: 3,
@@ -313,7 +372,24 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
   },
 
   /* --------------------------------------------------------------- epic */
-  { slug: "ulquiorra-cifer", cost: 4 },
+  {
+    slug: "ulquiorra-cifer",
+    cost: 4,
+    ability: {
+      slug: "segunda-etapa",
+      name: { en: "Segunda Etapa", ar: "الطور الثاني" },
+      description: {
+        en: "Gains +12 Rating while losing this battlefield.",
+        ar: "يكسب +١٢ من التقييم عندما تكون هذه الساحة خاسرة.",
+      },
+      selfRating: ({ self, board }) => {
+        const sum = (side: Side) =>
+          board.filter((p) => p.lane === self.lane && p.side === side)
+            .reduce((n, p) => n + baseRatingOf(p), 0);
+        return sum(other(self.side)) > sum(self.side) ? 12 : 0;
+      },
+    },
+  },
   {
     slug: "uryu-ishida",
     cost: 3,
@@ -359,7 +435,22 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       },
     },
   },
-  { slug: "gin-ichimaru", cost: 3 },
+  {
+    slug: "gin-ichimaru",
+    cost: 3,
+    ability: {
+      slug: "kamishini-no-yari",
+      name: { en: "Kamishini no Yari", ar: "كاميشيني نو ياري" },
+      description: {
+        en: "The strongest enemy card here loses 10 Rating.",
+        ar: "أقوى بطاقة معادية هنا تفقد ١٠ من التقييم.",
+      },
+      onPlay: (state, self) => {
+        const target = highestOf(enemiesIn(state, self));
+        return target ? addBonus(state, target.uid, -10) : state;
+      },
+    },
+  },
   {
     slug: "toshiro-hitsugaya",
     cost: 4,
@@ -394,11 +485,91 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       },
     },
   },
-  { slug: "soi-fon", cost: 2 },
-  { slug: "grimmjow-jaegerjaquez", cost: 3 },
-  { slug: "rukia-kuchiki", cost: 3 },
-  { slug: "shukuro-tsukishima", cost: 4 },
-  { slug: "kaname-tosen", cost: 3 },
+  {
+    slug: "soi-fon",
+    cost: 2,
+    ability: {
+      slug: "nigeki-kessatsu",
+      name: { en: "Nigeki Kessatsu", ar: "الضربتان القاتلتان" },
+      description: {
+        en: "The strongest enemy card here loses 10 Rating — 20 if it is already affected.",
+        ar: "أقوى بطاقة معادية هنا تفقد ١٠، أو ٢٠ إذا كانت متأثرة بالفعل.",
+      },
+      onPlay: (state, self) => {
+        const target = highestOf(enemiesIn(state, self));
+        if (!target) return state;
+        return addBonus(state, target.uid, target.statuses.length ? -20 : -10);
+      },
+    },
+  },
+  {
+    slug: "grimmjow-jaegerjaquez",
+    cost: 3,
+    ability: {
+      slug: "desgarron",
+      name: { en: "Desgarrón", ar: "ديسغارون" },
+      description: {
+        en: "Gains +4 Rating for every enemy card on this battlefield.",
+        ar: "يكسب +٤ من التقييم عن كل بطاقة معادية في هذه الساحة.",
+      },
+      selfRating: ({ self, board }) =>
+        4 * board.filter((p) => p.lane === self.lane && p.side !== self.side).length,
+    },
+  },
+  {
+    slug: "rukia-kuchiki",
+    cost: 3,
+    ability: {
+      slug: "sode-no-shirayuki",
+      name: { en: "Sode no Shirayuki", ar: "سودي نو شيرايوكي" },
+      description: {
+        en: "Freezes the strongest enemy card on this battlefield.",
+        ar: "تجمّد أقوى بطاقة معادية في هذه الساحة.",
+      },
+      applies: ["freeze"],
+      onPlay: (state, self) => {
+        const target = highestOf(enemiesIn(state, self));
+        return target ? applyStatus(state, target.uid, "freeze") : state;
+      },
+    },
+  },
+  {
+    slug: "shukuro-tsukishima",
+    cost: 4,
+    ability: {
+      slug: "book-of-the-end",
+      name: { en: "Book of the End", ar: "كتاب النهاية" },
+      description: {
+        en: "Inserts himself into the past — copies the Rating of the strongest card on this battlefield.",
+        ar: "يدخل نفسه في الماضي — ينسخ تقييم أقوى بطاقة في هذه الساحة.",
+      },
+      onPlay: (state, self) => {
+        const here = state.placements.filter((p) => p.lane === self.lane && p.uid !== self.uid);
+        const top = highestOf(here);
+        if (!top || baseRatingOf(top) <= baseRatingOf(self)) return state;
+        return setOverride(state, self.uid, baseRatingOf(top));
+      },
+    },
+  },
+  {
+    slug: "kaname-tosen",
+    cost: 3,
+    ability: {
+      slug: "suzumushi",
+      name: { en: "Suzumushi Hyakushiki", ar: "سوزوموشي هياكوشيكي" },
+      description: {
+        en: "Robs the senses: freezes the two strongest enemy cards on this battlefield.",
+        ar: "يسلب الحواس: يجمّد أقوى بطاقتين معاديتين في هذه الساحة.",
+      },
+      applies: ["freeze"],
+      onPlay: (state, self) => {
+        const targets = [...enemiesIn(state, self)]
+          .sort((a, b) => baseRatingOf(b) - baseRatingOf(a))
+          .slice(0, 2);
+        return targets.reduce((st, e) => applyStatus(st, e.uid, "freeze"), state);
+      },
+    },
+  },
 ];
 
 const BY_SLUG = new Map(DUEL_CHARACTERS.map((d) => [d.slug, d]));
