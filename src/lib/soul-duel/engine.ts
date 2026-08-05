@@ -74,10 +74,18 @@ export interface DuelOptions {
 const AI_WEAPONS: Record<Difficulty, string[]> = {
   practice: ["zangetsu", "hado-90"],
   normal: ["hado-90", "sakanade", "enma-korogi", "daiguren-hyorinmaru"],
-  nightmare: ["the-almighty", "kyoka-suigetsu", "ichimonji", "kannon-biraki"],
+  nightmare: ["the-almighty", "ichimonji", "kannon-biraki", "daiguren-hyorinmaru"],
 };
 
 const emptyGauge = () => ({ charge: 0, limit: 0, pending: false, used: false });
+
+export const emptyMods = (): DuelState["mods"] => ({
+  revealUntil: {},
+  blindUntil: {},
+  lockedRound: {},
+  laneBonus: {},
+  hijack: null,
+});
 
 export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState {
   const difficulty: Difficulty = opts.difficulty ?? "normal";
@@ -112,6 +120,7 @@ export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState
     },
     difficulty,
     ultimateEvent: null,
+    mods: emptyMods(),
   };
 }
 
