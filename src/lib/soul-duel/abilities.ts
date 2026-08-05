@@ -3,7 +3,7 @@ import type { DuelState, Placement, Side } from "./types";
 import type { StatusKind } from "./status";
 import {
   addBonus, applyStatus, clearNegatives, enemiesIn, alliesIn, highestOf, lowestOf,
-  makeToken, setOverride, grantImmunity, baseRatingOf, laneBuff, laneLimit,
+  makeToken, setOverride, grantImmunity, baseRatingOf, laneBuff, laneLimit, stealRating,
 } from "./effects";
 
 export interface AbilityCtx {
@@ -98,14 +98,16 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       slug: "the-emperors-revenge",
       name: { en: "The Emperor's Revenge", ar: "انتقام الإمبراطور" },
       description: {
-        en: "Whenever the opponent plays a card on this battlefield, Yhwach gains its Rating.",
-        ar: "كلما لعب الخصم بطاقة في هذه الساحة، يكسب يهواخ تقييمها.",
+        en: "Whenever the opponent plays a card here, Yhwach takes its Rating — the card loses it. Once per card.",
+        ar: "كلما لعب الخصم بطاقة هنا، يسلب يهواخ تقييمها — وتفقده البطاقة. مرة واحدة لكل بطاقة.",
       },
       onRoundEnd: (state, self) => {
-        const stolen = enemiesIn(state, self)
-          .filter((p) => p.round === state.round)
-          .reduce((n, p) => n + baseRatingOf(p), 0);
-        return stolen ? addBonus(state, self.uid, stolen) : state;
+        let next = state;
+        const victims = enemiesIn(state, self).filter((p) => p.round === state.round);
+        for (const victim of victims) {
+          next = stealRating(next, self.uid, victim.uid);
+        }
+        return next;
       },
     },
   },
