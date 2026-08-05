@@ -11,6 +11,7 @@ import {
 import {
   LANE_COUNT, MAX_ROUNDS, type DuelState, type Placement,
 } from "@/lib/soul-duel/types";
+import { BattlefieldCard } from "./BattlefieldCard";
 import { BattlefieldReveal } from "./BattlefieldReveal";
 import { DuelHandCard } from "./DuelHandCard";
 import { DuelLane } from "./DuelLane";
@@ -212,7 +213,12 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
           style={{ animation: "fade-in 0.25s ease-out both" }}
         >
           <div className="w-[min(60vw,230px)]">
-            <BattlefieldCardLazy lane={inspect} state={state} />
+            <BattlefieldCard
+              def={state.lanes[inspect].def}
+              revealed={state.lanes[inspect].revealed}
+              closed={state.lanes[inspect].closed}
+              className="w-full"
+            />
           </div>
           <div className="max-w-sm rounded-2xl border border-white/10 bg-card/70 p-4 text-center">
             <h3 className="font-display text-base font-black" style={{ color: state.lanes[inspect].def.accent }}>
@@ -233,10 +239,4 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
       ) : null}
     </div>
   );
-}
-
-function BattlefieldCardLazy({ state, lane }: { state: DuelState; lane: number }) {
-  const l = state.lanes[lane];
-  const { BattlefieldCard } = require("./BattlefieldCard") as typeof import("./BattlefieldCard");
-  return <BattlefieldCard def={l.def} revealed={l.revealed} closed={l.closed} className="w-full" />;
 }
