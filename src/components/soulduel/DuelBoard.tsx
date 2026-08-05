@@ -14,6 +14,9 @@ import {
 import {
   LANE_COUNT, MAX_ROUNDS, type Difficulty, type DuelState, type Placement,
 } from "@/lib/soul-duel/types";
+import { abilityOf } from "@/lib/soul-duel/abilities";
+import { AbilityAnnounce, type Announcement } from "./AbilityAnnounce";
+import { CardInspector } from "./CardInspector";
 import { BattlefieldCard } from "./BattlefieldCard";
 import { BattlefieldReveal } from "./BattlefieldReveal";
 import { DuelHandCard } from "./DuelHandCard";
@@ -38,6 +41,9 @@ export function DuelBoard({
   const [selected, setSelected] = useState<string | null>(null);
   const [mover, setMover] = useState<string | null>(null);
   const [inspect, setInspect] = useState<number | null>(null);
+  const [card, setCard] = useState<Placement | null>(null);
+  const [announce, setAnnounce] = useState<Announcement | null>(null);
+  const announced = useRef<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [cinematic, setCinematic] = useState<DuelState["ultimateEvent"]>(null);
   const [fragments, setFragments] = useState<number | null>(null);
@@ -149,6 +155,21 @@ export function DuelBoard({
     play("reveal");
   }, [pool, difficulty, weaponId]);
 
+  /* First time each unique ability fires in a match, name it for the player. */
+  useEffect(() => {
+    for (const p of state.placements) {
+      const slug = p.card.character.slug;
+      if (announced.current.has(slug)) continue;
+      const ability = abilityOf(slug);
+      announced.current.add(slug);
+      if (!ability) continue;
+      setAnnounce({ id: `${p.uid}-${slug}`, character: p.card.character, ability });
+      break;
+    }
+  }, [state.placements]);
+
+  const live = card ? (state.placements.find((p) => p.uid === card.uid) ?? null) : null;
+
   const revealIndex = state.phase === "reveal" ? Math.min(state.round, LANE_COUNT) - 1 : -1;
 
   return (
@@ -238,13 +259,7 @@ export function DuelBoard({
             }
             onPlace={() => place(i)}
             onInspect={() => { setInspect(i); play("tap"); }}
-            onUndo={undo}
-            onPickMover={(uid) => {
-              setMover((m) => (m === uid ? null : uid));
-              setSelected(null);
-              play("tap");
-              haptic("tap");
-            }}
+            onInspectCard={(p) => { setCard(p); play("tap"); haptic("tap"); }}
             mover={mover}
           />
         ))}
@@ -341,6 +356,35 @@ export function DuelBoard({
             </p>
           </div>
         </button>
+      ) : null}
+
+      {live ? (
+        <CardInspector
+          state={state}
+          placement={live}
+          rating={rate(live)}
+          onClose={() => setCard(null)}
+          onUndo={
+            live.side === "player"
+              ? () => { undo(live.uid); setCard(null); }
+              : undefined
+          }
+          onRelocate={
+            live.side === "player"
+              ? () => {
+                  setMover(live.uid);
+                  setSelected(null);
+                  setCard(null);
+                  play("tap");
+                  haptic("tap");
+                }
+              : undefined
+          }
+        />
+      ) : null}
+
+      {announce ? (
+        <AbilityAnnounce item={announce} onDone={() => setAnnounce(null)} />
       ) : null}
 
       {cinematic ? (
