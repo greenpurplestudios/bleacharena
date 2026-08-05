@@ -149,10 +149,6 @@ export function stealRating(state: DuelState, thiefUid: string, victimUid: strin
   return mark(next);
 }
 
-export function laneBuffLegacy(state: DuelState, lane: number, side: Side, amount: number): DuelState {
-  return { ...state, laneBuffs: [...state.laneBuffs, { lane, side, amount }] };
-}
-
 export function laneLimit(state: DuelState, lane: number, side: Side, max: number): DuelState {
   return { ...state, laneLimits: [...state.laneLimits, { lane, side, max }] };
 }
