@@ -104,7 +104,7 @@ export function ForgeCinematic({ weaponId, onDone }: { weaponId: string; onDone:
             onClick={onDone}
             className="tactile mt-6 rounded-2xl border border-white/15 px-6 py-2.5 font-display text-xs font-black uppercase tracking-[0.25em] rtl:tracking-normal"
           >
-            {t("continue")}
+            {t("close")}
           </button>
         </div>
       )}
