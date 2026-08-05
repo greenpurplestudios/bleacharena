@@ -1,8 +1,8 @@
-import { memo } from "react";
+import { memo, type ReactElement } from "react";
 import { useI18n } from "@/lib/i18n";
 import { STATUS_DEFS, type StatusInstance, type StatusKind } from "@/lib/soul-duel/status";
 
-const PATHS: Record<StatusKind, JSX.Element> = {
+const PATHS: Record<StatusKind, ReactElement> = {
   burn: (
     <path d="M12 2c1.5 3.4.4 5.2-1 6.8-1.7 2-3.6 3.6-3.6 6.6A4.6 4.6 0 0 0 12 20a4.6 4.6 0 0 0 4.6-4.6c0-2.3-1.1-3.7-2.2-5.3-.5.9-1.2 1.5-2 1.8.6-3.4 1-6.3-.4-9.9Z" />
   ),
