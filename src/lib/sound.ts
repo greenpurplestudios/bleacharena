@@ -309,6 +309,77 @@ export function playDuelClash() {
   tone(140, 0.3, "sine", 0.08 * v, 0.06);
 }
 
+/** A card gains Rating — a bright ascending shimmer. */
+export function playDuelBuff() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  [523, 784, 1046].forEach((f, i) => tone(f, 0.28, "sine", 0.05 * v, i * 0.05));
+  noise(0.2, 0.02 * v, 4200, 1.4, 0.05);
+}
+
+/** A card loses Rating — a dull descending crack. */
+export function playDuelDebuff() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  sweep(520, 120, 0.35, "square", 0.04 * v);
+  tone(90, 0.3, "sine", 0.08 * v, 0.05);
+}
+
+/** Burn / Freeze / Shield signatures. */
+export function playStatusFx(kind: "burn" | "freeze" | "shield") {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  if (kind === "burn") {
+    noise(0.5, 0.05 * v, 900, 0.5);
+    sweep(260, 700, 0.4, "sawtooth", 0.035 * v, 0.05);
+  } else if (kind === "freeze") {
+    [1568, 2093, 2637].forEach((f, i) => tone(f, 0.3, "triangle", 0.028 * v, i * 0.05));
+    tone(110, 0.5, "sine", 0.06 * v, 0.1);
+  } else {
+    tone(392, 0.35, "sine", 0.06 * v);
+    tone(587, 0.5, "sine", 0.05 * v, 0.06);
+    noise(0.3, 0.02 * v, 3000, 1.2, 0.02);
+  }
+}
+
+/** A card is torn apart / imprisoned. */
+export function playCardBreak() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  noise(0.35, 0.09 * v, 2600, 0.6);
+  sweep(900, 90, 0.4, "sawtooth", 0.05 * v, 0.03);
+  tone(60, 0.6, "sine", 0.11 * v, 0.06);
+}
+
+/** The Reiatsu Gauge crosses a threshold (1 = 25%, 4 = full). */
+export function playGaugeTier(tier: number) {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  const base = [0, 392, 523, 659, 880][Math.max(0, Math.min(4, tier))];
+  if (!base) return;
+  tone(base, 0.3, "sine", 0.05 * v);
+  tone(base * 2, 0.4, "triangle", 0.03 * v, 0.05);
+  if (tier >= 4) {
+    sweep(300, 1400, 0.6, "sawtooth", 0.045 * v, 0.05);
+    tone(65, 1.0, "sine", 0.1 * v, 0.1);
+  }
+}
+
+/** Short sting behind an ability announcement card. */
+export function playAnnounce() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  noise(0.18, 0.03 * v, 3200, 1.2);
+  tone(660, 0.16, "triangle", 0.05 * v, 0.02);
+  tone(990, 0.28, "sine", 0.04 * v, 0.08);
+}
+
 /* ---------- Ultimate Weapons ---------- */
 
 export type UltimateAudio =

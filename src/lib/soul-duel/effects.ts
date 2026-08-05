@@ -1,5 +1,5 @@
 import type { Character } from "@/types/character";
-import { duelDefOf } from "./abilities";
+import { ANT_SLUG, duelDefOf } from "./abilities";
 import { STATUS_DEFS, type StatusKind } from "./status";
 import type { DuelCard, DuelState, Placement, Side } from "./types";
 
@@ -13,6 +13,8 @@ export function baseRatingOf(p: Placement): number {
 }
 
 export function immuneToModifiers(p: Placement): boolean {
+  // The Black Ant is absolute: no buff, debuff, status or battlefield rule.
+  if (p.card.character.slug === ANT_SLUG) return true;
   return !!duelDefOf(p.card.character.slug)?.immuneToModifiers;
 }
 
