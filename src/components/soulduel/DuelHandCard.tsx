@@ -4,6 +4,8 @@ import { RARITY_COLOR } from "@/lib/rarity";
 import { framingOf } from "@/lib/portrait";
 import { abilityOf } from "@/lib/soul-duel/abilities";
 import type { DuelCard } from "@/lib/soul-duel/types";
+import { STATUS_DEFS } from "@/lib/soul-duel/status";
+import { StatusIcon } from "./StatusIcon";
 
 /** A card in the player's hand: portrait, cost, rating and ability blurb. */
 export const DuelHandCard = memo(function DuelHandCard({
@@ -17,7 +19,7 @@ export const DuelHandCard = memo(function DuelHandCard({
   disabled: boolean;
   onSelect: () => void;
 }) {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const c = card.character;
   const color = RARITY_COLOR[c.rarity];
   const f = framingOf(c.slug);
@@ -68,9 +70,37 @@ export const DuelHandCard = memo(function DuelHandCard({
           {c.name[locale]}
         </span>
       </div>
-      <p className="line-clamp-2 min-h-[26px] px-1.5 py-1 text-[8px] leading-tight text-muted-foreground">
-        {ability ? ability.description[locale] : ""}
-      </p>
+      <div className="min-h-[40px] px-1.5 py-1">
+        {ability ? (
+          <>
+            <p
+              className="truncate text-center font-display text-[8px] font-black uppercase tracking-wide rtl:tracking-normal"
+              style={{ color }}
+            >
+              {ability.name[locale]}
+            </p>
+            <p className="line-clamp-2 text-center text-[8px] leading-tight text-muted-foreground">
+              {ability.description[locale]}
+            </p>
+            {ability.applies?.length ? (
+              <span className="mt-0.5 flex items-center justify-center gap-1">
+                {ability.applies.map((k) => (
+                  <StatusIcon
+                    key={k}
+                    status={{ kind: k, remaining: STATUS_DEFS[k].duration }}
+                    size={9}
+                    showDuration={false}
+                  />
+                ))}
+              </span>
+            ) : null}
+          </>
+        ) : (
+          <p className="text-center text-[8px] leading-tight text-muted-foreground">
+            {t("sdNoAbility")}
+          </p>
+        )}
+      </div>
     </button>
   );
 });
