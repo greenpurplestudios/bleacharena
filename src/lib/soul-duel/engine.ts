@@ -1,6 +1,6 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
-import { abilityOf, duelDefOf } from "./abilities";
+import { ANT_SLUG, abilityOf, duelDefOf } from "./abilities";
 import { asOwner, canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
 import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import { ultimateOf, STARTER_WEAPON } from "./ultimates";
@@ -485,6 +485,8 @@ function raceMatches(character: Character, races: string[]): boolean {
 
 /** Final rating of a single placed card, with every active modifier applied. */
 export function ratingOf(state: DuelState, p: Placement): number {
+  // The Black Ant never changes — not by ability, battlefield or Ultimate.
+  if (p.card.character.slug === ANT_SLUG) return 1;
   if (p.imprisoned) return 0;
   if ((p.zeroUntilRound ?? 0) >= state.round) return 0;
   const base = p.override ?? p.card.character.overall;

@@ -1,4 +1,5 @@
 import type { Character, Locale, Rarity } from "@/types/character";
+import antArt from "@/assets/soulduel/black_ant.jpeg.asset.json";
 import type { DuelState, Placement, Side } from "./types";
 import type { StatusKind } from "./status";
 import {
@@ -46,15 +47,17 @@ const other = (s: Side): Side => (s === "player" ? "opponent" : "player");
 
 /* ------------------------------------------------------------------ tokens */
 
-/** Summoned filler card (Ichibe's Black Ant). */
+/** Ichibe's Black Ant. Permanently locked at 1 Rating — nothing touches it. */
+export const ANT_SLUG = "black-ant";
+
 export const ANT_CHARACTER: Character = {
   id: "token-ant",
-  slug: "black-ant",
+  slug: ANT_SLUG,
   name: { en: "Black Ant", ar: "النملة السوداء" },
   faction: "Royal Guard",
   rarity: "common" as Rarity,
   overall: 1,
-  image: null,
+  image: antArt.url,
 };
 
 /* ------------------------------------------------------------- definitions */
@@ -348,13 +351,11 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       slug: "lonely-realm",
       name: { en: "Lonely Realm", ar: "عالم الوحدة" },
       description: {
-        en: "If played into an empty or nearly empty battlefield, the enemy may keep only one card here.",
-        ar: "إذا لُعب في ساحة خالية أو شبه خالية، لا يمكن للخصم امتلاك أكثر من بطاقة واحدة هنا.",
+        en: "This battlefield is limited to one card per player — for both sides.",
+        ar: "تصبح هذه الساحة محدودة ببطاقة واحدة لكل لاعب — للطرفين معاً.",
       },
       onPlay: (state, self) =>
-        enemiesIn(state, self).length <= 1
-          ? laneLimit(state, self.lane, other(self.side), 1)
-          : state,
+        laneLimit(laneLimit(state, self.lane, self.side, 1), self.lane, other(self.side), 1),
     },
   },
   {

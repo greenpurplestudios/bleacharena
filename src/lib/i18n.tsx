@@ -693,6 +693,38 @@ export const dict = {
   sdMovable: { en: "Can relocate", ar: "يمكنه الانتقال" },
   nameFrame: { en: "Name Frame", ar: "إطار الاسم" },
   inviteFriends: { en: "Invite Friends", ar: "ادعُ أصدقاءك" },
+
+  /* ---- Soul Duel: gauge, inspection, announcements, forge dialogue ---- */
+  sdGaugeStirring: { en: "Stirring", ar: "يتحرّك" },
+  sdGaugeRising: { en: "Rising", ar: "يتصاعد" },
+  sdGaugeSurging: { en: "Surging", ar: "يهيج" },
+  sdGaugeOverflow: { en: "Overflowing", ar: "يفيض" },
+  sdGaugeDormant: { en: "Dormant", ar: "ساكن" },
+  sdInspect: { en: "Card details", ar: "تفاصيل البطاقة" },
+  sdCurrentRating: { en: "Current Rating", ar: "التقييم الحالي" },
+  sdBaseRating: { en: "Base", ar: "الأساس" },
+  sdBuffs: { en: "Buffs", ar: "تعزيزات" },
+  sdDebuffs: { en: "Debuffs", ar: "إضعافات" },
+  sdStatuses: { en: "Status Effects", ar: "التأثيرات" },
+  sdNoStatuses: { en: "None", ar: "لا شيء" },
+  sdElement: { en: "Element", ar: "العنصر" },
+  sdFaction: { en: "Faction", ar: "الانتماء" },
+  sdAbility: { en: "Ability", ar: "القدرة" },
+  sdNoAbility: { en: "Rating-only card — no ability.", ar: "بطاقة تقييم فقط — بلا قدرة." },
+  sdReturnHand: { en: "Return to hand", ar: "أعدها لليد" },
+  sdRelocateCard: { en: "Relocate", ar: "انقلها" },
+  sdCloseCard: { en: "Close", ar: "إغلاق" },
+  sdAntLocked: {
+    en: "Locked at 1 Rating — nothing can change it.",
+    ar: "مثبتة على تقييم ١ — لا شيء يغيّرها.",
+  },
+  sdAbilityActivated: { en: "Ability Activated", ar: "تفعّلت القدرة" },
+  sdNewBadge: { en: "New", ar: "جديد" },
+  newsPlayNow: { en: "Play Now", ar: "العب الآن" },
+  nimaiyaLine1: { en: "Now THAT’S a Zanpakutō!", ar: "!هذا هو الزانباكوتو الحقيقي" },
+  nimaiyaLine2: { en: "A blade’s got a soul!", ar: "!للنصل روح" },
+  nimaiyaLine3: { en: "Let’s see if you’re worthy.", ar: "لنرَ إن كنت جديراً." },
+  nimaiyaLine4: { en: "Don’t blame me if it’s too sharp.", ar: "لا تلمني إن كان حاداً أكثر من اللازم." },
 };
 
 export type TKey = keyof typeof dict;
