@@ -248,35 +248,35 @@ export function ultimateOf(id: string | undefined): UltimateDef {
 /** Short rules blurb shown in the Forge and the pre-duel loadout. */
 export const ULTIMATE_EFFECT_TEXT: Record<string, Record<Locale, string>> = {
   zangetsu: {
-    en: "Tears the contested battlefield: −25 Rating to every enemy there, +10 to your cards.",
-    ar: "يمزق الساحة المتنازع عليها: −٢٥ لكل عدو هناك، +١٠ لبطاقاتك.",
+    en: "All three battlefields gain +30 Rating for you.",
+    ar: "الساحات الثلاث كلها تكسب +٣٠ تقييم لصالحك.",
   },
   "the-almighty": {
-    en: "Rewrites the future: −12 Rating to every enemy card, +6 to all of yours.",
-    ar: "يعيد كتابة المستقبل: −١٢ لكل بطاقة معادية، +٦ لكل بطاقاتك.",
-  },
-  "hado-90": {
-    en: "Crushes the strongest enemy card to 0 Rating.",
-    ar: "يسحق أقوى بطاقة معادية إلى تقييم ٠.",
-  },
-  ichimonji: {
-    en: "Blackens names: halves the Rating of every enemy on the contested battlefield.",
-    ar: "يسوّد الأسماء: يقسم تقييم كل عدو في الساحة المتنازع عليها.",
-  },
-  "daiguren-hyorinmaru": {
-    en: "Freezes every enemy card and drains 6 Rating from each.",
-    ar: "يجمّد كل بطاقات الخصم ويستنزف ٦ من تقييم كل منها.",
-  },
-  "enma-korogi": {
-    en: "Inflicts Burn on every enemy card on the board.",
-    ar: "يصيب كل بطاقات الخصم بالاحتراق.",
+    en: "Reveals every opponent card for the next 2 rounds.",
+    ar: "يكشف كل بطاقات الخصم خلال الجولتين القادمتين.",
   },
   "kannon-biraki": {
-    en: "Restores your whole board: +12 Rating and a Shield for every ally.",
-    ar: "يعيد ترميم لوحك: +١٢ تقييم ودرع لكل حليف.",
+    en: "Moves up to 3 cards — yours, the opponent's or both — between battlefields.",
+    ar: "ينقل حتى ٣ بطاقات — لك أو للخصم أو للاثنين — بين الساحات.",
   },
   sakanade: {
-    en: "Inverts the enemy board between the outer battlefields and drains 8 Rating each.",
-    ar: "يقلب لوح الخصم بين الساحتين الطرفيتين ويستنزف ٨ من كل بطاقة.",
+    en: "Three random enemy abilities serve you instead for the rest of the match.",
+    ar: "ثلاث قدرات عشوائية من الخصم تعمل لصالحك حتى نهاية المباراة.",
+  },
+  "daiguren-hyorinmaru": {
+    en: "The opponent cannot play this round; cards they already played are Frozen at 0 Rating.",
+    ar: "لا يستطيع الخصم اللعب هذه الجولة، وبطاقاته الملعوبة تتجمد بتقييم ٠.",
+  },
+  "hado-90": {
+    en: "Shuffles every opponent card randomly between the battlefields.",
+    ar: "يخلط كل بطاقات الخصم عشوائياً بين الساحات.",
+  },
+  ichimonji: {
+    en: "Chooses one enemy card — its Rating becomes 0.",
+    ar: "يختار بطاقة معادية واحدة — يصبح تقييمها ٠.",
+  },
+  "enma-korogi": {
+    en: "The opponent cannot see your played cards or battlefield Ratings for 2 rounds.",
+    ar: "لا يرى الخصم بطاقاتك الملعوبة ولا تقييم الساحات لجولتين.",
   },
 };
