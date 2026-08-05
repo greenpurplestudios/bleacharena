@@ -27,6 +27,7 @@ import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedFriendsRouteImport } from './routes/_authenticated/friends'
+import { Route as AuthenticatedForgeRouteImport } from './routes/_authenticated/forge'
 import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/draft'
 import { Route as AuthenticatedDailyRouteImport } from './routes/_authenticated/daily'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
@@ -128,6 +129,11 @@ const AuthenticatedFriendsRoute = AuthenticatedFriendsRouteImport.update({
   path: '/friends',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedForgeRoute = AuthenticatedForgeRouteImport.update({
+  id: '/forge',
+  path: '/forge',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDraftRoute = AuthenticatedDraftRouteImport.update({
   id: '/draft',
   path: '/draft',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/collection': typeof AuthenticatedCollectionRoute
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
+  '/forge': typeof AuthenticatedForgeRoute
   '/friends': typeof AuthenticatedFriendsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/collection': typeof AuthenticatedCollectionRoute
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
+  '/forge': typeof AuthenticatedForgeRoute
   '/friends': typeof AuthenticatedFriendsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
   '/_authenticated/daily': typeof AuthenticatedDailyRoute
   '/_authenticated/draft': typeof AuthenticatedDraftRoute
+  '/_authenticated/forge': typeof AuthenticatedForgeRoute
   '/_authenticated/friends': typeof AuthenticatedFriendsRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
@@ -285,6 +294,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/daily'
     | '/draft'
+    | '/forge'
     | '/friends'
     | '/home'
     | '/leaderboard'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/daily'
     | '/draft'
+    | '/forge'
     | '/friends'
     | '/home'
     | '/leaderboard'
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/_authenticated/collection'
     | '/_authenticated/daily'
     | '/_authenticated/draft'
+    | '/_authenticated/forge'
     | '/_authenticated/friends'
     | '/_authenticated/home'
     | '/_authenticated/leaderboard'
@@ -497,6 +509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFriendsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/forge': {
+      id: '/_authenticated/forge'
+      path: '/forge'
+      fullPath: '/forge'
+      preLoaderRoute: typeof AuthenticatedForgeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/draft': {
       id: '/_authenticated/draft'
       path: '/draft'
@@ -579,6 +598,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
   AuthenticatedDailyRoute: typeof AuthenticatedDailyRoute
   AuthenticatedDraftRoute: typeof AuthenticatedDraftRoute
+  AuthenticatedForgeRoute: typeof AuthenticatedForgeRoute
   AuthenticatedFriendsRoute: typeof AuthenticatedFriendsRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
@@ -605,6 +625,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
   AuthenticatedDailyRoute: AuthenticatedDailyRoute,
   AuthenticatedDraftRoute: AuthenticatedDraftRoute,
+  AuthenticatedForgeRoute: AuthenticatedForgeRoute,
   AuthenticatedFriendsRoute: AuthenticatedFriendsRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
