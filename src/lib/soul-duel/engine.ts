@@ -238,16 +238,29 @@ function resolveUltimates(state: DuelState): DuelState {
 export function canPlay(state: DuelState, side: Side, card: DuelCard, lane: number): boolean {
   return (
     state.phase === "play" &&
+    !isLockedOut(state, side) &&
     laneIsOpen(state, lane, side) &&
     card.cost <= remainingReiatsu(state, side)
   );
 }
 
-/** Opponent cards on a hidden battlefield stay concealed until its reveal round. */
-export function isHidden(state: DuelState, p: Placement): boolean {
-  if (p.side === "player") return false;
+/** Daiguren Hyōrinmaru freezes a side out of playing for one round. */
+export function isLockedOut(state: DuelState, side: Side): boolean {
+  return state.mods.lockedRound[side] === state.round;
+}
+
+/** Enma Kōrogi blinds a side: it cannot read enemy cards or battlefield Ratings. */
+export function isBlinded(state: DuelState, viewer: Side): boolean {
+  return state.phase !== "ended" && (state.mods.blindUntil[viewer] ?? 0) >= state.round;
+}
+
+/** Enemy cards concealed by a battlefield rule, The Almighty or Enma Kōrogi. */
+export function isHidden(state: DuelState, p: Placement, viewer: Side = "player"): boolean {
+  if (p.side === viewer || state.phase === "ended") return false;
+  if ((state.mods.revealUntil[viewer] ?? 0) >= state.round) return false;
+  if (isBlinded(state, viewer)) return true;
   const until = state.lanes[p.lane]?.def.rules.hiddenUntilRound;
-  return !!until && state.round < until && state.phase !== "ended";
+  return !!until && state.round < until;
 }
 
 /* ---------------------------------------------------------------- mutation */
