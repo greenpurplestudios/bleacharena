@@ -1,6 +1,10 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
-import { abilityOf } from "./abilities";
+import { abilityOf, duelDefOf } from "./abilities";
+import {
+  addBonus, baseRatingOf, canRelocate, hasStatus, immuneToModifiers, isFrozen,
+} from "./effects";
+import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import {
   DECK_SIZE, HAND_SIZE, LANE_COUNT, MAX_PER_LANE, MAX_ROUNDS, REIATSU_BY_ROUND,
   type DuelCard, type DuelLogEntry, type DuelLogKey, type DuelResult,
@@ -14,7 +18,7 @@ const COST_BY_RARITY: Record<Rarity, number> = {
 };
 
 export function costOf(c: Character): number {
-  return COST_BY_RARITY[c.rarity] ?? 3;
+  return duelDefOf(c.slug)?.cost ?? COST_BY_RARITY[c.rarity] ?? 3;
 }
 
 export function reiatsuForRound(round: number): number {
@@ -79,6 +83,8 @@ export function createDuel(pool: Character[]): DuelState {
     decks: { player: p.rest, opponent: o.rest },
     spent: { player: 0, opponent: 0 },
     log: [],
+    laneBuffs: [],
+    laneLimits: [],
   };
 }
 
@@ -90,7 +96,10 @@ export function laneCards(state: DuelState, lane: number, side: Side): Placement
 
 export function laneIsOpen(state: DuelState, lane: number, side: Side): boolean {
   const l = state.lanes[lane];
-  return !!l && l.revealed && !l.closed && laneCards(state, lane, side).length < MAX_PER_LANE;
+  const cap = state.laneLimits
+    .filter((x) => x.lane === lane && x.side === side)
+    .reduce((n, x) => Math.min(n, x.max), MAX_PER_LANE);
+  return !!l && l.revealed && !l.closed && laneCards(state, lane, side).length < cap;
 }
 
 export function remainingReiatsu(state: DuelState, side: Side): number {
@@ -132,14 +141,44 @@ export function revealLane(state: DuelState, lane: number): DuelState {
 export function playCard(state: DuelState, side: Side, cardUid: string, lane: number): DuelState {
   const card = state.hands[side].find((c) => c.uid === cardUid);
   if (!card || !canPlay(state, side, card, lane)) return state;
-  return {
+  const buff = state.laneBuffs.find((b) => b.lane === lane && b.side === side);
+  const placement: Placement = {
+    uid: card.uid,
+    card,
+    side,
+    lane,
+    round: state.round,
+    statuses: [],
+    bonus: buff ? buff.amount : 0,
+    movesUsed: 0,
+  };
+  const next: DuelState = {
     ...state,
     hands: { ...state.hands, [side]: state.hands[side].filter((c) => c.uid !== cardUid) },
     spent: { ...state.spent, [side]: state.spent[side] + card.cost },
-    placements: [
-      ...state.placements,
-      { uid: card.uid, card, side, lane, round: state.round },
-    ],
+    placements: [...state.placements, placement],
+    laneBuffs: buff ? state.laneBuffs.filter((b) => b !== buff) : state.laneBuffs,
+  };
+  const ability = abilityOf(card.character.slug);
+  const played = next.placements[next.placements.length - 1];
+  return ability?.onPlay ? ability.onPlay(next, played) : next;
+}
+
+/** Abilities with a move budget (Urahara, Yoruichi) relocate a placed card. */
+export function canMove(state: DuelState, uid: string, lane: number): boolean {
+  const p = state.placements.find((x) => x.uid === uid);
+  if (!p || state.phase !== "play" || p.lane === lane) return false;
+  return canRelocate(p) && laneIsOpen(state, lane, p.side);
+}
+
+export function moveCard(state: DuelState, uid: string, lane: number): DuelState {
+  if (!canMove(state, uid, lane)) return state;
+  return {
+    ...state,
+    placements: state.placements.map((p) =>
+      p.uid === uid ? { ...p, lane, movesUsed: p.movesUsed + 1 } : p,
+    ),
+    log: [...state.log, log(state, "logMove", lane)],
   };
 }
 
