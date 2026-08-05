@@ -276,3 +276,35 @@ export function syncAmbientToPrefs() {
   if (prefs.music && prefs.ambient !== false) startAmbient();
   else stopAmbient();
 }
+/* ---------- Soul Duel ---------- */
+
+/** Signature battlefield reveal: gate riser, stone impact and a bell shimmer. */
+export function playBattlefieldReveal() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  sweep(90, 900, 0.85, "sawtooth", 0.035 * v);
+  noise(0.45, 0.05 * v, 1800, 0.7, 0.72);
+  tone(62, 1.3, "sine", 0.12 * v, 0.74);
+  [392, 587, 784, 1175].forEach((f, i) => tone(f, 0.9, "sine", 0.06 * v, 0.8 + i * 0.07));
+  [1568, 2093].forEach((f, i) => tone(f, 0.8, "triangle", 0.025 * v, 1.25 + i * 0.13));
+}
+
+/** Card landing on a battlefield. */
+export function playDuelPlace() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  noise(0.12, 0.045 * v, 2400, 1.1);
+  tone(180, 0.16, "triangle", 0.07 * v, 0.05);
+}
+
+/** Round resolution stinger. */
+export function playDuelClash() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  tone(2400, 0.08, "sawtooth", 0.03 * v);
+  tone(1500, 0.14, "triangle", 0.035 * v, 0.03);
+  tone(140, 0.3, "sine", 0.08 * v, 0.06);
+}
