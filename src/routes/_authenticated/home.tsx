@@ -6,6 +6,9 @@ import { NewsFeed, NewsNotification } from "@/components/NewsFeed";
 import { BleachLogo } from "@/components/BleachLogo";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { play, startAmbient } from "@/lib/sound";
+import { haptic } from "@/lib/haptics";
+import duelBanner from "@/assets/soulduel/soul_duel_banner.jpg";
+import duelLogo from "@/assets/soulduel/soul_duel_logo.png";
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({
@@ -32,6 +35,7 @@ type Tile = {
   icon: string;
   tone: "orange" | "blue" | "violet";
   soon?: boolean;
+  fresh?: boolean;
 };
 
 const TILES: Tile[] = [
@@ -43,7 +47,7 @@ const TILES: Tile[] = [
   { to: "/collection", key: "collection", desc: "collectionDesc", icon: "▦", tone: "blue" },
   { to: "/friends", key: "friendsAndClans", desc: "friendsAndClansDesc", icon: "♥", tone: "violet" },
   { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★", tone: "blue" },
-  { to: "/soul-duel", key: "soulDuel", desc: "soulDuelShort", icon: "⚔", tone: "violet" },
+  { to: "/soul-duel", key: "soulDuel", desc: "soulDuelShort", icon: "⚔", tone: "violet", fresh: true },
 ];
 
 const TONE: Record<Tile["tone"], string> = {
@@ -98,6 +102,38 @@ function HomeHub() {
           <span aria-hidden className="relative font-display text-4xl sm:text-5xl">卍</span>
         </Link>
 
+        {/* Soul Duel launch banner */}
+        <Link
+          to="/soul-duel"
+          onClick={() => { play("sword"); haptic("draft"); startAmbient(); }}
+          className="tactile group relative mt-4 block overflow-hidden rounded-3xl border border-white/12"
+          style={{ boxShadow: "0 0 44px -20px oklch(0.7 0.15 300)" }}
+        >
+          <img
+            src={duelBanner}
+            alt=""
+            aria-hidden
+            className="h-36 w-full object-cover transition-transform duration-700 group-hover:scale-105 sm:h-44"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, oklch(0.12 0.02 280 / 0.25), oklch(0.08 0.02 280 / 0.9))",
+            }}
+          />
+          <span className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+            <img src={duelLogo} alt={t("soulDuel")} className="h-14 w-auto sm:h-16" />
+            <span className="mt-2 rounded-full border border-primary/50 bg-primary/20 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.25em] text-primary rtl:tracking-normal">
+              {t("sdNewBadge")}
+            </span>
+            <span className="mt-2 font-display text-[11px] font-black uppercase tracking-[0.25em] text-accent rtl:tracking-normal">
+              {t("newsPlayNow")}
+            </span>
+          </span>
+        </Link>
+
         {/* Latest announcement */}
         <NewsNotification className="mt-5" />
 
@@ -126,6 +162,11 @@ function HomeHub() {
                 <span className="font-display text-3xl text-primary transition-transform duration-300 group-hover:scale-110" aria-hidden>
                   {tile.icon}
                 </span>
+                {tile.fresh && (
+                  <span className="rounded-full border border-primary/50 bg-primary/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-primary">
+                    {t("sdNewBadge")}
+                  </span>
+                )}
                 {tile.soon && (
                   <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-accent">
                     {t("comingSoon")}
