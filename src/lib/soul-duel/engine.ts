@@ -1,9 +1,7 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
 import { abilityOf, duelDefOf } from "./abilities";
-import {
-  addBonus, baseRatingOf, canRelocate, hasStatus, immuneToModifiers, isFrozen,
-} from "./effects";
+import { canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
 import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import {
   DECK_SIZE, HAND_SIZE, LANE_COUNT, MAX_PER_LANE, MAX_ROUNDS, REIATSU_BY_ROUND,
