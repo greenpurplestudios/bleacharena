@@ -5,10 +5,13 @@ export function DuelResultPanel({
   state,
   result,
   onRematch,
+  fragments,
 }: {
   state: DuelState;
   result: DuelResult;
   onRematch: () => void;
+  /** Broken Sword Fragments earned from this duel. */
+  fragments?: number;
 }) {
   const { t, locale } = useI18n();
   const title =
@@ -55,6 +58,15 @@ export function DuelResultPanel({
         <p className="mt-4 text-xs text-muted-foreground">
           {t("sdTotalRating")}: {result.total.player} — {result.total.opponent}
         </p>
+
+        {fragments ? (
+          <p
+            className="mt-3 rounded-xl border border-accent/30 bg-accent/10 px-3 py-2 font-display text-xs font-black text-accent"
+            style={{ animation: "scale-in 0.4s 0.3s ease-out both" }}
+          >
+            +{fragments} {t("sdFragmentsShort")}
+          </p>
+        ) : null}
 
         <button
           type="button"
