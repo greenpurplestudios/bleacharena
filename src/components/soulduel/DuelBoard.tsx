@@ -70,8 +70,7 @@ export function DuelBoard({
   const scores = useMemo(
     () =>
       state.lanes.map((_, i) => {
-        const t = laneTotals(state, i);
-        return blinded ? { ...t, opponent: null } : t;
+        return laneTotals(state, i);
       }),
     [state, blinded],
   );
