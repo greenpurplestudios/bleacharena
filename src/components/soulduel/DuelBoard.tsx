@@ -151,7 +151,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
             {t("sdDeck")}: {state.decks.player.length}
           </span>
         </div>
-        <div className="flex w-full min-w-0 gap-2 overflow-x-auto pb-2">
+        <div className="flex w-[calc(100vw-2rem)] max-w-full gap-2 overflow-x-auto pb-2 sm:w-full">
           {state.hands.player.map((c) => (
             <DuelHandCard
               key={c.uid}
