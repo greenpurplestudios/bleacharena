@@ -3,8 +3,11 @@ import { BATTLEFIELDS } from "@/data/battlefields";
 import { abilityOf, duelDefOf } from "./abilities";
 import { canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
 import { BURN_DAMAGE, STATUS_DEFS } from "./status";
+import { ultimateOf, STARTER_WEAPON } from "./ultimates";
 import {
-  DECK_SIZE, HAND_SIZE, LANE_COUNT, MAX_PER_LANE, MAX_ROUNDS, REIATSU_BY_ROUND,
+  CLASH_MARGIN, DECK_SIZE, GAUGE_MAX, HAND_SIZE, LANE_COUNT, LIMIT_MAX, MAX_PER_LANE,
+  MAX_ROUNDS, REIATSU_BY_ROUND,
+  type Difficulty,
   type DuelCard, type DuelLogEntry, type DuelLogKey, type DuelResult,
   type DuelState, type LaneScore, type Placement, type Side,
 } from "./types";
@@ -60,7 +63,24 @@ export function buildDeck(pool: Character[]): DuelCard[] {
     .map((character) => ({ uid: uid(), character, cost: costOf(character) }));
 }
 
-export function createDuel(pool: Character[]): DuelState {
+export interface DuelOptions {
+  difficulty?: Difficulty;
+  /** Ultimate Weapon the player equipped in Nimaiya's Forge. */
+  weaponId?: string;
+  /** Weapon the AI brings (defaults to a themed pick). */
+  opponentWeaponId?: string;
+}
+
+const AI_WEAPONS: Record<Difficulty, string[]> = {
+  practice: ["zangetsu", "hado-90"],
+  normal: ["hado-90", "sakanade", "enma-korogi", "daiguren-hyorinmaru"],
+  nightmare: ["the-almighty", "kyoka-suigetsu", "ichimonji", "kannon-biraki"],
+};
+
+const emptyGauge = () => ({ charge: 0, limit: 0, pending: false, used: false });
+
+export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState {
+  const difficulty: Difficulty = opts.difficulty ?? "normal";
   const lanes = shuffle(BATTLEFIELDS)
     .slice(0, LANE_COUNT)
     .map((def) => ({ def, revealed: false, closed: false }));
@@ -83,6 +103,15 @@ export function createDuel(pool: Character[]): DuelState {
     log: [],
     laneBuffs: [],
     laneLimits: [],
+    gauge: { player: emptyGauge(), opponent: emptyGauge() },
+    weapons: {
+      player: opts.weaponId ?? STARTER_WEAPON,
+      opponent:
+        opts.opponentWeaponId ??
+        AI_WEAPONS[difficulty][Math.floor(Math.random() * AI_WEAPONS[difficulty].length)],
+    },
+    difficulty,
+    ultimateEvent: null,
   };
 }
 
@@ -102,6 +131,98 @@ export function laneIsOpen(state: DuelState, lane: number, side: Side): boolean 
 
 export function remainingReiatsu(state: DuelState, side: Side): number {
   return reiatsuForRound(state.round) - state.spent[side];
+}
+
+/* ---------------------------------------------------- Reiatsu Gauge & Ultimates */
+
+/** True when a side may fire its Ultimate Weapon right now. */
+export function canActivateUltimate(state: DuelState, side: Side): boolean {
+  const g = state.gauge[side];
+  return state.phase === "play" && !g.used && !g.pending && g.charge >= GAUGE_MAX;
+}
+
+/** Queues an Ultimate — it resolves when the round is settled. */
+export function activateUltimate(state: DuelState, side: Side): DuelState {
+  if (!canActivateUltimate(state, side)) return state;
+  return { ...state, gauge: { ...state.gauge, [side]: { ...state.gauge[side], pending: true } } };
+}
+
+export function cancelUltimate(state: DuelState, side: Side): DuelState {
+  return { ...state, gauge: { ...state.gauge, [side]: { ...state.gauge[side], pending: false } } };
+}
+
+function addCharge(state: DuelState, side: Side, amount: number): DuelState {
+  const g = state.gauge[side];
+  if (g.used) return state;
+  const raw = g.charge + amount;
+  const charge = Math.min(GAUGE_MAX, raw);
+  const limit = Math.min(LIMIT_MAX, g.limit + Math.max(0, raw - GAUGE_MAX));
+  return { ...state, gauge: { ...state.gauge, [side]: { ...g, charge, limit } } };
+}
+
+/**
+ * Gauge growth rewards performance: holding battlefields and out-rating the
+ * opponent fills it faster. Even play reaches 100 in round 6, strong play in
+ * round 5 and exceptional play in round 4.
+ */
+function chargeRound(state: DuelState): DuelState {
+  let next = state;
+  const totals = state.lanes.map((_, i) => laneTotals(state, i));
+  (["player", "opponent"] as Side[]).forEach((side) => {
+    const led = totals.filter((t) => t.winner === side).length;
+    const advantage = totals.reduce(
+      (n, t) => n + (side === "player" ? t.player - t.opponent : t.opponent - t.player),
+      0,
+    );
+    const gain = Math.min(26, 10 + led * 5 + Math.max(0, Math.min(8, Math.floor(advantage / 15))));
+    next = addCharge(next, side, gain);
+  });
+  return next;
+}
+
+function spendGauge(state: DuelState, side: Side): DuelState {
+  return {
+    ...state,
+    gauge: { ...state.gauge, [side]: { charge: 0, limit: 0, pending: false, used: true } },
+  };
+}
+
+/** Resolves queued Ultimates — including the Reiatsu Clash when both fire. */
+function resolveUltimates(state: DuelState): DuelState {
+  const p = state.gauge.player.pending;
+  const o = state.gauge.opponent.pending;
+  if (!p && !o) return { ...state, ultimateEvent: null };
+
+  const eventId = uid();
+
+  if (p && o) {
+    const limits = { player: state.gauge.player.limit, opponent: state.gauge.opponent.limit };
+    const diff = Math.abs(limits.player - limits.opponent);
+    const winner: Side | null =
+      diff >= CLASH_MARGIN ? (limits.player > limits.opponent ? "player" : "opponent") : null;
+
+    let next = spendGauge(spendGauge(state, "player"), "opponent");
+    if (winner) next = ultimateOf(state.weapons[winner]).effect(next, winner);
+    return {
+      ...next,
+      ultimateEvent: {
+        id: eventId,
+        round: state.round,
+        kind: "clash",
+        side: winner ?? undefined,
+        weaponId: winner ? state.weapons[winner] : undefined,
+        clash: { weapons: { ...state.weapons }, limits, winner },
+      },
+    };
+  }
+
+  const side: Side = p ? "player" : "opponent";
+  const weaponId = state.weapons[side];
+  const next = ultimateOf(weaponId).effect(spendGauge(state, side), side);
+  return {
+    ...next,
+    ultimateEvent: { id: eventId, round: state.round, kind: "single", side, weaponId },
+  };
 }
 
 export function canPlay(state: DuelState, side: Side, card: DuelCard, lane: number): boolean {
@@ -149,6 +270,7 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
     statuses: [],
     bonus: buff ? buff.amount : 0,
     movesUsed: 0,
+    stolen: [],
   };
   const next: DuelState = {
     ...state,
