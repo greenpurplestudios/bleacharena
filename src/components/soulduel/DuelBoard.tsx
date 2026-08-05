@@ -5,8 +5,8 @@ import { haptic } from "@/lib/haptics";
 import { play, playDuelClash, playDuelPlace } from "@/lib/sound";
 import { takeOpponentTurn } from "@/lib/soul-duel/ai";
 import {
-  canPlay, createDuel, isHidden, laneTotals, playCard, ratingOf as ratingFor,
-  remainingReiatsu, resolveRound, revealLane,
+  canMove, canPlay, createDuel, isHidden, laneTotals, moveCard, playCard,
+  ratingOf as ratingFor, remainingReiatsu, resolveRound, revealLane,
 } from "@/lib/soul-duel/engine";
 import {
   LANE_COUNT, MAX_ROUNDS, type DuelState, type Placement,
@@ -21,6 +21,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
   const { t, locale } = useI18n();
   const [state, setState] = useState<DuelState>(() => createDuel(pool));
   const [selected, setSelected] = useState<string | null>(null);
+  const [mover, setMover] = useState<string | null>(null);
   const [inspect, setInspect] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -41,6 +42,18 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
 
   const place = useCallback(
     (lane: number) => {
+      if (mover) {
+        if (!canMove(state, mover, lane)) {
+          play("error");
+          haptic("error");
+          return;
+        }
+        setState((s) => moveCard(s, mover, lane));
+        setMover(null);
+        playDuelPlace();
+        haptic("press");
+        return;
+      }
       if (!selectedCard || !canPlay(state, "player", selectedCard, lane)) {
         play("error");
         haptic("error");
@@ -51,7 +64,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
       playDuelPlace();
       haptic("press");
     },
-    [selectedCard, state],
+    [mover, selectedCard, state],
   );
 
   const undo = useCallback((uid: string) => {
@@ -72,6 +85,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
     if (busy || state.phase !== "play") return;
     setBusy(true);
     setSelected(null);
+    setMover(null);
     playDuelClash();
     haptic("flip");
     window.setTimeout(() => {
@@ -83,6 +97,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
   const rematch = useCallback(() => {
     setState(createDuel(pool));
     setSelected(null);
+    setMover(null);
     play("reveal");
   }, [pool]);
 
@@ -133,10 +148,20 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
             score={scores[i]}
             ratingOf={rate}
             hiddenOpponent={hiddenFor(i)}
-            canPlace={!!selectedCard && canPlay(state, "player", selectedCard, i)}
+            canPlace={
+              mover ? canMove(state, mover, i)
+              : !!selectedCard && canPlay(state, "player", selectedCard, i)
+            }
             onPlace={() => place(i)}
             onInspect={() => { setInspect(i); play("tap"); }}
             onUndo={undo}
+            onPickMover={(uid) => {
+              setMover((m) => (m === uid ? null : uid));
+              setSelected(null);
+              play("tap");
+              haptic("tap");
+            }}
+            mover={mover}
           />
         ))}
       </div>
@@ -172,7 +197,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
       </div>
 
       <p className="mt-1 text-center text-[11px] text-muted-foreground">
-        {selectedCard ? t("sdTapLane") : t("sdSelectCard")}
+        {mover ? t("sdMoveHint") : selectedCard ? t("sdTapLane") : t("sdSelectCard")}
       </p>
 
       <button
