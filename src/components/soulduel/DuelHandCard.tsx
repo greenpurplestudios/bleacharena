@@ -29,6 +29,7 @@ export const DuelHandCard = memo(function DuelHandCard({
       onClick={onSelect}
       disabled={disabled}
       aria-pressed={selected}
+      data-duel-hand-card=""
       className="tactile relative w-[92px] shrink-0 overflow-hidden rounded-xl border bg-card/70 text-start backdrop-blur-sm transition-transform duration-200 disabled:opacity-40 sm:w-[104px]"
       style={{
         borderColor: selected ? color : "rgba(255,255,255,0.12)",
