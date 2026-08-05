@@ -123,6 +123,36 @@ export function laneBuff(state: DuelState, lane: number, side: Side, amount: num
   return { ...state, laneBuffs: [...state.laneBuffs, { lane, side, amount }] };
 }
 
+/**
+ * Moves Rating from one card to another — never duplicates it. The thief only
+ * gains what the victim actually loses, and each victim can be robbed once.
+ */
+export function stealRating(state: DuelState, thiefUid: string, victimUid: string): DuelState {
+  const thief = state.placements.find((p) => p.uid === thiefUid);
+  const victim = state.placements.find((p) => p.uid === victimUid);
+  if (!thief || !victim || thief.uid === victim.uid) return state;
+  if ((thief.stolen ?? []).includes(victim.uid)) return state;
+
+  const mark = (s: DuelState) =>
+    patch(s, thiefUid, (p) => ({ ...p, stolen: [...(p.stolen ?? []), victimUid] }));
+
+  // Shields and immunity stop the theft outright (the shield is spent).
+  if (immuneToModifiers(victim)) return mark(state);
+  if ((victim.immuneUntilRound ?? 0) > state.round) return mark(state);
+  if (hasStatus(victim, "shield")) return mark(consumeShield(state, victimUid));
+
+  const amount = baseRatingOf(victim);
+  if (amount <= 0) return mark(state);
+
+  let next = patch(state, victimUid, (p) => ({ ...p, bonus: p.bonus - amount }));
+  next = patch(next, thiefUid, (p) => ({ ...p, bonus: p.bonus + amount }));
+  return mark(next);
+}
+
+export function laneBuffLegacy(state: DuelState, lane: number, side: Side, amount: number): DuelState {
+  return { ...state, laneBuffs: [...state.laneBuffs, { lane, side, amount }] };
+}
+
 export function laneLimit(state: DuelState, lane: number, side: Side, max: number): DuelState {
   return { ...state, laneLimits: [...state.laneLimits, { lane, side, max }] };
 }
