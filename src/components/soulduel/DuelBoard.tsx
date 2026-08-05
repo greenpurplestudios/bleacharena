@@ -89,7 +89,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
   const revealIndex = state.phase === "reveal" ? Math.min(state.round, LANE_COUNT) - 1 : -1;
 
   return (
-    <div className="relative">
+    <div className="relative overflow-x-clip">
       {/* header */}
       <div className="sticky top-0 z-20 -mx-4 mb-3 border-b border-white/10 bg-background/80 px-4 py-2 backdrop-blur-md">
         <div className="flex items-center justify-between gap-2">
@@ -151,7 +151,7 @@ export function DuelBoard({ pool, onExit }: { pool: Character[]; onExit: () => v
             {t("sdDeck")}: {state.decks.player.length}
           </span>
         </div>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2">
+        <div className="flex gap-2 overflow-x-auto pb-2">
           {state.hands.player.map((c) => (
             <DuelHandCard
               key={c.uid}
