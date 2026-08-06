@@ -185,6 +185,19 @@ export interface DuelResult {
   winner: Side | "tie";
 }
 
+/** One resolved round, kept so the Battle Review can replay the match. */
+export interface RoundRecord {
+  round: number;
+  lanes: LaneScore[];
+  total: Record<Side, number>;
+  /** Cards each side committed during the round. */
+  played: Record<Side, { name: Record<Locale, string>; rating: number; lane: number }[]>;
+  /** Log keys emitted while the round resolved. */
+  events: DuelLogEntry[];
+  /** Ultimate fired this round, if any. */
+  ultimate?: { kind: "single" | "clash"; side?: Side; weaponId?: string; winner?: Side | null };
+}
+
 export const MAX_ROUNDS = 6;
 export const REIATSU_BY_ROUND = [2, 4, 6, 8, 10, 10];
 export const DECK_SIZE = 16;
