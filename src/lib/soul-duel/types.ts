@@ -168,6 +168,8 @@ export interface DuelState {
   difficulty: Difficulty;
   /** Set for one resolution so the cinematic layer can stage it. */
   ultimateEvent?: UltimateEvent | null;
+  /** Round-by-round record powering the post-match Battle Review. */
+  history?: RoundRecord[];
   /** Set once the match ends. */
   result?: DuelResult;
 }
@@ -183,6 +185,19 @@ export interface DuelResult {
   lanesWon: Record<Side, number>;
   total: Record<Side, number>;
   winner: Side | "tie";
+}
+
+/** One resolved round, kept so the Battle Review can replay the match. */
+export interface RoundRecord {
+  round: number;
+  lanes: LaneScore[];
+  total: Record<Side, number>;
+  /** Cards each side committed during the round. */
+  played: Record<Side, { name: Record<Locale, string>; rating: number; lane: number }[]>;
+  /** Log keys emitted while the round resolved. */
+  events: DuelLogEntry[];
+  /** Ultimate fired this round, if any. */
+  ultimate?: { kind: "single" | "clash"; side?: Side; weaponId?: string; winner?: Side | null };
 }
 
 export const MAX_ROUNDS = 6;

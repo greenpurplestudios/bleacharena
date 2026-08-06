@@ -187,20 +187,25 @@ export function DuelBoard({
           <p className="font-display text-xs font-black uppercase tracking-[0.28em] rtl:tracking-normal">
             {t("sdRound")} {Math.min(state.round, MAX_ROUNDS)} / {MAX_ROUNDS}
           </p>
-          <p className="font-display text-xs font-black text-accent">
-            {reiatsu}/{max}
+          <p className="flex items-baseline gap-1 font-display font-black text-accent">
+            <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground rtl:tracking-normal">
+              {t("sdReiatsu")}
+            </span>
+            <span className="text-xl leading-none tabular-nums">{reiatsu}</span>
+            <span className="text-xs text-muted-foreground">/{max}</span>
           </p>
         </div>
-        <div className="mt-1.5 flex items-center gap-1" aria-label={t("sdReiatsu")}>
+        <div className="mt-2 flex items-center gap-1" aria-label={t("sdReiatsu")}>
           {Array.from({ length: 10 }).map((_, i) => (
             <span
               key={i}
-              className="h-1.5 flex-1 rounded-full transition-colors duration-300"
+              className="h-2.5 flex-1 rounded-full transition-colors duration-300"
               style={{
                 background:
                   i < reiatsu ? "oklch(0.8 0.16 220)"
                   : i < max ? "oklch(0.8 0.16 220 / 0.25)"
                   : "oklch(1 0 0 / 0.07)",
+                boxShadow: i < reiatsu ? "0 0 10px oklch(0.8 0.16 220 / 0.55)" : undefined,
               }}
             />
           ))}

@@ -10,6 +10,7 @@ import {
   type Difficulty,
   type DuelCard, type DuelLogEntry, type DuelLogKey, type DuelResult,
   type DuelState, type LaneScore, type Placement, type Side,
+  type RoundRecord,
 } from "./types";
 
 /* ------------------------------------------------------------------ costs */
@@ -184,7 +185,9 @@ function chargeRound(state: DuelState): DuelState {
       (n, t) => n + (side === "player" ? t.player - t.opponent : t.opponent - t.player),
       0,
     );
-    const gain = Math.min(30, 17 + led * 4 + Math.max(0, Math.min(8, Math.floor(advantage / 15))));
+    // Soul Pressure grows ~18% faster than the original tuning so a committed
+    // player reaches their Ultimate by round 5 (round 4 on a dominant board).
+    const gain = Math.min(34, 20 + led * 5 + Math.max(0, Math.min(9, Math.floor(advantage / 13))));
     next = addCharge(next, side, gain);
   });
   return next;
@@ -460,6 +463,7 @@ export function resolveRound(state: DuelState): DuelState {
   next = applyClosures(next);
   next = tickStatuses(next);
   next = chargeRound(next);
+  next = recordRound(state, next);
 
   if (next.round >= MAX_ROUNDS) {
     next = applyImprisonment(next);
@@ -474,6 +478,35 @@ export function resolveRound(state: DuelState): DuelState {
     spent: { player: 0, opponent: 0 },
     phase: next.round + 1 <= LANE_COUNT ? "reveal" : "play",
   };
+}
+
+/** Snapshots the round for the post-match Battle Review. */
+function recordRound(before: DuelState, state: DuelState): DuelState {
+  const round = state.round;
+  const lanes = state.lanes.map((_l, i) => laneTotals(state, i));
+  const played = (side: Side) =>
+    state.placements
+      .filter((p) => p.side === side && p.round === round)
+      .map((p) => ({ name: p.card.character.name, rating: ratingOf(state, p), lane: p.lane }));
+  const record: RoundRecord = {
+    round,
+    lanes,
+    total: {
+      player: lanes.reduce((n, l) => n + l.player, 0),
+      opponent: lanes.reduce((n, l) => n + l.opponent, 0),
+    },
+    played: { player: played("player"), opponent: played("opponent") },
+    events: state.log.slice(before.log.length),
+    ultimate: state.ultimateEvent
+      ? {
+          kind: state.ultimateEvent.kind,
+          side: state.ultimateEvent.side,
+          weaponId: state.ultimateEvent.weaponId,
+          winner: state.ultimateEvent.clash?.winner ?? undefined,
+        }
+      : undefined,
+  };
+  return { ...state, history: [...(state.history ?? []), record] };
 }
 
 /* ----------------------------------------------------------------- scoring */

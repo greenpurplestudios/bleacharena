@@ -101,16 +101,14 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       slug: "the-emperors-revenge",
       name: { en: "The Emperor's Revenge", ar: "انتقام الإمبراطور" },
       description: {
-        en: "Whenever the opponent plays a card here, Yhwach takes its Rating — the card loses it. Once per card.",
-        ar: "كلما لعب الخصم بطاقة هنا، يسلب يهواخ تقييمها — وتفقده البطاقة. مرة واحدة لكل بطاقة.",
+        en: "Once per match, Yhwach steals the base Rating of the strongest enemy card on this battlefield.",
+        ar: "مرة واحدة في المباراة، يسلب يهواخ التقييم الأساسي لأقوى بطاقة معادية في هذه الساحة.",
       },
       onRoundEnd: (state, self) => {
-        let next = state;
-        const victims = enemiesIn(state, self).filter((p) => p.round === state.round);
-        for (const victim of victims) {
-          next = stealRating(next, self.uid, victim.uid);
-        }
-        return next;
+        // Strictly once per match: the moment anything has been stolen, done.
+        if ((self.stolen ?? []).length) return state;
+        const victim = highestOf(enemiesIn(state, self));
+        return victim ? stealRating(state, self.uid, victim.uid) : state;
       },
     },
   },
