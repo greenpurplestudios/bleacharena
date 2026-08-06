@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { haptic } from "@/lib/haptics";
-import { playReiatsuClash, playUltimate } from "@/lib/sound";
+import {
+  playClashDetonation, playReiatsuClash, playUltimate, playVoiceLine, stopVoiceLine,
+} from "@/lib/sound";
 import { ULTIMATE_EFFECT_TEXT, ultimateOf } from "@/lib/soul-duel/ultimates";
 import type { UltimateEvent } from "@/lib/soul-duel/types";
 
@@ -29,8 +31,17 @@ export function UltimateOverlay({
   const duration = clash ? 4200 : 3400;
 
   useEffect(() => {
-    if (clash) { playReiatsuClash(); haptic("draft"); }
-    else { playUltimate(weapon.visual.audio); haptic("draft"); }
+    if (clash) {
+      playReiatsuClash();
+      haptic("draft");
+      // Only the victor is heard; a perfect clash detonates instead.
+      if (winner) playVoiceLine(ultimateOf(event.clash?.weapons[winner]).voiceUrl, 1500);
+      else playClashDetonation();
+    } else {
+      playUltimate(weapon.visual.audio);
+      playVoiceLine(weapon.voiceUrl, 900);
+      haptic("draft");
+    }
 
     const timers = [
       window.setTimeout(() => setStage(1), 700),
@@ -42,7 +53,10 @@ export function UltimateOverlay({
         onDone();
       }, duration),
     ];
-    return () => timers.forEach(window.clearTimeout);
+    return () => {
+      timers.forEach(window.clearTimeout);
+      stopVoiceLine();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event.id]);
 
@@ -57,6 +71,18 @@ export function UltimateOverlay({
       aria-live="assertive"
       aria-label={clash ? t("sdClash") : weapon.name[locale]}
     >
+      {/* clash detonation: white-hot flash + camera punch */}
+      {clash && stage >= 2 ? (
+        <span
+          key={`flash-${stage}`}
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10"
+          style={{
+            background: `radial-gradient(50vmax 50vmax at 50% 50%, #fff, ${glow} 35%, transparent 70%)`,
+            animation: "clash-flash 0.9s ease-out both",
+          }}
+        />
+      ) : null}
       {/* energy wash */}
       <span
         aria-hidden
@@ -80,7 +106,11 @@ export function UltimateOverlay({
 
       <div
         className="relative flex w-full max-w-md flex-col items-center px-6 text-center"
-        style={{ animation: clash ? "ult-shake 0.5s ease-in-out 1.2s 3" : "ult-zoom 3.2s ease-out both" }}
+        style={{
+          animation: clash
+            ? "ult-shake 0.4s ease-in-out 1.2s 4, ult-zoom 3.6s ease-out both"
+            : "ult-zoom 3.2s ease-out both",
+        }}
       >
         {clash ? (
           <>
@@ -93,7 +123,8 @@ export function UltimateOverlay({
             <div className="mt-4 flex w-full items-center justify-between gap-3">
               <ClashCard art={playerWeapon.art} name={playerWeapon.name[locale]}
                 limit={event.clash?.limits.player ?? 0} side="start"
-                dimmed={!!winner && winner !== "player"} />
+                dimmed={!!winner && winner !== "player"}
+                sliced={stage >= 2 && !!winner && winner !== "player"} />
               <span
                 aria-hidden
                 className="h-16 w-16 shrink-0 rounded-full"
@@ -104,7 +135,8 @@ export function UltimateOverlay({
               />
               <ClashCard art={enemyWeapon.art} name={enemyWeapon.name[locale]}
                 limit={event.clash?.limits.opponent ?? 0} side="end"
-                dimmed={!!winner && winner !== "opponent"} />
+                dimmed={!!winner && winner !== "opponent"}
+                sliced={stage >= 2 && !!winner && winner !== "opponent"} />
             </div>
             {stage >= 2 ? (
               <p
@@ -179,8 +211,11 @@ export function UltimateOverlay({
 }
 
 function ClashCard({
-  art, name, limit, side, dimmed,
-}: { art: string; name: string; limit: number; side: "start" | "end"; dimmed: boolean }) {
+  art, name, limit, side, dimmed, sliced,
+}: {
+  art: string; name: string; limit: number;
+  side: "start" | "end"; dimmed: boolean; sliced: boolean;
+}) {
   return (
     <div
       className="min-w-0 flex-1"
@@ -191,7 +226,42 @@ function ClashCard({
         transition: "opacity 0.5s, filter 0.5s",
       }}
     >
-      <img src={art} alt={name} className="w-full rounded-xl border border-white/15" draggable={false} />
+      <div className="relative overflow-hidden rounded-xl">
+        <img src={art} alt={name} className="w-full rounded-xl border border-white/15" draggable={false} />
+        {sliced ? (
+          <>
+            {/* the cut */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-x-[-20%] top-1/2 h-[2px] origin-center bg-white"
+              style={{ animation: "clash-slice 0.7s ease-out both", boxShadow: "0 0 18px #fff" }}
+            />
+            {/* the two halves falling apart */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage: `url(${art})`,
+                backgroundSize: "cover",
+                clipPath: "polygon(0 0, 100% 0, 100% 48%, 0 56%)",
+                animation: "clash-shard 1.1s 0.25s ease-in both",
+                ["--sx" as string]: "-26px", ["--sy" as string]: "-34px", ["--sr" as string]: "-16deg",
+              }}
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage: `url(${art})`,
+                backgroundSize: "cover",
+                clipPath: "polygon(0 56%, 100% 48%, 100% 100%, 0 100%)",
+                animation: "clash-shard 1.1s 0.25s ease-in both",
+                ["--sx" as string]: "24px", ["--sy" as string]: "44px", ["--sr" as string]: "14deg",
+              }}
+            />
+          </>
+        ) : null}
+      </div>
       <p className="mt-1.5 truncate text-[10px] font-bold">{name}</p>
       <p className="font-display text-xs font-black text-primary">+{Math.round(limit)}</p>
     </div>
