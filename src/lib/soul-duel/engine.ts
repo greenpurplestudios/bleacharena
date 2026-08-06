@@ -184,7 +184,9 @@ function chargeRound(state: DuelState): DuelState {
       (n, t) => n + (side === "player" ? t.player - t.opponent : t.opponent - t.player),
       0,
     );
-    const gain = Math.min(30, 17 + led * 4 + Math.max(0, Math.min(8, Math.floor(advantage / 15))));
+    // Soul Pressure grows ~18% faster than the original tuning so a committed
+    // player reaches their Ultimate by round 5 (round 4 on a dominant board).
+    const gain = Math.min(34, 20 + led * 5 + Math.max(0, Math.min(9, Math.floor(advantage / 13))));
     next = addCharge(next, side, gain);
   });
   return next;

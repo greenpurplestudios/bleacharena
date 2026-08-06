@@ -640,7 +640,7 @@ export const dict = {
   sdRounds: { en: "rounds", ar: "جولات" },
 
   /* ---- Ultimate Weapons, Reiatsu Gauge, Clash, Forge, AI ---- */
-  sdGauge: { en: "Reiatsu Gauge", ar: "مقياس الرياتسو" },
+  sdGauge: { en: "Soul Pressure", ar: "الضغط الروحي" },
   sdLimitBreaker: { en: "Limit Breaker", ar: "كاسر الحدود" },
   sdUltimate: { en: "Ultimate Weapon", ar: "السلاح المطلق" },
   sdUltimates: { en: "Ultimate Weapons", ar: "الأسلحة المطلقة" },
@@ -723,6 +723,14 @@ export const dict = {
   nimaiyaLine2: { en: "A blade’s got a soul!", ar: "!للنصل روح" },
   nimaiyaLine3: { en: "Let’s see if you’re worthy.", ar: "لنرَ إن كنت جديراً." },
   nimaiyaLine4: { en: "Don’t blame me if it’s too sharp.", ar: "لا تلمني إن كان حاداً أكثر من اللازم." },
+
+  /* ---- Battle review, clash and easter eggs ---- */
+  sdBattleReview: { en: "Battle Review", ar: "مراجعة النزال" },
+  sdTimeline: { en: "Round Timeline", ar: "مسار الجولات" },
+  sdNoEvents: { en: "Nothing happened this round.", ar: "لم يحدث شيء في هذه الجولة." },
+  sdClashDetonation: { en: "Perfect Clash — both weapons detonate.", ar: "تصادم متكافئ — ينفجر السلاحان." },
+  sdWeaponShattered: { en: "Weapon shattered", ar: "تحطّم السلاح" },
+  sdSecretWord: { en: "A name in the sparks…", ar: "…اسمٌ بين الشرر" },
 };
 
 export type TKey = keyof typeof dict;
