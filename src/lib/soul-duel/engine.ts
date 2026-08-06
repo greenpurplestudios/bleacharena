@@ -10,6 +10,7 @@ import {
   type Difficulty,
   type DuelCard, type DuelLogEntry, type DuelLogKey, type DuelResult,
   type DuelState, type LaneScore, type Placement, type Side,
+  type RoundRecord,
 } from "./types";
 
 /* ------------------------------------------------------------------ costs */
