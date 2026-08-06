@@ -42,6 +42,12 @@ function ForgePage() {
   const [secret, setSecret] = useState(0);
   const [kiss, setKiss] = useState(false);
   const SECRET = "MARYAM";
+  /* Scrambled once per visit so the order has to be discovered. */
+  const [scramble] = useState(() =>
+    SECRET_LETTERS.map((v) => ({ v, k: Math.random() }))
+      .sort((a, b) => a.k - b.k)
+      .map((x) => x.v),
+  );
   const tapSecret = (letter: string, index: number) => {
     if (index === secret && letter === SECRET[secret]) {
       const next = secret + 1;
@@ -208,7 +214,7 @@ function ForgePage() {
 
       {/* MARYAM */}
       <div className="mx-auto mb-24 flex max-w-4xl items-center justify-center gap-1.5 px-4 opacity-40">
-        {SECRET.split("").map((ch, i) => (
+        {scramble.map(({ ch, i }) => (
           <button
             key={`${ch}-${i}`}
             type="button"
