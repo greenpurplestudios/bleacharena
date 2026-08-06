@@ -461,6 +461,68 @@ export function playReiatsuClash() {
   noise(1.2, 0.04 * v, 400, 0.4, 1.2);
 }
 
+/**
+ * Recorded Ultimate Weapon voice line. Falls back silently when the browser
+ * blocks playback; the synthesized signature still carries the moment.
+ */
+let voiceEl: HTMLAudioElement | null = null;
+
+export function playVoiceLine(url: string | undefined, delay = 900) {
+  if (!url || typeof window === "undefined") return;
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  window.setTimeout(() => {
+    try {
+      stopVoiceLine();
+      const el = new Audio(url);
+      el.volume = Math.min(1, Math.max(0, prefs.volume));
+      voiceEl = el;
+      void el.play().catch(() => {});
+    } catch {}
+  }, delay);
+}
+
+export function stopVoiceLine() {
+  try {
+    if (voiceEl) { voiceEl.pause(); voiceEl.currentTime = 0; }
+  } catch {}
+  voiceEl = null;
+}
+
+/** Perfect Reiatsu Clash — no winner, only a detonation. */
+export function playClashDetonation() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  noise(0.25, 0.16 * v, 6000, 0.3, 0);
+  noise(1.8, 0.12 * v, 900, 0.35, 0.05);
+  tone(38, 2.6, "sine", 0.2 * v, 0.04);
+  sweep(1400, 60, 1.4, "sawtooth", 0.08 * v, 0.06);
+  [55, 110, 165].forEach((f, i) => tone(f, 2.0, "square", 0.035 * v, 0.1 + i * 0.03));
+}
+
+/** Easter egg: MARYAM. */
+export function playKiss() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  sweep(1400, 300, 0.12, "sine", 0.09 * v, 0);
+  noise(0.09, 0.05 * v, 4200, 1.6, 0.02);
+  tone(660, 0.18, "sine", 0.05 * v, 0.14);
+  tone(880, 0.3, "sine", 0.045 * v, 0.24);
+}
+
+/** Easter egg: the Hollow scream. */
+export function playScream() {
+  const prefs = loadPrefs();
+  if (!prefs.sfx) return;
+  const v = prefs.volume;
+  sweep(220, 1500, 0.35, "sawtooth", 0.09 * v, 0);
+  sweep(1500, 180, 1.0, "sawtooth", 0.08 * v, 0.32);
+  noise(1.1, 0.07 * v, 2600, 0.5, 0.05);
+  tone(46, 1.6, "sine", 0.14 * v, 0.1);
+}
+
 /** Nimaiya's Forge — fragments, flame, hammer strikes and a reveal. */
 export function playForge() {
   const prefs = loadPrefs();
