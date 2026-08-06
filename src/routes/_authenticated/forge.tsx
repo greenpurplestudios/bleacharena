@@ -14,6 +14,9 @@ import nimaiya from "@/assets/soulduel/nimaiya.jpeg.asset.json";
 /** Ōetsu Nimaiya greets the player with one of his lines on every visit. */
 const NIMAIYA_LINES = ["nimaiyaLine1", "nimaiyaLine2", "nimaiyaLine3", "nimaiyaLine4"] as const;
 
+const SECRET = "MARYAM";
+const SECRET_LETTERS: { ch: string; i: number }[] = SECRET.split("").map((ch, i) => ({ ch, i }));
+
 export const Route = createFileRoute("/_authenticated/forge")({
   head: () => ({
     meta: [
@@ -41,7 +44,6 @@ function ForgePage() {
   /* Easter egg: tap the sparks spelling M-A-R-Y-A-M in order. */
   const [secret, setSecret] = useState(0);
   const [kiss, setKiss] = useState(false);
-  const SECRET = "MARYAM";
   /* Scrambled once per visit so the order has to be discovered. */
   const [scramble] = useState(() =>
     SECRET_LETTERS.map((v) => ({ v, k: Math.random() }))
