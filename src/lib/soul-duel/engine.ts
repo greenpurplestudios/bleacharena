@@ -462,6 +462,7 @@ export function resolveRound(state: DuelState): DuelState {
   next = applyClosures(next);
   next = tickStatuses(next);
   next = chargeRound(next);
+  next = recordRound(state, next);
 
   if (next.round >= MAX_ROUNDS) {
     next = applyImprisonment(next);
@@ -476,6 +477,35 @@ export function resolveRound(state: DuelState): DuelState {
     spent: { player: 0, opponent: 0 },
     phase: next.round + 1 <= LANE_COUNT ? "reveal" : "play",
   };
+}
+
+/** Snapshots the round for the post-match Battle Review. */
+function recordRound(before: DuelState, state: DuelState): DuelState {
+  const round = state.round;
+  const lanes = state.lanes.map((_l, i) => laneTotals(state, i));
+  const played = (side: Side) =>
+    state.placements
+      .filter((p) => p.side === side && p.round === round)
+      .map((p) => ({ name: p.card.character.name, rating: ratingOf(state, p), lane: p.lane }));
+  const record: RoundRecord = {
+    round,
+    lanes,
+    total: {
+      player: lanes.reduce((n, l) => n + l.player, 0),
+      opponent: lanes.reduce((n, l) => n + l.opponent, 0),
+    },
+    played: { player: played("player"), opponent: played("opponent") },
+    events: state.log.slice(before.log.length),
+    ultimate: state.ultimateEvent
+      ? {
+          kind: state.ultimateEvent.kind,
+          side: state.ultimateEvent.side,
+          weaponId: state.ultimateEvent.weaponId,
+          winner: state.ultimateEvent.clash?.winner ?? undefined,
+        }
+      : undefined,
+  };
+  return { ...state, history: [...(state.history ?? []), record] };
 }
 
 /* ----------------------------------------------------------------- scoring */
