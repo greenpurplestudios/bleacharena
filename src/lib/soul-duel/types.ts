@@ -168,6 +168,8 @@ export interface DuelState {
   difficulty: Difficulty;
   /** Set for one resolution so the cinematic layer can stage it. */
   ultimateEvent?: UltimateEvent | null;
+  /** Round-by-round record powering the post-match Battle Review. */
+  history?: RoundRecord[];
   /** Set once the match ends. */
   result?: DuelResult;
 }
