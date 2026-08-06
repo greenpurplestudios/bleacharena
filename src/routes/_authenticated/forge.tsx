@@ -5,7 +5,7 @@ import { Atmosphere } from "@/components/Atmosphere";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ForgeCinematic } from "@/components/soulduel/ForgeCinematic";
 import { useI18n } from "@/lib/i18n";
-import { play } from "@/lib/sound";
+import { play, playKiss } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
 import { equipWeapon, fetchForge, forgeWeapon, type ForgeState } from "@/lib/forge";
 import { ULTIMATE_EFFECT_TEXT, ultimateOf } from "@/lib/soul-duel/ultimates";
@@ -38,6 +38,27 @@ function ForgePage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [cinematic, setCinematic] = useState<string | null>(null);
   const [line] = useState(() => NIMAIYA_LINES[Math.floor(Math.random() * NIMAIYA_LINES.length)]);
+  /* Easter egg: tap the sparks spelling M-A-R-Y-A-M in order. */
+  const [secret, setSecret] = useState(0);
+  const [kiss, setKiss] = useState(false);
+  const SECRET = "MARYAM";
+  const tapSecret = (letter: string, index: number) => {
+    if (index === secret && letter === SECRET[secret]) {
+      const next = secret + 1;
+      if (next === SECRET.length) {
+        setSecret(0);
+        setKiss(true);
+        playKiss();
+        haptic("reward");
+        window.setTimeout(() => setKiss(false), 2200);
+        return;
+      }
+      setSecret(next);
+      play("tap");
+      return;
+    }
+    setSecret(0);
+  };
 
   const refresh = useCallback(async () => setForge(await fetchForge()), []);
 
@@ -184,6 +205,31 @@ function ForgePage() {
           })}
         </ul>
       </main>
+
+      {/* MARYAM */}
+      <div className="mx-auto mb-24 flex max-w-4xl items-center justify-center gap-1.5 px-4 opacity-40">
+        {SECRET.split("").map((ch, i) => (
+          <button
+            key={`${ch}-${i}`}
+            type="button"
+            aria-hidden
+            tabIndex={-1}
+            onClick={() => tapSecret(ch, i)}
+            className="h-4 w-4 rounded-full border border-accent/25 text-[7px] font-black text-accent/50"
+          >
+            {ch}
+          </button>
+        ))}
+      </div>
+
+      {kiss ? (
+        <div
+          className="pointer-events-none fixed inset-0 z-[80] flex items-center justify-center"
+          style={{ animation: "fade-in 0.25s ease-out both" }}
+        >
+          <span className="text-[28vw]" style={{ animation: "scale-in 0.5s ease-out both" }}>💋</span>
+        </div>
+      ) : null}
 
       {cinematic ? (
         <ForgeCinematic weaponId={cinematic} onDone={() => setCinematic(null)} />
