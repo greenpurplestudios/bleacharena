@@ -442,7 +442,7 @@ function tickStatuses(state: DuelState): DuelState {
   const placements = state.placements.map((p) => {
     if (!p.statuses.length) return p;
     let bonus = p.bonus;
-    if (hasStatus(p, "burn") && !immuneToModifiers(p)) {
+    if (hasStatus(p, "burn") && !immuneToModifiers(p) && !p.noReduce) {
       bonus -= BURN_DAMAGE;
       entries.push(log(state, "logBurn", p.lane, p.card.character.slug));
     }

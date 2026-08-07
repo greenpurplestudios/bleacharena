@@ -227,6 +227,11 @@ export function grantImmunity(state: DuelState, uid: string): DuelState {
   return patch(state, uid, (p) => ({ ...p, immuneUntilRound: state.round + 1 }));
 }
 
+/** Komamura: this card's Rating can never be reduced again. */
+export function protectRating(state: DuelState, uid: string): DuelState {
+  return patch(state, uid, (p) => ({ ...p, noReduce: true }));
+}
+
 export function laneBuff(state: DuelState, lane: number, side: Side, amount: number): DuelState {
   return { ...state, laneBuffs: [...state.laneBuffs, { lane, side, amount }] };
 }
