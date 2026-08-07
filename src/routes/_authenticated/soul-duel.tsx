@@ -3,6 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Atmosphere } from "@/components/Atmosphere";
 import { SiteHeader } from "@/components/SiteHeader";
 import { DuelBoard } from "@/components/soulduel/DuelBoard";
+import { OnlineDuel } from "@/components/soulduel/OnlineDuel";
+import { DuelRanking } from "@/components/soulduel/DuelRanking";
 import { BattlefieldCard } from "@/components/soulduel/BattlefieldCard";
 import { BATTLEFIELDS } from "@/data/battlefields";
 import { DUEL_ROSTER } from "@/data/soul-duel-roster";
@@ -42,6 +44,7 @@ const DIFFICULTIES: { id: Difficulty; label: TKey; desc: TKey; color: string }[]
 function SoulDuelPage() {
   const { t, locale } = useI18n();
   const [playing, setPlaying] = useState(false);
+  const [online, setOnline] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [forge, setForge] = useState<ForgeState | null>(null);
 
@@ -52,6 +55,18 @@ function SoulDuelPage() {
   }, []);
 
   const weapon = ultimateOf(forge?.equipped);
+
+  if (online) {
+    return (
+      <>
+        <Atmosphere variant="sparks" count={16} parallax={false} />
+        <SiteHeader />
+        <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
+          <OnlineDuel pool={DUEL_ROSTER} weaponId={forge?.equipped} onExit={() => setOnline(false)} />
+        </main>
+      </>
+    );
+  }
 
   if (playing) {
     return (
@@ -102,6 +117,16 @@ function SoulDuelPage() {
             >
               {t("sdStart")}
             </button>
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => { play("sword"); haptic("draft"); setOnline(true); }}
+                className="tactile rounded-2xl border border-accent/50 bg-accent/10 px-8 py-3.5 font-display text-sm font-black uppercase tracking-[0.25em] text-accent rtl:tracking-normal"
+              >
+                {t("sdOnline")}
+              </button>
+              <p className="mt-2 text-[11px] text-muted-foreground">{t("sdOnlineDesc")}</p>
+            </div>
           </div>
         </section>
 
@@ -204,6 +229,8 @@ function SoulDuelPage() {
             ))}
           </ul>
         </section>
+
+        <DuelRanking />
       </main>
     </>
   );
