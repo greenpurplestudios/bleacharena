@@ -25,19 +25,42 @@ import { DuelResultPanel } from "./DuelResultPanel";
 import { ReiatsuGauge } from "./ReiatsuGauge";
 import { UltimateOverlay } from "./UltimateOverlay";
 
+/** Online duels drive the board from outside: state lives with the session. */
+export interface OnlineController {
+  state: DuelState;
+  setState: (updater: (s: DuelState) => DuelState) => void;
+  onEndRound: () => void;
+  /** Waiting for the opponent to finish their round. */
+  waiting: boolean;
+  opponentName?: string;
+}
+
 export function DuelBoard({
   pool,
   onExit,
   difficulty = "normal",
   weaponId,
+  online,
 }: {
   pool: Character[];
   onExit: () => void;
   difficulty?: Difficulty;
   weaponId?: string;
+  online?: OnlineController;
 }) {
   const { t, locale } = useI18n();
-  const [state, setState] = useState<DuelState>(() => createDuel(pool, { difficulty, weaponId }));
+  const [offlineState, setOfflineState] = useState<DuelState>(() =>
+    online ? online.state : createDuel(pool, { difficulty, weaponId }),
+  );
+  const state = online ? online.state : offlineState;
+  const setState = useCallback(
+    (updater: DuelState | ((s: DuelState) => DuelState)) => {
+      const fn = typeof updater === "function" ? (updater as (s: DuelState) => DuelState) : () => updater;
+      if (online) online.setState(fn);
+      else setOfflineState(fn);
+    },
+    [online],
+  );
   const [selected, setSelected] = useState<string | null>(null);
   const [mover, setMover] = useState<string | null>(null);
   const [inspect, setInspect] = useState<number | null>(null);
@@ -135,6 +158,14 @@ export function DuelBoard({
 
   const endRound = useCallback(() => {
     if (busy || state.phase !== "play") return;
+    if (online) {
+      setSelected(null);
+      setMover(null);
+      playDuelClash();
+      haptic("flip");
+      online.onEndRound();
+      return;
+    }
     setBusy(true);
     setSelected(null);
     setMover(null);
@@ -144,16 +175,17 @@ export function DuelBoard({
       setState((s) => resolveRound(takeOpponentTurn(s)));
       setBusy(false);
     }, 560);
-  }, [busy, state.phase]);
+  }, [busy, state.phase, online, setState]);
 
   const rematch = useCallback(() => {
+    if (online) { onExit(); return; }
     rewarded.current = false;
     setFragments(null);
-    setState(createDuel(pool, { difficulty, weaponId }));
+    setOfflineState(createDuel(pool, { difficulty, weaponId }));
     setSelected(null);
     setMover(null);
     play("reveal");
-  }, [pool, difficulty, weaponId]);
+  }, [pool, difficulty, weaponId, online, onExit]);
 
   /* First time each unique ability fires in a match, name it for the player. */
   useEffect(() => {
