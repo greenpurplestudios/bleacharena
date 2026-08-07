@@ -71,6 +71,10 @@ export interface Placement {
   zeroUntilRound?: number;
   /** Sakanade: this card's ability now serves the opposing side. */
   hijacked?: boolean;
+  /** Komamura's Unbreakable Loyalty: this card's Rating can never be reduced. */
+  noReduce?: boolean;
+  /** Ukitake: round in which this card's reflect has already been spent. */
+  reflectUsedRound?: number;
 }
 
 export interface LaneState {
