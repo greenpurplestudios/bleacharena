@@ -339,10 +339,10 @@ export function DuelBoard({
       <button
         type="button"
         onClick={endRound}
-        disabled={busy || state.phase !== "play"}
+        disabled={busy || state.phase !== "play" || !!online?.waiting}
         className="tactile glow-orange mt-3 w-full rounded-2xl bg-primary px-6 py-3.5 font-display text-sm font-black uppercase tracking-[0.25em] text-primary-foreground disabled:opacity-50 rtl:tracking-normal"
       >
-        {busy ? t("sdResolving") : t("sdEndRound")}
+        {online?.waiting ? t("sdWaitingOpponent") : busy ? t("sdResolving") : t("sdEndRound")}
       </button>
 
       {/* battlefield log */}
