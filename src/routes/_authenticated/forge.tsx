@@ -14,8 +14,9 @@ import nimaiya from "@/assets/soulduel/nimaiya.jpeg.asset.json";
 /** Ōetsu Nimaiya greets the player with one of his lines on every visit. */
 const NIMAIYA_LINES = ["nimaiyaLine1", "nimaiyaLine2", "nimaiyaLine3", "nimaiyaLine4"] as const;
 
-const SECRET = "MARYAM";
-const SECRET_LETTERS: { ch: string; i: number }[] = SECRET.split("").map((ch, i) => ({ ch, i }));
+/** Easter egg: tap the M in "Nimaiya" five times. */
+const NIMAIYA_NAME = "Ōetsu Nimaiya";
+const SECRET_TAPS = 5;
 
 export const Route = createFileRoute("/_authenticated/forge")({
   head: () => ({

@@ -17,7 +17,7 @@ const GROUPS: NavGroup[] = [
       { to: "/draft", key: "draft", icon: "卍" },
       { to: "/bleachdle", key: "bleachdle", icon: "◇" },
       { to: "/rivals", key: "rivals", icon: "⚔" },
-      { to: "/soul-duel", key: "soulDuel", icon: "⚔" },
+      { to: "/soul-duel", key: "soulDuel", icon: "VS" },
       { to: "/quotes", key: "quotes", icon: "?" },
       { to: "/quiz", key: "quizShort", icon: "◈" },
     ],
@@ -66,7 +66,7 @@ const GROUPS: NavGroup[] = [
   },
   {
     id: "store",
-    labelKey: "store",
+    labelKey: "storeHub",
     icon: "🛒",
     items: [
       { to: "/store", key: "store", icon: "✧" },
