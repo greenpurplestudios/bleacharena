@@ -47,7 +47,7 @@ const TILES: Tile[] = [
   { to: "/collection", key: "collection", desc: "collectionDesc", icon: "▦", tone: "blue" },
   { to: "/friends", key: "friendsAndClans", desc: "friendsAndClansDesc", icon: "♥", tone: "violet" },
   { to: "/leaderboard", key: "leaderboard", desc: "leaderboardDesc", icon: "★", tone: "blue" },
-  { to: "/soul-duel", key: "soulDuel", desc: "soulDuelShort", icon: "⚔", tone: "violet", fresh: true },
+  { to: "/soul-duel", key: "soulDuel", desc: "soulDuelShort", icon: "VS", tone: "violet", fresh: true },
 ];
 
 const TONE: Record<Tile["tone"], string> = {

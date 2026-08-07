@@ -442,7 +442,7 @@ function tickStatuses(state: DuelState): DuelState {
   const placements = state.placements.map((p) => {
     if (!p.statuses.length) return p;
     let bonus = p.bonus;
-    if (hasStatus(p, "burn") && !immuneToModifiers(p)) {
+    if (hasStatus(p, "burn") && !immuneToModifiers(p) && !p.noReduce) {
       bonus -= BURN_DAMAGE;
       entries.push(log(state, "logBurn", p.lane, p.card.character.slug));
     }
@@ -556,6 +556,12 @@ export function ratingOf(state: DuelState, p: Placement): number {
       if (!ab?.aura) continue;
       const otherMult = otherRules.doubleAbilities ? 2 : 1;
       rating += otherMult * ab.aura({ self: asOwner(other), state, board }, p);
+    }
+
+    // Renji rewrites his own Rating from the weakest enemy on his battlefield.
+    if (own?.overrideRating) {
+      const forced = own.overrideRating({ self: owned, state, board });
+      if (typeof forced === "number") rating = forced;
     }
   }
 

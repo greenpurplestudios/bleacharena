@@ -34,6 +34,34 @@ export function isFrozen(p: Placement): boolean {
   return hasStatus(p, "freeze");
 }
 
+/* ------------------------------------------------- lane-wide ability slugs */
+
+export const ZANGETSU_SLUG = "zangetsu";
+export const HIERRO_SLUG = "nnoitra-gilga";
+export const REFLECT_SLUG = "jushiro-ukitake";
+
+/** True when an un-frozen ally with `slug` shares the target's battlefield. */
+function allySlugIn(state: DuelState, target: Placement, slug: string): boolean {
+  return state.placements.some(
+    (x) =>
+      x.lane === target.lane &&
+      x.side === target.side &&
+      x.card.character.slug === slug &&
+      !isFrozen(x),
+  );
+}
+
+/**
+ * Zangetsu doubles every buff and debuff on his battlefield; Nnoitra's Hierro
+ * halves incoming debuffs. Applied in that order, then rounded.
+ */
+function scaleAmount(state: DuelState, target: Placement, amount: number): number {
+  let amt = amount;
+  if (allySlugIn(state, target, ZANGETSU_SLUG)) amt *= 2;
+  if (amt < 0 && allySlugIn(state, target, HIERRO_SLUG)) amt /= 2;
+  return amt < 0 ? -Math.round(-amt) : Math.round(amt);
+}
+
 /**
  * Sakanade hands an enemy ability to its caster. Abilities always read
  * `self.side`, so a hijacked card is handed to them with its side flipped —
@@ -77,16 +105,70 @@ function blocksNegative(state: DuelState, p: Placement): boolean {
   return immuneToModifiers(p) || (p.immuneUntilRound ?? 0) > state.round || hasStatus(p, "shield");
 }
 
-export function addBonus(state: DuelState, uid: string, amount: number): DuelState {
+interface EffectOpts {
+  /** Set while resolving a reflected effect so it cannot bounce again. */
+  noReflect?: boolean;
+  /** Skip Zangetsu / Hierro scaling (the amount is already final). */
+  raw?: boolean;
+}
+
+/**
+ * Ukitake's Sōgyo no Kotowari: once per round, the next negative effect aimed
+ * at an ally on his battlefield is bounced onto the strongest enemy there.
+ * Returns the new state when the effect was reflected (or simply negated).
+ */
+function tryReflect(
+  state: DuelState,
+  target: Placement,
+  apply: (s: DuelState, victim: Placement) => DuelState,
+  opts?: EffectOpts,
+): DuelState | null {
+  if (opts?.noReflect) return null;
+  const guard = state.placements.find(
+    (x) =>
+      x.lane === target.lane &&
+      x.side === target.side &&
+      x.card.character.slug === REFLECT_SLUG &&
+      !isFrozen(x) &&
+      x.reflectUsedRound !== state.round,
+  );
+  if (!guard) return null;
+  const spent = patch(state, guard.uid, (p) => ({ ...p, reflectUsedRound: state.round }));
+  const victim = highestOf(
+    spent.placements.filter((p) => p.lane === target.lane && p.side !== target.side),
+  );
+  return victim ? apply(spent, victim) : spent;
+}
+
+export function addBonus(
+  state: DuelState,
+  uid: string,
+  amount: number,
+  opts?: EffectOpts,
+): DuelState {
   const target = state.placements.find((p) => p.uid === uid);
-  if (!target || immuneToModifiers(target)) return state;
-  if (amount < 0 && blocksNegative(state, target)) return consumeShield(state, uid);
-  return patch(state, uid, (p) => ({ ...p, bonus: p.bonus + amount }));
+  if (!target || immuneToModifiers(target) || !amount) return state;
+  const amt = opts?.raw ? amount : scaleAmount(state, target, amount);
+  if (!amt) return state;
+  if (amt < 0) {
+    if (target.noReduce) return state;
+    const bounced = tryReflect(
+      state,
+      target,
+      (s, victim) => addBonus(s, victim.uid, amt, { noReflect: true, raw: true }),
+      opts,
+    );
+    if (bounced) return bounced;
+    if (blocksNegative(state, target)) return consumeShield(state, uid);
+  }
+  return patch(state, uid, (p) => ({ ...p, bonus: p.bonus + amt }));
 }
 
 export function setOverride(state: DuelState, uid: string, rating: number): DuelState {
   const target = state.placements.find((p) => p.uid === uid);
   if (!target || immuneToModifiers(target)) return state;
+  // Unbreakable Loyalty never lets a Rating drop.
+  if (target.noReduce && rating < baseRatingOf(target)) return state;
   return patch(state, uid, (p) => ({ ...p, override: rating }));
 }
 
@@ -97,13 +179,27 @@ export function consumeShield(state: DuelState, uid: string): DuelState {
   }));
 }
 
-export function applyStatus(state: DuelState, uid: string, kind: StatusKind): DuelState {
+export function applyStatus(
+  state: DuelState,
+  uid: string,
+  kind: StatusKind,
+  opts?: EffectOpts,
+): DuelState {
   const target = state.placements.find((p) => p.uid === uid);
   if (!target) return state;
   const def = STATUS_DEFS[kind];
 
   if (def.negative) {
     if (immuneToModifiers(target)) return state;
+    // Burn eats Rating — Unbreakable Loyalty blocks it outright.
+    if (target.noReduce && kind === "burn") return state;
+    const bounced = tryReflect(
+      state,
+      target,
+      (s, victim) => applyStatus(s, victim.uid, kind, { noReflect: true }),
+      opts,
+    );
+    if (bounced) return bounced;
     if ((target.immuneUntilRound ?? 0) > state.round) return state;
     if (hasStatus(target, "shield")) return consumeShield(state, uid);
     if (kind === "freeze" && (target.freezeReadyRound ?? 0) > state.round) return state;
@@ -131,6 +227,11 @@ export function grantImmunity(state: DuelState, uid: string): DuelState {
   return patch(state, uid, (p) => ({ ...p, immuneUntilRound: state.round + 1 }));
 }
 
+/** Komamura: this card's Rating can never be reduced again. */
+export function protectRating(state: DuelState, uid: string): DuelState {
+  return patch(state, uid, (p) => ({ ...p, noReduce: true }));
+}
+
 export function laneBuff(state: DuelState, lane: number, side: Side, amount: number): DuelState {
   return { ...state, laneBuffs: [...state.laneBuffs, { lane, side, amount }] };
 }
@@ -150,6 +251,7 @@ export function stealRating(state: DuelState, thiefUid: string, victimUid: strin
 
   // Shields and immunity stop the theft outright (the shield is spent).
   if (immuneToModifiers(victim)) return mark(state);
+  if (victim.noReduce) return mark(state);
   if ((victim.immuneUntilRound ?? 0) > state.round) return mark(state);
   if (hasStatus(victim, "shield")) return mark(consumeShield(state, victimUid));
 

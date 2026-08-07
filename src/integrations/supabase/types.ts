@@ -421,6 +421,78 @@ export type Database = {
         }
         Relationships: []
       }
+      duel_matches: {
+        Row: {
+          created_at: string
+          guest_id: string | null
+          guest_moves: Json | null
+          guest_ready: boolean
+          host_id: string
+          host_ready: boolean
+          id: string
+          state: Json | null
+          status: string
+          updated_at: string
+          winner: string | null
+        }
+        Insert: {
+          created_at?: string
+          guest_id?: string | null
+          guest_moves?: Json | null
+          guest_ready?: boolean
+          host_id: string
+          host_ready?: boolean
+          id?: string
+          state?: Json | null
+          status?: string
+          updated_at?: string
+          winner?: string | null
+        }
+        Update: {
+          created_at?: string
+          guest_id?: string | null
+          guest_moves?: Json | null
+          guest_ready?: boolean
+          host_id?: string
+          host_ready?: boolean
+          id?: string
+          state?: Json | null
+          status?: string
+          updated_at?: string
+          winner?: string | null
+        }
+        Relationships: []
+      }
+      duel_ranks: {
+        Row: {
+          draws: number
+          losses: number
+          rating: number
+          updated_at: string
+          user_id: string
+          week_start: string
+          wins: number
+        }
+        Insert: {
+          draws?: number
+          losses?: number
+          rating?: number
+          updated_at?: string
+          user_id: string
+          week_start?: string
+          wins?: number
+        }
+        Update: {
+          draws?: number
+          losses?: number
+          rating?: number
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+          wins?: number
+        }
+        Relationships: []
+      }
       duel_weapon_catalog: {
         Row: {
           fragment_cost: number
@@ -1165,6 +1237,48 @@ export type Database = {
       current_season_key: { Args: never; Returns: string }
       delete_global_message: { Args: { p_id: string }; Returns: Json }
       disband_clan: { Args: never; Returns: Json }
+      duel_find_match: {
+        Args: never
+        Returns: {
+          created_at: string
+          guest_id: string | null
+          guest_moves: Json | null
+          guest_ready: boolean
+          host_id: string
+          host_ready: boolean
+          id: string
+          state: Json | null
+          status: string
+          updated_at: string
+          winner: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "duel_matches"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      duel_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_character_id: string
+          draws: number
+          losses: number
+          name_frame: string
+          rating: number
+          user_id: string
+          username: string
+          username_color: string
+          wins: number
+        }[]
+      }
+      duel_leave_match: { Args: { p_match: string }; Returns: undefined }
+      duel_report_result: {
+        Args: { p_match: string; p_winner: string }
+        Returns: undefined
+      }
+      duel_week_start: { Args: never; Returns: string }
       ensure_weekly_announcement: { Args: never; Returns: undefined }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       equip_weapon: { Args: { p_weapon_id: string }; Returns: Json }

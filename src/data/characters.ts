@@ -611,6 +611,14 @@ const raw: Omit<Character, "rarity">[] = [
     image: gremmyImg.url,
     overall: 90,
   },
+  {
+    id: "c-073", slug: "nnoitra-gilga",
+    name: { en: "Nnoitra Gilga", ar: "نويترا غيلغا" },
+    race: "Arrancar", faction: "Espada", division: null, rank: "Quinta Espada",
+    arc: "Arrancar", shikai: "Santa Teresa", bankai: null,
+    image: null,
+    overall: 86,
+  },
 ];
 
 export const characters: Character[] = raw.map((c) => ({

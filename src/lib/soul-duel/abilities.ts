@@ -5,6 +5,7 @@ import type { StatusKind } from "./status";
 import {
   addBonus, applyStatus, clearNegatives, enemiesIn, alliesIn, highestOf, lowestOf,
   makeToken, setOverride, grantImmunity, baseRatingOf, laneBuff, laneLimit, stealRating,
+  protectRating,
 } from "./effects";
 
 export interface AbilityCtx {
@@ -24,6 +25,8 @@ export interface AbilityDef {
   selfRating?: (ctx: AbilityCtx) => number;
   /** Rating this character adds to another card on the board. */
   aura?: (ctx: AbilityCtx, other: Placement) => number;
+  /** Forces this card's final Rating (Renji). Return undefined to skip. */
+  overrideRating?: (ctx: AbilityCtx) => number | undefined;
   /** Fires the moment the card is deployed. */
   onPlay?: (state: DuelState, self: Placement) => DuelState;
   /** Fires at the end of every round while the card is on the board. */
@@ -566,6 +569,115 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
           .sort((a, b) => baseRatingOf(b) - baseRatingOf(a))
           .slice(0, 2);
         return targets.reduce((st, e) => applyStatus(st, e.uid, "freeze"), state);
+      },
+    },
+  },
+
+  /* ------------------------------------------------- expansion (7 souls) */
+  {
+    slug: "retsu-unohana",
+    cost: 5,
+    faction: { en: "Shinigami", ar: "شينيغامي" },
+    ability: {
+      slug: "blood-field",
+      name: { en: "Blood Field", ar: "حقل الدماء" },
+      description: {
+        en: "Allies on this battlefield gain +5 Rating; enemies here lose 5.",
+        ar: "الحلفاء في هذه الساحة يكسبون +٥ تقييم، والأعداء هنا يفقدون ٥.",
+      },
+      selfRating: () => 5,
+      aura: ({ self }, o) =>
+        o.lane !== self.lane ? 0 : o.side === self.side ? 5 : -5,
+    },
+  },
+  {
+    slug: "jushiro-ukitake",
+    cost: 4,
+    faction: { en: "Shinigami", ar: "شينيغامي" },
+    ability: {
+      slug: "sogyo-no-kotowari",
+      name: { en: "Sōgyo no Kotowari", ar: "سوغيو نو كوتوواري" },
+      description: {
+        en: "Once per round, reflects the next negative effect on an ally here back at the enemy.",
+        ar: "مرة كل جولة، يعكس التأثير السلبي التالي على حليف هنا نحو الخصم.",
+      },
+    },
+  },
+  {
+    slug: "sajin-komamura",
+    cost: 3,
+    faction: { en: "Shinigami", ar: "شينيغامي" },
+    ability: {
+      slug: "unbreakable-loyalty",
+      name: { en: "Unbreakable Loyalty", ar: "ولاء لا يُكسر" },
+      description: {
+        en: "The strongest ally on this battlefield can never lose Rating again.",
+        ar: "أقوى حليف في هذه الساحة لا يمكن أن يفقد التقييم أبداً.",
+      },
+      onPlay: (state, self) => {
+        const top = highestOf(alliesIn(state, self, true));
+        return top ? protectRating(state, top.uid) : state;
+      },
+    },
+  },
+  {
+    slug: "nelliel-tu-odelschwanck",
+    cost: 3,
+    faction: { en: "Arrancar", ar: "أرانكار" },
+    ability: {
+      slug: "compassion",
+      name: { en: "Compassion", ar: "الرحمة" },
+      description: {
+        en: "The weakest ally on this battlefield gains +10 Rating.",
+        ar: "أضعف حليف في هذه الساحة يكسب +١٠ تقييم.",
+      },
+      onPlay: (state, self) => {
+        const weak = lowestOf(alliesIn(state, self, true));
+        return weak ? addBonus(state, weak.uid, 10) : state;
+      },
+    },
+  },
+  {
+    slug: "nnoitra-gilga",
+    cost: 3,
+    faction: { en: "Arrancar", ar: "أرانكار" },
+    ability: {
+      slug: "hierro",
+      name: { en: "Hierro", ar: "هييرو" },
+      description: {
+        en: "Allies on this battlefield take 50% less from debuffs.",
+        ar: "الحلفاء في هذه الساحة يتلقون نصف تأثير الإضعافات.",
+      },
+    },
+  },
+  {
+    slug: "renji-abarai",
+    cost: 3,
+    faction: { en: "Shinigami", ar: "شينيغامي" },
+    ability: {
+      slug: "cant-imagine-losing",
+      name: { en: "I Can't Imagine Losing", ar: "لا أتخيل الخسارة" },
+      description: {
+        en: "Renji's Rating is always 1 above the weakest enemy on this battlefield.",
+        ar: "تقييم رينجي دائماً أعلى بنقطة من أضعف عدو في هذه الساحة.",
+      },
+      overrideRating: ({ self, state }) => {
+        const foes = enemiesIn(state, self);
+        if (!foes.length) return undefined;
+        return Math.min(...foes.map(baseRatingOf)) + 1;
+      },
+    },
+  },
+  {
+    slug: "zangetsu",
+    cost: 5,
+    faction: { en: "Zanpakutō Spirit", ar: "روح زانباكوتو" },
+    ability: {
+      slug: "the-blade-is-me",
+      name: { en: "The Blade Is Me", ar: "النصل هو أنا" },
+      description: {
+        en: "Buffs and debuffs on allies of this battlefield count double.",
+        ar: "التعزيزات والإضعافات على حلفاء هذه الساحة تُحتسب مضاعفة.",
       },
     },
   },
