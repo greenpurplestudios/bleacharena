@@ -557,6 +557,12 @@ export function ratingOf(state: DuelState, p: Placement): number {
       const otherMult = otherRules.doubleAbilities ? 2 : 1;
       rating += otherMult * ab.aura({ self: asOwner(other), state, board }, p);
     }
+
+    // Renji rewrites his own Rating from the weakest enemy on his battlefield.
+    if (own?.overrideRating) {
+      const forced = own.overrideRating({ self: owned, state, board });
+      if (typeof forced === "number") rating = forced;
+    }
   }
 
   return Math.max(0, Math.round(rating));
