@@ -269,6 +269,7 @@ export const dict = {
   loading: { en: "Loading…", ar: "جاري التحميل…" },
   // Store & cosmetics
   store: { en: "Urahara's Shop", ar: "متجر أوراهارا" },
+  storeHub: { en: "Store", ar: "المتجر" },
   storeTitle: { en: "Urahara's Shop", ar: "متجر أوراهارا" },
   storeDesc: { en: "Spend Souls on titles, colors, and extra packs.", ar: "أنفق الأرواح على الألقاب والألوان والحزم." },
   shopkeeperName: { en: "Kisuke Urahara", ar: "كيسكي أوراهارا" },

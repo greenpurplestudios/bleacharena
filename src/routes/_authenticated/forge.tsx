@@ -42,31 +42,21 @@ function ForgePage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [cinematic, setCinematic] = useState<string | null>(null);
   const [line] = useState(() => NIMAIYA_LINES[Math.floor(Math.random() * NIMAIYA_LINES.length)]);
-  /* Easter egg: tap the sparks spelling M-A-R-Y-A-M in order. */
+  /* Easter egg: tap the "M" in Nimaiya's name five times. */
   const [secret, setSecret] = useState(0);
   const [kiss, setKiss] = useState(false);
-  /* Scrambled once per visit so the order has to be discovered. */
-  const [scramble] = useState(() =>
-    SECRET_LETTERS.map((v) => ({ v, k: Math.random() }))
-      .sort((a, b) => a.k - b.k)
-      .map((x) => x.v),
-  );
-  const tapSecret = (letter: string, index: number) => {
-    if (index === secret && letter === SECRET[secret]) {
-      const next = secret + 1;
-      if (next === SECRET.length) {
-        setSecret(0);
-        setKiss(true);
-        playKiss();
-        haptic("reward");
-        window.setTimeout(() => setKiss(false), 2200);
-        return;
-      }
-      setSecret(next);
-      play("tap");
+  const tapSecret = () => {
+    const next = secret + 1;
+    if (next >= SECRET_TAPS) {
+      setSecret(0);
+      setKiss(true);
+      playKiss();
+      haptic("reward");
+      window.setTimeout(() => setKiss(false), 2200);
       return;
     }
-    setSecret(0);
+    setSecret(next);
+    play("tap");
   };
 
   const refresh = useCallback(async () => setForge(await fetchForge()), []);
@@ -140,7 +130,20 @@ function ForgePage() {
               />
               <div className="min-w-0">
                 <p className="font-display text-[10px] font-black uppercase tracking-[0.25em] text-accent rtl:tracking-normal">
-                  Ōetsu Nimaiya
+                  {NIMAIYA_NAME.split("").map((ch, i) =>
+                    ch.toLowerCase() === "m" ? (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={tapSecret}
+                        className="cursor-pointer align-baseline"
+                      >
+                        {ch}
+                      </button>
+                    ) : (
+                      <span key={i}>{ch === " " ? "\u00A0" : ch}</span>
+                    ),
+                  )}
                 </p>
                 <p className="mt-1 text-sm font-bold leading-snug">{t(line)}</p>
               </div>
@@ -214,22 +217,6 @@ function ForgePage() {
           })}
         </ul>
       </main>
-
-      {/* MARYAM */}
-      <div className="mx-auto mb-24 flex max-w-4xl items-center justify-center gap-1.5 px-4 opacity-40">
-        {scramble.map(({ ch, i }) => (
-          <button
-            key={`${ch}-${i}`}
-            type="button"
-            aria-hidden
-            tabIndex={-1}
-            onClick={() => tapSecret(ch, i)}
-            className="h-4 w-4 rounded-full border border-accent/25 text-[7px] font-black text-accent/50"
-          >
-            {ch}
-          </button>
-        ))}
-      </div>
 
       {kiss ? (
         <div
