@@ -34,6 +34,34 @@ export function isFrozen(p: Placement): boolean {
   return hasStatus(p, "freeze");
 }
 
+/* ------------------------------------------------- lane-wide ability slugs */
+
+export const ZANGETSU_SLUG = "zangetsu";
+export const HIERRO_SLUG = "nnoitra-gilga";
+export const REFLECT_SLUG = "jushiro-ukitake";
+
+/** True when an un-frozen ally with `slug` shares the target's battlefield. */
+function allySlugIn(state: DuelState, target: Placement, slug: string): boolean {
+  return state.placements.some(
+    (x) =>
+      x.lane === target.lane &&
+      x.side === target.side &&
+      x.card.character.slug === slug &&
+      !isFrozen(x),
+  );
+}
+
+/**
+ * Zangetsu doubles every buff and debuff on his battlefield; Nnoitra's Hierro
+ * halves incoming debuffs. Applied in that order, then rounded.
+ */
+function scaleAmount(state: DuelState, target: Placement, amount: number): number {
+  let amt = amount;
+  if (allySlugIn(state, target, ZANGETSU_SLUG)) amt *= 2;
+  if (amt < 0 && allySlugIn(state, target, HIERRO_SLUG)) amt /= 2;
+  return amt < 0 ? -Math.round(-amt) : Math.round(amt);
+}
+
 /**
  * Sakanade hands an enemy ability to its caster. Abilities always read
  * `self.side`, so a hijacked card is handed to them with its side flipped —
