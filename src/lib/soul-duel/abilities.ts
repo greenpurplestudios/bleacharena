@@ -5,6 +5,7 @@ import type { StatusKind } from "./status";
 import {
   addBonus, applyStatus, clearNegatives, enemiesIn, alliesIn, highestOf, lowestOf,
   makeToken, setOverride, grantImmunity, baseRatingOf, laneBuff, laneLimit, stealRating,
+  protectRating,
 } from "./effects";
 
 export interface AbilityCtx {
@@ -24,6 +25,8 @@ export interface AbilityDef {
   selfRating?: (ctx: AbilityCtx) => number;
   /** Rating this character adds to another card on the board. */
   aura?: (ctx: AbilityCtx, other: Placement) => number;
+  /** Forces this card's final Rating (Renji). Return undefined to skip. */
+  overrideRating?: (ctx: AbilityCtx) => number | undefined;
   /** Fires the moment the card is deployed. */
   onPlay?: (state: DuelState, self: Placement) => DuelState;
   /** Fires at the end of every round while the card is on the board. */
