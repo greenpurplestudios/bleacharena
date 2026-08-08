@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { play } from "@/lib/sound";
 import { ultimateOf } from "@/lib/soul-duel/ultimates";
+import { ratingOf } from "@/lib/soul-duel/engine";
 import type { DuelResult, DuelState } from "@/lib/soul-duel/types";
 
 export function DuelResultPanel({
@@ -18,6 +19,7 @@ export function DuelResultPanel({
 }) {
   const { t, locale } = useI18n();
   const [review, setReview] = useState(false);
+  const [openLane, setOpenLane] = useState<number | null>(null);
   const history = state.history ?? [];
   const title =
     result.winner === "player" ? t("sdVictory")
@@ -44,18 +46,69 @@ export function DuelResultPanel({
 
         <ul className="mt-5 space-y-2">
           {result.lanes.map((l, i) => (
-            <li
-              key={state.lanes[i].def.id}
-              className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-start"
-            >
-              <span className="min-w-0 flex-1 truncate text-xs font-semibold">
-                {state.lanes[i].def.name[locale]}
-              </span>
-              <span className="font-display text-sm font-black">
-                <span style={{ color: l.winner === "player" ? color : undefined }}>{l.player}</span>
-                <span className="mx-1 text-muted-foreground">-</span>
-                <span>{l.opponent}</span>
-              </span>
+            <li key={state.lanes[i].def.id} className="rounded-xl border border-white/10 bg-white/[0.03]">
+              <button
+                type="button"
+                onClick={() => { setOpenLane((o) => (o === i ? null : i)); play("tap"); }}
+                aria-expanded={openLane === i}
+                className="tactile flex w-full items-center justify-between gap-2 px-3 py-2 text-start"
+              >
+                <span className="min-w-0 flex-1 truncate text-xs font-semibold">
+                  {state.lanes[i].def.name[locale]}
+                </span>
+                <span className="font-display text-sm font-black">
+                  <span style={{ color: l.winner === "player" ? color : undefined }}>{l.player}</span>
+                  <span className="mx-1 text-muted-foreground">-</span>
+                  <span>{l.opponent}</span>
+                </span>
+                <span aria-hidden className="text-[10px] text-muted-foreground">
+                  {openLane === i ? "▴" : "▾"}
+                </span>
+              </button>
+
+              {openLane === i ? (
+                <div
+                  className="space-y-2 border-t border-white/10 px-3 py-2 text-start"
+                  style={{ animation: "card-in 0.3s ease-out both" }}
+                >
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    {state.lanes[i].def.ability[locale]}
+                  </p>
+                  {(["player", "opponent"] as const).map((side) => {
+                    const cards = state.placements.filter((p) => p.lane === i && p.side === side);
+                    if (!cards.length) return null;
+                    return (
+                      <ul key={side} className="space-y-1">
+                        {cards.map((p) => (
+                          <li
+                            key={p.uid}
+                            className="flex items-center justify-between gap-2 text-[11px]"
+                          >
+                            <span className="min-w-0 flex-1 truncate">
+                              <span className="me-1 text-muted-foreground">
+                                {side === "player" ? "▲" : "▼"}
+                              </span>
+                              {p.card.character.name[locale]}
+                              {p.statuses.length ? (
+                                <span className="ms-1">
+                                  {p.statuses.map((s) => (
+                                    <span key={s.kind} aria-hidden>
+                                      {s.kind === "burn" ? "🔥" : s.kind === "freeze" ? "❄" : "🛡"}
+                                    </span>
+                                  ))}
+                                </span>
+                              ) : null}
+                            </span>
+                            <span className="font-display text-xs font-black tabular-nums">
+                              {ratingOf(state, p)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                  })}
+                </div>
+              ) : null}
             </li>
           ))}
         </ul>

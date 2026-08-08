@@ -467,18 +467,24 @@ export function playReiatsuClash() {
  */
 let voiceEl: HTMLAudioElement | null = null;
 
-export function playVoiceLine(url: string | undefined, delay = 900) {
-  if (!url || typeof window === "undefined") return;
+export function playVoiceLine(url: string | undefined, delay = 900, onEnded?: () => void) {
+  if (!url || typeof window === "undefined") return onEnded?.();
   const prefs = loadPrefs();
-  if (!prefs.sfx) return;
+  if (!prefs.sfx) return onEnded?.();
   window.setTimeout(() => {
     try {
       stopVoiceLine();
       const el = new Audio(url);
       el.volume = Math.min(1, Math.max(0, prefs.volume));
       voiceEl = el;
-      void el.play().catch(() => {});
-    } catch {}
+      if (onEnded) {
+        el.addEventListener("ended", onEnded, { once: true });
+        el.addEventListener("error", onEnded, { once: true });
+      }
+      void el.play().catch(() => onEnded?.());
+    } catch {
+      onEnded?.();
+    }
   }, delay);
 }
 

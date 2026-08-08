@@ -12,13 +12,31 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { t } = useI18n();
-  const { user } = useSession();
+  const { user, loading } = useSession();
   const nav = useNavigate();
 
   // Signed-in players land on the hub, not straight into Draft.
   useEffect(() => {
     if (user) nav({ to: "/home", replace: true });
   }, [user, nav]);
+
+  // Never flash the public landing page while auth resolves or we redirect.
+  if (loading || user) {
+    return (
+      <>
+        <Atmosphere variant="reiatsu" count={18} parallax={false} />
+        <main className="relative z-10 flex min-h-screen flex-col items-center justify-center gap-6 px-4">
+          <div style={{ animation: "card-in 0.5s ease-out both" }}>
+            <BleachLogo size="lg" />
+          </div>
+          <span
+            aria-hidden
+            className="h-8 w-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
+          />
+        </main>
+      </>
+    );
+  }
 
   return (
     <>

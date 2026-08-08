@@ -4,6 +4,9 @@ import masakiImg from "@/assets/characters/masaki.jpeg.asset.json";
 import zangetsuImg from "@/assets/characters/zangetsu.jpeg.asset.json";
 import asNodtImg from "@/assets/characters/as_nodt.jpeg.asset.json";
 import gremmyImg from "@/assets/characters/gremmy.jpeg.asset.json";
+import nnoitraImg from "@/assets/characters/nnoitra.jpeg.asset.json";
+import rirukaImg from "@/assets/characters/riruka.jpeg.asset.json";
+import yukioImg from "@/assets/characters/yukio.jpeg.asset.json";
 import ichigoImg from "@/assets/characters/ichigo.jpeg.asset.json";
 import uraharaImg from "@/assets/characters/urahara.jpeg.asset.json";
 import kyorakuImg from "@/assets/characters/kyoraku.jpeg.asset.json";
@@ -616,8 +619,24 @@ const raw: Omit<Character, "rarity">[] = [
     name: { en: "Nnoitra Gilga", ar: "نويترا غيلغا" },
     race: "Arrancar", faction: "Espada", division: null, rank: "Quinta Espada",
     arc: "Arrancar", shikai: "Santa Teresa", bankai: null,
-    image: null,
+    image: nnoitraImg.url,
     overall: 86,
+  },
+  {
+    id: "c-074", slug: "riruka-dokugamine",
+    name: { en: "Riruka Dokugamine", ar: "ريروكا دوكوغامين" },
+    race: "Human / Fullbringer", faction: "Xcution", division: null, rank: null,
+    arc: "Lost Agent", shikai: null, bankai: null,
+    image: rirukaImg.url,
+    overall: 78,
+  },
+  {
+    id: "c-075", slug: "yukio-vorarlberna",
+    name: { en: "Yukio Hans Vorarlberna", ar: "يوكيو هانز فورارلبيرنا" },
+    race: "Human / Fullbringer", faction: "Xcution", division: null, rank: null,
+    arc: "Lost Agent", shikai: null, bankai: null,
+    image: yukioImg.url,
+    overall: 76,
   },
 ];
 
@@ -631,6 +650,7 @@ function inferGender(id: string): "male" | "female" | "other" {
   const female = new Set([
     "c-002", "c-008", "c-015", "c-031", "c-041", "c-042", "c-047",
     "c-051", "c-054", "c-056", "c-057", "c-059", "c-061", "c-062",
+    "c-074",
   ]);
   const other = new Set(["c-050", "c-064"]);
   if (female.has(id)) return "female";

@@ -22,6 +22,8 @@ export function UltimateOverlay({
   const { t, locale } = useI18n();
   const [stage, setStage] = useState(0);
   const done = useRef(false);
+  const voiceDone = useRef(false);
+  const timerDone = useRef(false);
 
   const clash = event.kind === "clash";
   const winner = event.side;
@@ -31,15 +33,31 @@ export function UltimateOverlay({
   const duration = clash ? 4200 : 3400;
 
   useEffect(() => {
+    voiceDone.current = false;
+    timerDone.current = false;
+
+    // The cinematic never cuts the voice line off — it holds until both the
+    // animation timeline and the audio have finished.
+    const finish = () => {
+      if (!voiceDone.current || !timerDone.current || done.current) return;
+      done.current = true;
+      onDone();
+    };
+    const onVoiceEnd = () => { voiceDone.current = true; finish(); };
+
     if (clash) {
       playReiatsuClash();
       haptic("draft");
       // Only the victor is heard; a perfect clash detonates instead.
-      if (winner) playVoiceLine(ultimateOf(event.clash?.weapons[winner]).voiceUrl, 1500);
-      else playClashDetonation();
+      if (winner) {
+        playVoiceLine(ultimateOf(event.clash?.weapons[winner]).voiceUrl, 1500, onVoiceEnd);
+      } else {
+        playClashDetonation();
+        voiceDone.current = true;
+      }
     } else {
       playUltimate(weapon.visual.audio);
-      playVoiceLine(weapon.voiceUrl, 900);
+      playVoiceLine(weapon.voiceUrl, 900, onVoiceEnd);
       haptic("draft");
     }
 
@@ -48,10 +66,15 @@ export function UltimateOverlay({
       window.setTimeout(() => { setStage(2); haptic("press"); }, clash ? 1500 : 1200),
       window.setTimeout(() => setStage(3), clash ? 2600 : 2200),
       window.setTimeout(() => {
-        if (done.current) return;
-        done.current = true;
-        onDone();
+        timerDone.current = true;
+        finish();
       }, duration),
+      // Safety net: never trap the player if audio stalls.
+      window.setTimeout(() => {
+        voiceDone.current = true;
+        timerDone.current = true;
+        finish();
+      }, duration + 9000),
     ];
     return () => {
       timers.forEach(window.clearTimeout);

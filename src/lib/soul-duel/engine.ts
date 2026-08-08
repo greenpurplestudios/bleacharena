@@ -1,7 +1,10 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
 import { ANT_SLUG, abilityOf, duelDefOf } from "./abilities";
-import { asOwner, canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
+import { elementMultiplier, elementOf } from "@/lib/elements";
+import {
+  asOwner, canRelocate, hasStatus, immuneToModifiers, isFrozen, isSealed, withCaster,
+} from "./effects";
 import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import { ultimateOf, STARTER_WEAPON } from "./ultimates";
 import {
@@ -286,6 +289,15 @@ export function revealLane(state: DuelState, lane: number): DuelState {
 export function playCard(state: DuelState, side: Side, cardUid: string, lane: number): DuelState {
   const card = state.hands[side].find((c) => c.uid === cardUid);
   if (!card || !canPlay(state, side, card, lane)) return state;
+  // Yukio's Invaders Must Die — the card is repelled straight back to hand.
+  const bounce = (state.bounces ?? []).find((b) => b.lane === lane && b.side === side);
+  if (bounce) {
+    return {
+      ...state,
+      bounces: (state.bounces ?? []).filter((b) => b !== bounce),
+      log: [...state.log, log(state, "logBounce", lane, card.character.slug)],
+    };
+  }
   const buff = state.laneBuffs.find((b) => b.lane === lane && b.side === side);
   const hijack = state.mods.hijack;
   const placement: Placement = {
@@ -310,7 +322,9 @@ export function playCard(state: DuelState, side: Side, cardUid: string, lane: nu
   };
   const ability = abilityOf(card.character.slug);
   const played = next.placements[next.placements.length - 1];
-  return ability?.onPlay ? ability.onPlay(next, asOwner(played)) : next;
+  if (!ability?.onPlay) return next;
+  const owner = asOwner(played);
+  return withCaster(owner, () => ability.onPlay!(next, owner));
 }
 
 /** Abilities with a move budget (Urahara, Yoruichi) relocate a placed card. */
@@ -429,10 +443,13 @@ function applyAbilityTicks(state: DuelState): DuelState {
   let next = state;
   for (const p of state.placements) {
     const current = next.placements.find((x) => x.uid === p.uid);
-    if (!current || isFrozen(current)) continue;
+    if (!current || isFrozen(current) || isSealed(next, current)) continue;
     if (next.lanes[current.lane]?.def.rules.disableAbilities) continue;
     const ability = abilityOf(current.card.character.slug);
-    if (ability?.onRoundEnd) next = ability.onRoundEnd(next, asOwner(current));
+    if (ability?.onRoundEnd) {
+      const owner = asOwner(current);
+      next = withCaster(owner, () => ability.onRoundEnd!(next, owner));
+    }
   }
   return next;
 }
@@ -543,19 +560,31 @@ export function ratingOf(state: DuelState, p: Placement): number {
     const mult = rules.doubleAbilities ? 2 : 1;
     const board = state.placements;
     const owned = asOwner(p);
-    const own = isFrozen(p) ? undefined : abilityOf(p.card.character.slug);
+    const sealed = isSealed(state, p);
+    const own = isFrozen(p) || sealed ? undefined : abilityOf(p.card.character.slug);
     // A hijacked card no longer boosts itself for its original owner.
     if (own?.selfRating && !p.hijacked) {
       rating += mult * own.selfRating({ self: owned, state, board });
     }
     for (const other of board) {
-      if (other.uid === p.uid || isFrozen(other)) continue;
+      if (other.uid === p.uid || isFrozen(other) || isSealed(state, other)) continue;
       const otherRules = state.lanes[other.lane]?.def.rules ?? {};
       if (otherRules.disableAbilities) continue;
       const ab = abilityOf(other.card.character.slug);
       if (!ab?.aura) continue;
       const otherMult = otherRules.doubleAbilities ? 2 : 1;
-      rating += otherMult * ab.aura({ self: asOwner(other), state, board }, p);
+      const caster = asOwner(other);
+      const raw = ab.aura({ self: caster, state, board }, p);
+      // Sealed cards are inert; elemental advantage scales cross-side effects.
+      if (!raw || sealed) continue;
+      const elem =
+        caster.side === p.side
+          ? 1
+          : elementMultiplier(
+              elementOf(other.card.character.slug),
+              elementOf(p.card.character.slug),
+            );
+      rating += otherMult * raw * elem;
     }
 
     // Renji rewrites his own Rating from the weakest enemy on his battlefield.

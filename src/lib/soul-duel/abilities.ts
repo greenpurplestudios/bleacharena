@@ -5,7 +5,7 @@ import type { StatusKind } from "./status";
 import {
   addBonus, applyStatus, clearNegatives, enemiesIn, alliesIn, highestOf, lowestOf,
   makeToken, setOverride, grantImmunity, baseRatingOf, laneBuff, laneLimit, stealRating,
-  protectRating,
+  protectRating, sealCard, armBounce,
 } from "./effects";
 
 export interface AbilityCtx {
@@ -679,6 +679,38 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
         en: "Buffs and debuffs on allies of this battlefield count double.",
         ar: "التعزيزات والإضعافات على حلفاء هذه الساحة تُحتسب مضاعفة.",
       },
+    },
+  },
+  /* -------------------------------------------------------- fullbringers */
+  {
+    slug: "riruka-dokugamine",
+    cost: 2,
+    faction: { en: "Fullbringer", ar: "فولبرينغر" },
+    ability: {
+      slug: "dollhouse",
+      name: { en: "Dollhouse", ar: "بيت الدمى" },
+      description: {
+        en: "Seals the strongest enemy on this battlefield for 2 rounds: no ability, no buffs or debuffs.",
+        ar: "تحبس أقوى عدو في هذه الساحة لجولتين: بلا قدرة ولا تعزيزات أو إضعافات.",
+      },
+      onPlay: (state, self) => {
+        const victim = highestOf(enemiesIn(state, self));
+        return victim ? sealCard(state, victim.uid, 2) : state;
+      },
+    },
+  },
+  {
+    slug: "yukio-vorarlberna",
+    cost: 3,
+    faction: { en: "Fullbringer", ar: "فولبرينغر" },
+    ability: {
+      slug: "invaders-must-die",
+      name: { en: "Invaders Must Die", ar: "الغزاة يجب أن يموتوا" },
+      description: {
+        en: "The next enemy card played on this battlefield returns to its owner's hand.",
+        ar: "البطاقة المعادية التالية التي تُلعب في هذه الساحة تعود إلى يد صاحبها.",
+      },
+      onPlay: (state, self) => armBounce(state, self.lane, other(self.side)),
     },
   },
 ];
