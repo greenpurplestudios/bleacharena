@@ -2,22 +2,21 @@ import { ElementIcon, ELEMENT_COLOR } from "@/components/ElementIcon";
 import { ELEMENT_LABEL, type ElementKey } from "@/lib/elements";
 import { useI18n } from "@/lib/i18n";
 
-const CORE: ElementKey[] = ["fire", "nature", "water", "lightning"];
+const CORE: ElementKey[] = ["fire", "nature", "lightning", "water"];
 
 /** Positions on a 300x300 board for the core cycle. */
 const POS: Record<string, { x: number; y: number }> = {
   fire: { x: 150, y: 34 },
   nature: { x: 266, y: 150 },
-  water: { x: 150, y: 266 },
-  lightning: { x: 34, y: 150 },
+  lightning: { x: 150, y: 266 },
+  water: { x: 34, y: 150 },
 };
 
 /** from -> to (beats). */
 const BEATS: [ElementKey, ElementKey][] = [
-  ["fire", "nature"],
-  ["nature", "water"],
   ["water", "fire"],
-  ["lightning", "fire"],
+  ["fire", "nature"],
+  ["nature", "lightning"],
   ["lightning", "water"],
 ];
 
@@ -99,14 +98,6 @@ export function ElementGuide() {
               />
             );
           })}
-          {/* Nature resists Lightning — dashed, no arrowhead */}
-          <line
-            {...edge(POS.lightning, POS.nature)}
-            stroke={ELEMENT_COLOR.nature}
-            strokeWidth={2}
-            strokeDasharray="6 6"
-            strokeOpacity={0.5}
-          />
         </svg>
         {CORE.map((el) => (
           <div
@@ -140,11 +131,13 @@ export function ElementGuide() {
           <span className="h-px w-6 bg-foreground/60" />
           {locale === "ar" ? "يتفوق على" : "Beats"}
         </span>
-        <span className="flex items-center gap-2">
-          <span className="h-px w-6 border-t border-dashed border-foreground/60" />
-          {locale === "ar" ? "يقاوم" : "Resists"}
-        </span>
       </div>
+
+      <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-foreground">
+        {locale === "ar"
+          ? "ميزة العنصر تضاعف تأثير القدرة على الخصم، والضعف يقلّصه إلى النصف."
+          : "An elemental advantage doubles an ability's effect on the enemy; a disadvantage halves it."}
+      </p>
     </section>
   );
 }
