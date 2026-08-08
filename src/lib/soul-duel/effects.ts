@@ -1,4 +1,5 @@
 import type { Character } from "@/types/character";
+import { elementMultiplier, elementOf } from "@/lib/elements";
 import { ANT_SLUG, duelDefOf } from "./abilities";
 import { STATUS_DEFS, type StatusKind } from "./status";
 import type { DuelCard, DuelState, Placement, Side } from "./types";
@@ -16,6 +17,39 @@ export function immuneToModifiers(p: Placement): boolean {
   // The Black Ant is absolute: no buff, debuff, status or battlefield rule.
   if (p.card.character.slug === ANT_SLUG) return true;
   return !!duelDefOf(p.card.character.slug)?.immuneToModifiers;
+}
+
+/** Riruka's Dollhouse: sealed cards are inert — no abilities, no modifiers. */
+export function isSealed(state: DuelState, p: Placement): boolean {
+  return (p.sealedUntilRound ?? 0) > state.round;
+}
+
+/* --------------------------------------------------------- element caster */
+
+let activeCaster: Placement | null = null;
+
+/**
+ * Ability effects are attributed to the card that fired them so elemental
+ * advantage can scale what lands on the opposing side.
+ */
+export function withCaster<T>(caster: Placement, fn: () => T): T {
+  const prev = activeCaster;
+  activeCaster = caster;
+  try {
+    return fn();
+  } finally {
+    activeCaster = prev;
+  }
+}
+
+function elementScale(target: Placement): number {
+  const caster = activeCaster;
+  if (!caster || caster.uid === target.uid) return 1;
+  if (caster.side === target.side) return 1;
+  return elementMultiplier(
+    elementOf(caster.card.character.slug),
+    elementOf(target.card.character.slug),
+  );
 }
 
 export function movesAllowed(p: Placement): number {
@@ -56,7 +90,7 @@ function allySlugIn(state: DuelState, target: Placement, slug: string): boolean 
  * halves incoming debuffs. Applied in that order, then rounded.
  */
 function scaleAmount(state: DuelState, target: Placement, amount: number): number {
-  let amt = amount;
+  let amt = amount * elementScale(target);
   if (allySlugIn(state, target, ZANGETSU_SLUG)) amt *= 2;
   if (amt < 0 && allySlugIn(state, target, HIERRO_SLUG)) amt /= 2;
   return amt < 0 ? -Math.round(-amt) : Math.round(amt);
@@ -147,7 +181,7 @@ export function addBonus(
   opts?: EffectOpts,
 ): DuelState {
   const target = state.placements.find((p) => p.uid === uid);
-  if (!target || immuneToModifiers(target) || !amount) return state;
+  if (!target || immuneToModifiers(target) || isSealed(state, target) || !amount) return state;
   const amt = opts?.raw ? amount : scaleAmount(state, target, amount);
   if (!amt) return state;
   if (amt < 0) {
@@ -166,7 +200,7 @@ export function addBonus(
 
 export function setOverride(state: DuelState, uid: string, rating: number): DuelState {
   const target = state.placements.find((p) => p.uid === uid);
-  if (!target || immuneToModifiers(target)) return state;
+  if (!target || immuneToModifiers(target) || isSealed(state, target)) return state;
   // Unbreakable Loyalty never lets a Rating drop.
   if (target.noReduce && rating < baseRatingOf(target)) return state;
   return patch(state, uid, (p) => ({ ...p, override: rating }));
@@ -190,7 +224,7 @@ export function applyStatus(
   const def = STATUS_DEFS[kind];
 
   if (def.negative) {
-    if (immuneToModifiers(target)) return state;
+    if (immuneToModifiers(target) || isSealed(state, target)) return state;
     // Burn eats Rating — Unbreakable Loyalty blocks it outright.
     if (target.noReduce && kind === "burn") return state;
     const bounced = tryReflect(
