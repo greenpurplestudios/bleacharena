@@ -648,6 +648,8 @@ export const dict = {
   logAbility: { en: "An ability triggered.", ar: "تفعّلت قدرة." },
   logMove: { en: "A card relocated.", ar: "انتقلت بطاقة." },
   logSummon: { en: "A card was summoned.", ar: "استُدعيت بطاقة." },
+  logSeal: { en: "A card was sealed in the Dollhouse.", ar: "حُبست بطاقة في بيت الدمى." },
+  logBounce: { en: "A card was repelled back to hand.", ar: "أُعيدت بطاقة إلى اليد." },
   sdStatusEffects: { en: "Status Effects", ar: "التأثيرات" },
   sdAbility: { en: "Ability", ar: "القدرة" },
   sdNoAbility: { en: "No ability — pure Rating.", ar: "بلا قدرة — تقييم خالص." },
