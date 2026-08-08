@@ -271,6 +271,22 @@ export function laneBuff(state: DuelState, lane: number, side: Side, amount: num
   return { ...state, laneBuffs: [...state.laneBuffs, { lane, side, amount }] };
 }
 
+/** Riruka's Dollhouse: seal an enemy card for `rounds` rounds. */
+export function sealCard(state: DuelState, uid: string, rounds = 2): DuelState {
+  const target = state.placements.find((p) => p.uid === uid);
+  if (!target || immuneToModifiers(target)) return state;
+  if (hasStatus(target, "shield")) return consumeShield(state, uid);
+  if ((target.immuneUntilRound ?? 0) > state.round) return state;
+  return patch(state, uid, (p) => ({ ...p, sealedUntilRound: state.round + rounds }));
+}
+
+/** Yukio: arm a battlefield so the next card `side` plays there bounces back. */
+export function armBounce(state: DuelState, lane: number, side: Side): DuelState {
+  const existing = state.bounces ?? [];
+  if (existing.some((b) => b.lane === lane && b.side === side)) return state;
+  return { ...state, bounces: [...existing, { lane, side }] };
+}
+
 /**
  * Moves Rating from one card to another — never duplicates it. The thief only
  * gains what the victim actually loses, and each victim can be robbed once.
