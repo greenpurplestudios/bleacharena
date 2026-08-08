@@ -1,7 +1,10 @@
 import type { Character, Rarity } from "@/types/character";
 import { BATTLEFIELDS } from "@/data/battlefields";
 import { ANT_SLUG, abilityOf, duelDefOf } from "./abilities";
-import { asOwner, canRelocate, hasStatus, immuneToModifiers, isFrozen } from "./effects";
+import { elementMultiplier, elementOf } from "@/lib/elements";
+import {
+  asOwner, canRelocate, hasStatus, immuneToModifiers, isFrozen, isSealed, withCaster,
+} from "./effects";
 import { BURN_DAMAGE, STATUS_DEFS } from "./status";
 import { ultimateOf, STARTER_WEAPON } from "./ultimates";
 import {
