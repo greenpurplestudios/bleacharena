@@ -149,7 +149,9 @@ export type DuelLogKey =
   | "logShield"
   | "logAbility"
   | "logMove"
-  | "logSummon";
+  | "logSummon"
+  | "logSeal"
+  | "logBounce";
 
 export interface DuelState {
   round: number;
