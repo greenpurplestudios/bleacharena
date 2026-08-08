@@ -75,6 +75,8 @@ export interface Placement {
   noReduce?: boolean;
   /** Ukitake: round in which this card's reflect has already been spent. */
   reflectUsedRound?: number;
+  /** Riruka's Dollhouse: sealed until this round (exclusive). */
+  sealedUntilRound?: number;
 }
 
 export interface LaneState {
@@ -162,6 +164,8 @@ export interface DuelState {
   laneBuffs: { lane: number; side: Side; amount: number }[];
   /** Hard caps on how many cards a side may hold on a battlefield. */
   laneLimits: { lane: number; side: Side; max: number }[];
+  /** Yukio: the next card `side` plays on `lane` bounces back to hand. */
+  bounces?: { lane: number; side: Side }[];
   /** Reiatsu Gauge / Limit Breaker per side. */
   gauge: Record<Side, GaugeState>;
   /** Ultimate Weapon equipped by each side for this match. */
