@@ -222,6 +222,7 @@ export function applyStatus(
   const target = state.placements.find((p) => p.uid === uid);
   if (!target) return state;
   const def = STATUS_DEFS[kind];
+  if (isSealed(state, target)) return state;
 
   if (def.negative) {
     if (immuneToModifiers(target) || isSealed(state, target)) return state;
