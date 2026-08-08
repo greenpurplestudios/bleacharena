@@ -31,8 +31,7 @@ function Home() {
           </div>
           <span
             aria-hidden
-            className="h-8 w-8 rounded-full border-2 border-primary/30 border-t-primary"
-            style={{ animation: "spin 0.9s linear infinite" }}
+            className="h-8 w-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
           />
         </main>
       </>
