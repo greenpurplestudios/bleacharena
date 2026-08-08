@@ -23,7 +23,7 @@ const BY_ELEMENT: Record<ElementKey, string[]> = {
   ],
   fire: [
     "genryusai-yamamoto", "bazz-b", "renji-abarai", "ikkaku-madarame",
-    "ganju-shiba", "kenpachi-zaraki", "isshin-kurosaki",
+    "ganju-shiba", "kenpachi-zaraki", "isshin-kurosaki", "riruka-dokugamine",
   ],
   water: [
     "ichigo-kurosaki", "rukia-kuchiki", "toshiro-hitsugaya", "grimmjow-jaegerjaquez",
@@ -32,6 +32,7 @@ const BY_ELEMENT: Record<ElementKey, string[]> = {
   lightning: [
     "kisuke-urahara", "yoruichi-shihoin", "soi-fon", "gin-ichimaru", "uryu-ishida",
     "shuhei-hisagi", "izuru-kira", "rangiku-matsumoto", "yumichika-ayasegawa", "kon",
+    "yukio-vorarlberna",
   ],
   nature: [
     "byakuya-kuchiki", "retsu-unohana", "gerard-valkyrie", "aura-michibane",
