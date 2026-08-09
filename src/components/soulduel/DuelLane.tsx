@@ -111,7 +111,7 @@ export const DuelLane = memo(function DuelLane({
           animation: canPlace ? "pulse-glow 1.8s ease-in-out infinite" : undefined,
         }}
         data-duel-lane-drop={canPlace ? "1" : undefined}
-        aria-label={l.def.name.en}
+        aria-label={l.revealed ? l.def.name.en : t("sdMystery")}
       >
         <BattlefieldCard def={l.def} revealed={l.revealed} closed={l.closed} className="w-full" />
         <span className="mt-1 flex items-center justify-center gap-1 font-display text-[10px] font-black">
@@ -121,6 +121,11 @@ export const DuelLane = memo(function DuelLane({
           <span className="text-muted-foreground">·</span>
           <span style={{ color: score.winner === "player" ? accent : undefined }}>{score.player}</span>
         </span>
+        {!l.revealed ? (
+          <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-black/60 py-1 text-center font-display text-[9px] uppercase tracking-widest text-accent rtl:tracking-normal">
+            ?
+          </span>
+        ) : null}
         {l.closed ? (
           <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 bg-black/70 py-1 text-center font-display text-[9px] uppercase tracking-widest text-destructive">
             {t("sdClosed")}

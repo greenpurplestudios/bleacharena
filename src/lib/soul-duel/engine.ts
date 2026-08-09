@@ -550,7 +550,6 @@ export function ratingOf(state: DuelState, p: Placement): number {
   if ((p.zeroUntilRound ?? 0) >= state.round) return 0;
   const base = p.override ?? p.card.character.overall;
   if (immuneToModifiers(p)) return Math.max(0, Math.round(base));
-  const lane = state.lanes[p.lane];
   const rules = rulesOf(state, p.lane);
   let rating = base + p.bonus;
 

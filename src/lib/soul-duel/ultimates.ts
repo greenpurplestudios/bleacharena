@@ -61,7 +61,7 @@ const MAX_LANE = 4;
 /** Cards a side may still fit on a battlefield. */
 function laneRoom(state: DuelState, lane: number, side: Side): number {
   const l = state.lanes[lane];
-  if (!l || !l.revealed || l.closed) return 0;
+  if (!l || l.closed) return 0;
   return MAX_LANE - state.placements.filter((p) => p.lane === lane && p.side === side).length;
 }
 
