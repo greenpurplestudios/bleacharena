@@ -39,7 +39,7 @@ export function DuelResultPanel({
       style={{ animation: "fade-in 0.4s ease-out both" }}
     >
       <div
-        className="max-h-[92vh] w-full max-w-sm overflow-y-auto rounded-3xl border border-white/10 bg-card/80 p-6 text-center backdrop-blur-md"
+        className="relative max-h-[92vh] w-full max-w-sm overflow-y-auto rounded-3xl border border-white/10 bg-card/80 p-6 text-center backdrop-blur-md"
         style={{ animation: "card-in 0.5s ease-out both", boxShadow: `0 0 60px -20px ${color}` }}
       >
         {onClose ? (
