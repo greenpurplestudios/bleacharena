@@ -5,12 +5,15 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { DuelBoard } from "@/components/soulduel/DuelBoard";
 import { OnlineDuel } from "@/components/soulduel/OnlineDuel";
 import { DuelRanking } from "@/components/soulduel/DuelRanking";
+import { DeckBuilder } from "@/components/soulduel/DeckBuilder";
 import { BattlefieldCard } from "@/components/soulduel/BattlefieldCard";
 import { BATTLEFIELDS } from "@/data/battlefields";
 import { DUEL_ROSTER } from "@/data/soul-duel-roster";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { play } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
+import { useOnlineCount } from "@/lib/presence";
+import { DECK_CARDS, deckCharacters, loadDeck } from "@/lib/soul-duel/deck";
 import { fetchForge, type ForgeState } from "@/lib/forge";
 import { ULTIMATE_EFFECT_TEXT, ultimateOf } from "@/lib/soul-duel/ultimates";
 import type { Difficulty } from "@/lib/soul-duel/types";
@@ -47,12 +50,19 @@ function SoulDuelPage() {
   const [online, setOnline] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [forge, setForge] = useState<ForgeState | null>(null);
+  const [deck, setDeck] = useState<string[]>([]);
+  const onlineCount = useOnlineCount();
 
   useEffect(() => {
     let alive = true;
     void fetchForge().then((f) => { if (alive) setForge(f); });
     return () => { alive = false; };
   }, []);
+
+  useEffect(() => { setDeck(loadDeck()); }, []);
+
+  const chosen = deckCharacters(deck);
+  const pool = chosen.length === DECK_CARDS ? chosen : DUEL_ROSTER;
 
   const weapon = ultimateOf(forge?.equipped);
 
@@ -62,7 +72,7 @@ function SoulDuelPage() {
         <Atmosphere variant="sparks" count={16} parallax={false} />
         <SiteHeader />
         <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
-          <OnlineDuel pool={DUEL_ROSTER} weaponId={forge?.equipped} onExit={() => setOnline(false)} />
+          <OnlineDuel pool={pool} weaponId={forge?.equipped} onExit={() => setOnline(false)} />
         </main>
       </>
     );
@@ -75,7 +85,7 @@ function SoulDuelPage() {
         <SiteHeader />
         <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
           <DuelBoard
-            pool={DUEL_ROSTER}
+            pool={pool}
             onExit={() => setPlaying(false)}
             difficulty={difficulty}
             weaponId={forge?.equipped}
@@ -126,9 +136,17 @@ function SoulDuelPage() {
                 {t("sdOnline")}
               </button>
               <p className="mt-2 text-[11px] text-muted-foreground">{t("sdOnlineDesc")}</p>
+              {onlineCount !== null ? (
+                <p className="mt-1 flex items-center justify-center gap-1.5 text-[11px] font-bold text-accent">
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "pulse-glow 1.8s ease-in-out infinite" }} />
+                  {onlineCount} {t("onlineNow")}
+                </p>
+              ) : null}
             </div>
           </div>
         </section>
+
+        <DeckBuilder deck={deck} onChange={setDeck} />
 
         {/* difficulty */}
         <section className="mt-6">

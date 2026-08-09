@@ -7,6 +7,9 @@ import { BleachLogo } from "@/components/BleachLogo";
 import { useI18n, type TKey } from "@/lib/i18n";
 import { play, startAmbient } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
+import { useOnlineCount } from "@/lib/presence";
+import { scheduleReminder } from "@/lib/notifications";
+import { useEffect } from "react";
 import duelBanner from "@/assets/soulduel/soul_duel_banner.jpg";
 import duelLogo from "@/assets/soulduel/soul_duel_logo.png";
 
@@ -58,6 +61,12 @@ const TONE: Record<Tile["tone"], string> = {
 
 function HomeHub() {
   const { t } = useI18n();
+  const onlineCount = useOnlineCount();
+
+  useEffect(
+    () => scheduleReminder(t("notifyReminderTitle"), t("notifyReminderBody")),
+    [t],
+  );
 
   return (
     <>
@@ -78,6 +87,12 @@ function HomeHub() {
           <p className="mx-auto mt-2 max-w-md text-balance text-sm text-muted-foreground">
             {t("homeSubtitle")}
           </p>
+          {onlineCount !== null ? (
+            <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[11px] font-bold text-accent">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "pulse-glow 1.8s ease-in-out infinite" }} />
+              {onlineCount} {t("onlineNow")}
+            </p>
+          ) : null}
         </section>
 
         {/* Primary CTA */}
