@@ -10,12 +10,15 @@ export function DuelResultPanel({
   result,
   onRematch,
   fragments,
+  onClose,
 }: {
   state: DuelState;
   result: DuelResult;
   onRematch: () => void;
   /** Broken Sword Fragments earned from this duel. */
   fragments?: number;
+  /** Dismisses the panel so the final battlefield can be inspected. */
+  onClose?: () => void;
 }) {
   const { t, locale } = useI18n();
   const [review, setReview] = useState(false);
@@ -36,9 +39,19 @@ export function DuelResultPanel({
       style={{ animation: "fade-in 0.4s ease-out both" }}
     >
       <div
-        className="max-h-[92vh] w-full max-w-sm overflow-y-auto rounded-3xl border border-white/10 bg-card/80 p-6 text-center backdrop-blur-md"
+        className="relative max-h-[92vh] w-full max-w-sm overflow-y-auto rounded-3xl border border-white/10 bg-card/80 p-6 text-center backdrop-blur-md"
         style={{ animation: "card-in 0.5s ease-out both", boxShadow: `0 0 60px -20px ${color}` }}
       >
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t("sdHideResult")}
+            className="tactile absolute end-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-sm font-black text-muted-foreground"
+          >
+            ✕
+          </button>
+        ) : null}
         <h2 className="font-display text-3xl font-black" style={{ color }}>{title}</h2>
         <p className="mt-1 font-display text-xs uppercase tracking-[0.3em] text-muted-foreground rtl:tracking-normal">
           {t("sdLanesWon")} {result.lanesWon.player} — {result.lanesWon.opponent}

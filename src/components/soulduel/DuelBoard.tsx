@@ -70,6 +70,7 @@ export function DuelBoard({
   const [busy, setBusy] = useState(false);
   const [cinematic, setCinematic] = useState<DuelState["ultimateEvent"]>(null);
   const [fragments, setFragments] = useState<number | null>(null);
+  const [hideResult, setHideResult] = useState(false);
   const rewarded = useRef(false);
 
   const weapon = ultimateOf(state.weapons.player);
@@ -382,15 +383,24 @@ export function DuelBoard({
             />
           </div>
           <div className="max-w-sm rounded-2xl border border-white/10 bg-card/70 p-4 text-center">
-            <h3 className="font-display text-base font-black" style={{ color: state.lanes[inspect].def.accent }}>
-              {state.lanes[inspect].def.name[locale]}
-            </h3>
-            <p className="mt-1 font-display text-[11px] uppercase tracking-[0.28em] text-accent rtl:tracking-normal">
-              {state.lanes[inspect].def.ability[locale]}
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {state.lanes[inspect].def.description[locale]}
-            </p>
+            {state.lanes[inspect].revealed ? (
+              <>
+                <h3 className="font-display text-base font-black" style={{ color: state.lanes[inspect].def.accent }}>
+                  {state.lanes[inspect].def.name[locale]}
+                </h3>
+                <p className="mt-1 font-display text-[11px] uppercase tracking-[0.28em] text-accent rtl:tracking-normal">
+                  {state.lanes[inspect].def.ability[locale]}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {state.lanes[inspect].def.description[locale]}
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className="font-display text-base font-black text-accent">{t("sdMystery")}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("sdMysteryDesc")}</p>
+              </>
+            )}
           </div>
         </button>
       ) : null}
@@ -428,12 +438,23 @@ export function DuelBoard({
         <UltimateOverlay event={cinematic} onDone={() => setCinematic(null)} />
       ) : null}
 
-      {state.result && !cinematic ? (
+      {state.result && !cinematic && hideResult ? (
+        <button
+          type="button"
+          onClick={() => { setHideResult(false); play("tap"); }}
+          className="tactile glow-orange fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-2xl bg-primary px-6 py-3 font-display text-xs font-black uppercase tracking-[0.22em] text-primary-foreground rtl:tracking-normal"
+        >
+          {t("sdShowResult")}
+        </button>
+      ) : null}
+
+      {state.result && !cinematic && !hideResult ? (
         <DuelResultPanel
           state={state}
           result={state.result}
           onRematch={rematch}
           fragments={fragments ?? undefined}
+          onClose={() => { setHideResult(true); play("tap"); }}
         />
       ) : null}
     </div>

@@ -16,6 +16,10 @@ import {
   SettingSlider,
 } from "@/components/settings/SettingsRow";
 import { InstallAppRow } from "@/components/InstallAppRow";
+import {
+  notificationPermission, notificationsEnabled, notificationsSupported,
+  setNotificationsEnabled,
+} from "@/lib/notifications";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -41,6 +45,9 @@ function SettingsPage() {
   const [equippedTitle, setEquippedTitle] = useState<string | null>(null);
   const [equippedColor, setEquippedColor] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [notifOn, setNotifOn] = useState(false);
+  const [notifBlocked, setNotifBlocked] = useState(false);
+  const [notifSupported, setNotifSupported] = useState(false);
 
   const loadProfile = async () => {
     const p = (await getMyProfile()) as { username: string | null; title?: string | null; username_color?: string | null } | null;
@@ -53,6 +60,9 @@ function SettingsPage() {
   useEffect(() => {
     loadProfile();
     loadInventory();
+    setNotifSupported(notificationsSupported());
+    setNotifOn(notificationsEnabled());
+    setNotifBlocked(notificationPermission() === "denied");
   }, []);
 
   const update = (patch: Partial<SoundPrefs>) => {
@@ -132,6 +142,22 @@ function SettingsPage() {
             onChange={(v) => { update({ haptics: v }); if (v) haptic("press"); }}
           />
         </SettingsSection>
+
+        {notifSupported ? (
+          <SettingsSection title={t("notifications")}>
+            <SettingToggle
+              label={t("notifications")}
+              description={notifBlocked ? t("notificationsBlocked") : t("notificationsDesc")}
+              value={notifOn}
+              onChange={async (v) => {
+                const on = await setNotificationsEnabled(v);
+                setNotifOn(on);
+                setNotifBlocked(notificationPermission() === "denied");
+                if (on) play("success");
+              }}
+            />
+          </SettingsSection>
+        ) : null}
 
         <SettingsSection title={t("profile")}>
           <SettingRow

@@ -747,6 +747,49 @@ export const dict = {
   sdClashDetonation: { en: "Perfect Clash — both weapons detonate.", ar: "تصادم متكافئ — ينفجر السلاحان." },
   sdWeaponShattered: { en: "Weapon shattered", ar: "تحطّم السلاح" },
   sdSecretWord: { en: "A name in the sparks…", ar: "…اسمٌ بين الشرر" },
+
+  /* ---- Deck building ---- */
+  sdDeckBuilder: { en: "Deck Builder", ar: "بناء الفريق" },
+  sdDeckBuilderDesc: {
+    en: "Pick exactly 12 characters. They are the only cards you will draw.",
+    ar: "اختر ١٢ شخصية بالضبط. هي البطاقات الوحيدة التي ستسحبها.",
+  },
+  sdDeckEdit: { en: "Edit Deck", ar: "تعديل الفريق" },
+  sdDeckDone: { en: "Done", ar: "تم" },
+  sdDeckAuto: { en: "Auto Deck", ar: "فريق تلقائي" },
+  sdDeckClear: { en: "Clear", ar: "مسح" },
+  sdDeckSaved: { en: "Deck saved", ar: "تم حفظ الفريق" },
+  sdDeckIncomplete: { en: "Pick 12 cards to save your deck.", ar: "اختر ١٢ بطاقة لحفظ فريقك." },
+  sdDeckRoster: { en: "Roster", ar: "القائمة" },
+  sdAvgReiatsu: { en: "Avg. Reiatsu", ar: "متوسط الرياتسو" },
+  sdDeckDefault: {
+    en: "No deck saved — a random deck will be drawn.",
+    ar: "لا يوجد فريق محفوظ — سيتم سحب فريق عشوائي.",
+  },
+
+  /* ---- Hidden battlefields, live count, notifications ---- */
+  sdMystery: { en: "Unknown Battlefield", ar: "ساحة مجهولة" },
+  sdMysteryDesc: {
+    en: "This battlefield is still sealed. You may deploy here, but its rules stay hidden until it is revealed — then they apply to every card already standing on it.",
+    ar: "هذه الساحة ما زالت مغلقة. يمكنك النزول فيها، لكن قوانينها تبقى مخفية حتى تُكشف — عندها تُطبَّق على كل بطاقة موجودة فيها.",
+  },
+  onlineNow: { en: "Players online", ar: "لاعبون متصلون" },
+  notifications: { en: "Notifications", ar: "الإشعارات" },
+  notificationsDesc: {
+    en: "Reminders for daily rewards, duels and events.",
+    ar: "تذكيرات بالمكافآت اليومية والنزالات والفعاليات.",
+  },
+  notificationsBlocked: {
+    en: "Notifications are blocked in your browser settings.",
+    ar: "الإشعارات محظورة في إعدادات متصفحك.",
+  },
+  notifyReminderTitle: { en: "Bleach Arena", ar: "بليتش أرينا" },
+  notifyReminderBody: {
+    en: "Your Reiatsu has recovered — rewards and duels are waiting.",
+    ar: "استعاد رياتسوك قوته — المكافآت والنزالات بانتظارك.",
+  },
+  sdHideResult: { en: "View battlefield", ar: "عرض الساحة" },
+  sdShowResult: { en: "Show result", ar: "عرض النتيجة" },
 };
 
 export type TKey = keyof typeof dict;

@@ -134,12 +134,22 @@ export function laneCards(state: DuelState, lane: number, side: Side): Placement
   return state.placements.filter((p) => p.lane === lane && p.side === side);
 }
 
+/**
+ * A sealed battlefield keeps its rules secret — and inert. The moment it is
+ * revealed the rules apply retroactively to every card already standing there.
+ */
+export function rulesOf(state: DuelState, lane: number) {
+  const l = state.lanes[lane];
+  return l?.revealed ? l.def.rules : {};
+}
+
 export function laneIsOpen(state: DuelState, lane: number, side: Side): boolean {
   const l = state.lanes[lane];
   const cap = state.laneLimits
     .filter((x) => x.lane === lane && x.side === side)
     .reduce((n, x) => Math.min(n, x.max), MAX_PER_LANE);
-  return !!l && l.revealed && !l.closed && laneCards(state, lane, side).length < cap;
+  // Cards may be committed to a battlefield before it is revealed.
+  return !!l && !l.closed && laneCards(state, lane, side).length < cap;
 }
 
 export function remainingReiatsu(state: DuelState, side: Side): number {
@@ -265,7 +275,7 @@ export function isHidden(state: DuelState, p: Placement, viewer: Side = "player"
   if (p.side === viewer || state.phase === "ended") return false;
   if ((state.mods.revealUntil[viewer] ?? 0) >= state.round) return false;
   if (isBlinded(state, viewer)) return true;
-  const until = state.lanes[p.lane]?.def.rules.hiddenUntilRound;
+  const until = rulesOf(state, p.lane).hiddenUntilRound;
   return !!until && state.round < until;
 }
 
@@ -363,14 +373,13 @@ function applyDrift(state: DuelState): DuelState {
   let placements = state.placements;
   const entries: DuelLogEntry[] = [];
   for (const p of placements.filter((x) => x.round === state.round)) {
-    const chance = state.lanes[p.lane]?.def.rules.driftChance;
+    const chance = rulesOf(state, p.lane).driftChance;
     if (!chance || Math.random() > chance) continue;
     const targets = state.lanes
       .map((_, i) => i)
       .filter(
         (i) =>
           i !== p.lane &&
-          state.lanes[i].revealed &&
           !state.lanes[i].closed &&
           placements.filter((x) => x.lane === i && x.side === p.side).length < MAX_PER_LANE,
       );
@@ -386,7 +395,7 @@ function applySwap(state: DuelState): DuelState {
   let placements = state.placements;
   const entries: DuelLogEntry[] = [];
   state.lanes.forEach((lane, i) => {
-    if (!lane.def.rules.swapOnContest) return;
+    if (!lane.revealed || !lane.def.rules.swapOnContest) return;
     const mine = placements.find((p) => p.lane === i && p.side === "player" && p.round === state.round);
     const theirs = placements.find((p) => p.lane === i && p.side === "opponent" && p.round === state.round);
     if (!mine || !theirs) return;
@@ -415,7 +424,7 @@ function applyImprisonment(state: DuelState): DuelState {
   let placements = state.placements;
   const entries: DuelLogEntry[] = [];
   state.lanes.forEach((lane, i) => {
-    if (!lane.def.rules.imprisonAtFinalRound) return;
+    if (!lane.revealed || !lane.def.rules.imprisonAtFinalRound) return;
     (["player", "opponent"] as Side[]).forEach((side) => {
       const pool = placements.filter((p) => p.lane === i && p.side === side);
       if (!pool.length) return;
@@ -444,7 +453,7 @@ function applyAbilityTicks(state: DuelState): DuelState {
   for (const p of state.placements) {
     const current = next.placements.find((x) => x.uid === p.uid);
     if (!current || isFrozen(current) || isSealed(next, current)) continue;
-    if (next.lanes[current.lane]?.def.rules.disableAbilities) continue;
+    if (rulesOf(next, current.lane).disableAbilities) continue;
     const ability = abilityOf(current.card.character.slug);
     if (ability?.onRoundEnd) {
       const owner = asOwner(current);
@@ -541,8 +550,7 @@ export function ratingOf(state: DuelState, p: Placement): number {
   if ((p.zeroUntilRound ?? 0) >= state.round) return 0;
   const base = p.override ?? p.card.character.overall;
   if (immuneToModifiers(p)) return Math.max(0, Math.round(base));
-  const lane = state.lanes[p.lane];
-  const rules = lane?.def.rules ?? {};
+  const rules = rulesOf(state, p.lane);
   let rating = base + p.bonus;
 
   if (rules.globalRating) rating += rules.globalRating;
@@ -568,7 +576,7 @@ export function ratingOf(state: DuelState, p: Placement): number {
     }
     for (const other of board) {
       if (other.uid === p.uid || isFrozen(other) || isSealed(state, other)) continue;
-      const otherRules = state.lanes[other.lane]?.def.rules ?? {};
+      const otherRules = rulesOf(state, other.lane);
       if (otherRules.disableAbilities) continue;
       const ab = abilityOf(other.card.character.slug);
       if (!ab?.aura) continue;
