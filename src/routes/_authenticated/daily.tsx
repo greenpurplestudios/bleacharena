@@ -48,6 +48,7 @@ function DailyPage() {
     if (r.ok) {
       setLastReward({ souls: r.souls, pack: r.pack });
       refreshSouls();
+      void trackMission("login_claim", 1);
       // Streak-based achievement
       if ((r.streak ?? 0) >= 30) trackAchievement("gen_login_30", 30, true);
       load();

@@ -124,6 +124,7 @@ function RivalsPage() {
     setBattle(res);
     const won = res.winnerId === myId;
     const draw = res.winnerId === null;
+    trackMission("rival_play", 1);
     if (won) { playSound("rare"); trackMission("rival_win", 1); }
     else if (draw) playSound("reveal");
     else playSound("error");
