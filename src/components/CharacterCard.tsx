@@ -1,79 +1,39 @@
 import { useEffect, useState } from "react";
-import type { Character } from "@/types/character";
+import type { Character, Rarity } from "@/types/character";
 import { useI18n } from "@/lib/i18n";
 import { elementOf } from "@/lib/elements";
 import { ELEMENT_PATH } from "@/components/ElementIcon";
-import { CARD_BACK } from "@/lib/card-backs";
+import { RARITY_MATERIAL } from "@/lib/card-backs";
 import { framingOf } from "@/lib/portrait";
 import { RARITY_LABEL } from "@/lib/rarity";
 import { loadPrefs, play, playReveal } from "@/lib/sound";
 import { haptic, hapticRarity } from "@/lib/haptics";
 import { preloadCardArt } from "@/lib/card-preload";
-import {
-  CARD_LABEL, localizeArc, localizeBlade, localizeDivision,
-  localizeFaction, localizeRank,
-} from "@/lib/card-i18n";
-import commonTpl from "@/assets/cards/common.jpeg.asset.json";
-import uncommonTpl from "@/assets/cards/uncommon.jpeg.asset.json";
-import rareTpl from "@/assets/cards/rare.jpeg.asset.json";
-import epicTpl from "@/assets/cards/epic.jpeg.asset.json";
-import legendaryTpl from "@/assets/cards/legendary.jpeg.asset.json";
-import mythicTpl from "@/assets/cards/mythic.jpeg.asset.json";
-import type { Rarity } from "@/types/character";
+import { CARD_LABEL, localizeFaction, localizeRank, localizeDivision } from "@/lib/card-i18n";
+import { CardChrome } from "@/components/card/CardChrome";
+import { CardSigil } from "@/components/card/CardSigil";
 
-const TEMPLATE: Record<Rarity, string> = {
-  common: commonTpl.url,
-  uncommon: uncommonTpl.url,
-  rare: rareTpl.url,
-  epic: epicTpl.url,
-  legendary: legendaryTpl.url,
-  mythic: mythicTpl.url,
-};
-
-/** Ink colour used for the engraved typography, per rarity. */
-const INK: Record<Rarity, string> = {
-  common: "#e4e9f0",
-  uncommon: "#a8f0bd",
-  rare: "#a9d4ff",
-  epic: "#dcb0ff",
-  legendary: "#ffdf9b",
-  mythic: "#ffb0a2",
-};
-const GLOW: Record<Rarity, string> = {
-  common: "rgba(190,205,225,0.55)",
-  uncommon: "rgba(64,220,120,0.6)",
-  rare: "rgba(70,150,255,0.6)",
-  epic: "rgba(170,90,255,0.6)",
-  legendary: "rgba(255,190,70,0.6)",
-  mythic: "rgba(255,60,45,0.6)",
-};
-
-/**
- * Per-language typography. Latin uses Cinzel small-caps with wide tracking;
- * Arabic uses Amiri at a larger optical size with no tracking (tracking breaks
- * Arabic joining) and roomier line-height. Never one layout for both.
- */
+/** Per-language typography: Latin uses Cinzel small-caps with wide tracking;
+ *  Arabic uses Amiri, larger optical size, no tracking (breaks joining). */
 const TYPO = {
   en: {
     family: "'Cinzel', serif",
     upper: "uppercase" as const,
-    rarity: { size: 3.3, ls: "0.18em" },
-    caption: { size: 1.55, ls: "0.38em" },
-    label: { size: 1.5, ls: "0.24em" },
-    value: { size: 2.05, ls: "0.03em", lh: 1.15 },
-    nameLh: 1.08,
-    nameSize: (n: number) => (n > 26 ? 2.7 : n > 20 ? 3.1 : n > 14 ? 3.6 : 4.3),
-    nameLs: "0.05em",
+    rarityPill: { size: 2.1, ls: "0.24em" },
+    lore: { size: 1.85, ls: "0.06em" },
+    ovr: { size: 6.2 },
+    nameLh: 1.05,
+    nameSize: (n: number) => (n > 26 ? 3.4 : n > 20 ? 3.9 : n > 14 ? 4.5 : 5.2),
+    nameLs: "0.04em",
   },
   ar: {
     family: "'Amiri', 'Cairo', serif",
     upper: "none" as const,
-    rarity: { size: 3.9, ls: "0" },
-    caption: { size: 1.95, ls: "0" },
-    label: { size: 1.8, ls: "0" },
-    value: { size: 2.25, ls: "0", lh: 1.45 },
-    nameLh: 1.3,
-    nameSize: (n: number) => (n > 26 ? 2.9 : n > 20 ? 3.4 : n > 14 ? 3.9 : 4.5),
+    rarityPill: { size: 2.4, ls: "0" },
+    lore: { size: 2.1, ls: "0" },
+    ovr: { size: 6.6 },
+    nameLh: 1.25,
+    nameSize: (n: number) => (n > 26 ? 3.6 : n > 20 ? 4.1 : n > 14 ? 4.7 : 5.4),
     nameLs: "0",
   },
 } as const;
@@ -100,58 +60,35 @@ export function CharacterCard({
   useEffect(() => {
     setShowBack(faceDown && flipEnabled());
   }, [faceDown, character.id]);
+
   const c = character;
-  const ink = INK[c.rarity];
-  const glow = GLOW[c.rarity];
-  const tpl = TEMPLATE[c.rarity];
-  const back = CARD_BACK[c.rarity];
+  const m = RARITY_MATERIAL[c.rarity];
   const el = elementOf(c.slug);
   const f = framingOf(c.slug);
   const ty = TYPO[locale];
   const rtl = locale === "ar";
+  const uid = c.id;
 
   const Shell = (interactive ? "button" : "div") as "button";
   const name = c.name[locale];
   const nameSize = ty.nameSize(name.length);
 
-  const dash = rtl ? "—" : "—";
-  const rows: { label: string; value: string }[] = [
-    {
-      label: CARD_LABEL.affiliation[locale],
-      value: c.faction ? localizeFaction(c.faction, locale) : dash,
-    },
-    {
-      label: CARD_LABEL.rank[locale],
-      value: c.rank
-        ? localizeRank(c.rank, locale)
-        : c.division
-          ? localizeDivision(c.division, locale)
-          : dash,
-    },
-    {
-      label: CARD_LABEL.zanpakuto[locale],
-      value: c.bankai
-        ? localizeBlade(c.bankai, locale)
-        : c.shikai
-          ? localizeBlade(c.shikai, locale)
-          : dash,
-    },
-    {
-      label: CARD_LABEL.arc[locale],
-      value: c.arc ? localizeArc(c.arc, locale) : dash,
-    },
-  ];
+  const dash = "—";
+  const faction = c.faction ? localizeFaction(c.faction, locale) : "";
+  const rank = c.rank
+    ? localizeRank(c.rank, locale)
+    : c.division
+      ? localizeDivision(c.division, locale)
+      : "";
+  const lore = [faction, rank].filter(Boolean).join("  •  ") || dash;
 
+  const ink = m.ink;
   const engrave = {
     color: ink,
-    textShadow: `0 0.08cqw 0.1cqw rgba(0,0,0,0.9), 0 0 0.9cqw ${glow}, 0 0 2.2cqw ${glow}`,
+    textShadow: `0 0.08cqw 0.12cqw rgba(0,0,0,0.9), 0 0 0.8cqw ${m.glow}`,
     fontFamily: ty.family,
     textTransform: ty.upper,
   } as const;
-
-  /** label rows sit above the divider, values just beneath the label. */
-  const LABEL_Y = [27.6, 39.2, 50.8, 62.4];
-  const VALUE_Y = [30.9, 42.5, 54.1, 65.7];
 
   const toggle = () => {
     if (!interactive) return;
@@ -193,135 +130,115 @@ export function CharacterCard({
           aria-hidden
           className="pointer-events-none absolute -inset-2 rounded-[6%] blur-2xl transition-opacity duration-500 group-hover:opacity-100"
           style={{
-            background: `radial-gradient(ellipse at center, ${glow}, transparent 70%)`,
+            background: `radial-gradient(ellipse at center, ${m.glow}, transparent 70%)`,
             opacity: flipping ? 1 : 0.7,
             animation: "rarity-glow 3.6s ease-in-out infinite",
           }}
         />
 
-        {/* FRONT */}
+        {/* ============================================================ FRONT */}
         <div
-          className="relative w-full overflow-hidden rounded-[3.5%] bg-black"
+          className="relative w-full overflow-hidden rounded-[6.5%]"
           style={{
             aspectRatio: "1128 / 1394",
             backfaceVisibility: "hidden",
             opacity: showBack ? 0 : 1,
             transition: "opacity 0.35s ease-out 0.3s",
+            background: `linear-gradient(180deg, ${m.deep} 0%, #0b0d12 45%, ${m.deep} 100%)`,
           }}
         >
-          {/* portrait, framed inside the art window */}
-          {c.image ? (
+          {/* hero portrait, full-bleed, fading into the frame at the base */}
+          {c.image && (
             <div
               className="absolute overflow-hidden"
               style={{
-                left: "8.7%",
-                top: "22.4%",
-                width: "44.4%",
-                height: "52.6%",
-                borderRadius: "9% / 7%",
-                WebkitMaskImage:
-                  "radial-gradient(120% 110% at 50% 45%, #000 62%, rgba(0,0,0,0.55) 84%, transparent 100%)",
-                maskImage:
-                  "radial-gradient(120% 110% at 50% 45%, #000 62%, rgba(0,0,0,0.55) 84%, transparent 100%)",
+                left: "5%", top: "4.5%", width: "90%", height: "56%",
+                borderRadius: "3% / 4%",
+                WebkitMaskImage: "linear-gradient(180deg, #000 72%, transparent 100%)",
+                maskImage: "linear-gradient(180deg, #000 72%, transparent 100%)",
               }}
             >
               <img
                 src={c.image}
                 alt={name}
                 loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                 style={{ objectPosition: `${f.x}% ${f.y}%`, transform: `scale(${f.scale})` }}
               />
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0"
-                style={{
-                  background: `radial-gradient(120% 90% at 50% 100%, ${glow}, transparent 55%)`,
-                  mixBlendMode: "screen",
-                  opacity: 0.35,
-                }}
+                style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 22%, transparent 68%, ${m.deep} 100%)` }}
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{ boxShadow: `inset 0 0 4cqw rgba(0,0,0,0.55)` }}
               />
             </div>
-          ) : null}
+          )}
 
-          {/* the official template sits above the art, so the frame stays intact */}
-          <img
-            src={tpl}
-            alt=""
-            aria-hidden
-            className="pointer-events-none absolute inset-0 h-full w-full"
-            style={{ mixBlendMode: "lighten" }}
-          />
+          <CardChrome rarity={c.rarity} uid={uid} />
 
-          {/* rarity name + caption */}
-          <span
-            className="absolute flex items-center justify-center text-center font-bold leading-none"
+          {/* rarity pill, top-center */}
+          <div
+            className="absolute flex items-center gap-[0.6cqw] rounded-full px-[2.2cqw] py-[0.6cqw]"
             style={{
-              left: "50%", top: "8.8%", width: "27%", height: "4.6%",
-              transform: "translate(-50%, -50%)",
-              fontSize: `${ty.rarity.size}cqw`,
-              letterSpacing: ty.rarity.ls,
-              ...engrave,
+              left: "50%", top: "5.4%", transform: "translate(-50%, -50%)",
+              background: `linear-gradient(180deg, ${m.base}, ${m.deep})`,
+              border: `0.14cqw solid ${m.bright}`,
+              boxShadow: `0 0 1.4cqw ${m.glow}`,
             }}
           >
-            {RARITY_LABEL[c.rarity][locale]}
-          </span>
-          <span
-            className="absolute flex items-center justify-center text-center leading-none opacity-90"
-            style={{
-              left: "50%", top: "14.2%", width: "26%",
-              transform: "translate(-50%, -50%)",
-              fontSize: `${ty.caption.size}cqw`,
-              letterSpacing: ty.caption.ls,
-              ...engrave,
-            }}
-          >
-            {CARD_LABEL.rarity[locale]}
-          </span>
-
-          {/* element icon, engraved into its medallion */}
-          <span
-            className="absolute"
-            style={{
-              left: "13.05%",
-              top: "9.2%",
-              width: "8.6%",
-              transform: "translate(-50%, -50%)",
-              filter: `drop-shadow(0 0 0.8cqw ${glow}) drop-shadow(0 0.1cqw 0.1cqw rgba(0,0,0,0.9))`,
-            }}
-          >
-            <svg viewBox="0 0 64 64" className="h-auto w-full">
-              <defs>
-                <linearGradient id={`el-${c.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#fff8e6" />
-                  <stop offset="45%" stopColor={ink} />
-                  <stop offset="100%" stopColor={ink} stopOpacity={0.75} />
-                </linearGradient>
-              </defs>
-              <path d={ELEMENT_PATH[el]} fill={`url(#el-${c.id})`} />
+            <svg viewBox="0 0 20 20" style={{ width: "1.8cqw", height: "1.8cqw" }} aria-hidden>
+              <path d="M10 1 L13 7 L19 8 L14.5 12.5 L15.7 19 L10 15.8 L4.3 19 L5.5 12.5 L1 8 L7 7 Z" fill={m.bright} />
             </svg>
-          </span>
-          <span
-            className="absolute flex items-center justify-center text-center leading-none opacity-90"
+            <span
+              className="whitespace-nowrap font-bold leading-none"
+              style={{ fontSize: `${ty.rarityPill.size}cqw`, letterSpacing: ty.rarityPill.ls, ...engrave }}
+            >
+              {RARITY_LABEL[c.rarity][locale]}
+            </span>
+          </div>
+
+          {/* element medallion, top-left */}
+          <div
+            className="absolute flex items-center justify-center rounded-full"
             style={{
-              left: "13.5%", top: "17.6%", width: "20%",
+              left: "13%", top: "13%", width: "16%", aspectRatio: "1 / 1",
               transform: "translate(-50%, -50%)",
-              fontSize: `${ty.caption.size}cqw`,
-              letterSpacing: ty.caption.ls,
-              ...engrave,
+              background: `radial-gradient(circle at 35% 30%, ${m.bright}, ${m.base} 55%, ${m.deep} 100%)`,
+              border: `0.16cqw solid ${m.bright}`,
+              boxShadow: `0 0.3cqw 0.6cqw rgba(0,0,0,0.6), 0 0 1.2cqw ${m.glow}`,
             }}
           >
-            {CARD_LABEL.element[locale]}
-          </span>
+            <svg viewBox="0 0 64 64" style={{ width: "58%", height: "58%" }}>
+              <path d={ELEMENT_PATH[el]} fill="#0b0d12" opacity="0.88" />
+            </svg>
+          </div>
 
-          {/* name */}
-          <span
-            className="absolute flex items-center justify-center px-[1cqw] text-center font-bold leading-none"
+          {/* rating medallion, top-right */}
+          <div
+            className="absolute flex flex-col items-center justify-center rounded-full"
             style={{
-              left: "59.4%",
-              top: "15.6%",
-              width: "30.4%",
-              height: "7.2%",
+              left: "87%", top: "13%", width: "16%", aspectRatio: "1 / 1",
+              transform: "translate(-50%, -50%)",
+              background: `radial-gradient(circle at 35% 30%, ${m.bright}, ${m.base} 55%, ${m.deep} 100%)`,
+              border: `0.16cqw solid ${m.bright}`,
+              boxShadow: `0 0.3cqw 0.6cqw rgba(0,0,0,0.6), 0 0 1.2cqw ${m.glow}`,
+            }}
+          >
+            <span className="font-black leading-none" style={{ fontSize: `${ty.ovr.size * 0.62}cqw`, color: "#0b0d12", fontFamily: "'Cinzel', serif" }}>
+              {c.overall}
+            </span>
+          </div>
+
+          {/* name banner */}
+          <div
+            className="absolute left-1/2 flex items-center justify-center px-[4%] text-center font-bold leading-none"
+            style={{
+              top: "63%", width: "88%", height: "10%",
+              transform: "translate(-50%, -50%)",
               fontSize: `${nameSize}cqw`,
               lineHeight: ty.nameLh,
               letterSpacing: ty.nameLs,
@@ -329,132 +246,71 @@ export function CharacterCard({
             }}
           >
             <span className="line-clamp-2">{name}</span>
-          </span>
+          </div>
 
-          {/* stat rows — label above, value beneath, always aligned to the
-              inner edge of the plaque in both writing directions */}
-          {rows.map((r, i) => (
-            <span key={r.label} aria-hidden={false}>
-              <span
-                className="absolute flex items-center justify-end leading-none opacity-80"
-                style={{
-                  left: "69%", top: `${LABEL_Y[i]}%`, width: "25.5%", height: "3.4%",
-                  transform: "translateY(-50%)",
-                  fontSize: `${ty.label.size}cqw`,
-                  letterSpacing: ty.label.ls,
-                  ...engrave,
-                }}
-              >
-                {r.label}
-              </span>
-              <span
-                className="absolute flex items-center justify-end text-end leading-none"
-                style={{
-                  left: "69%", top: `${VALUE_Y[i]}%`, width: "25.5%", height: "4.2%",
-                  transform: "translateY(-50%)",
-                  fontSize: `${ty.value.size}cqw`,
-                  letterSpacing: ty.value.ls,
-                  lineHeight: ty.value.lh,
-                  ...engrave,
-                  textTransform: "none",
-                }}
-              >
-                <span className="line-clamp-2 w-full overflow-hidden">{r.value}</span>
-              </span>
-            </span>
-          ))}
+          {/* divider flourish */}
+          <svg viewBox="0 0 200 12" className="absolute left-1/2" style={{ top: "71%", width: "70%", transform: "translate(-50%, -50%)" }} aria-hidden>
+            <line x1="0" y1="6" x2="86" y2="6" stroke={m.bright} strokeWidth="1" opacity="0.7" />
+            <line x1="114" y1="6" x2="200" y2="6" stroke={m.bright} strokeWidth="1" opacity="0.7" />
+            <path d="M92 2 L100 10 L108 2" fill="none" stroke={m.bright} strokeWidth="1.4" opacity="0.9" />
+          </svg>
 
-          {/* rating + stars captions */}
-          <span
-            className="absolute flex items-center justify-center text-center leading-none opacity-90"
+          {/* lore line */}
+          <div
+            className="absolute left-1/2 flex items-center justify-center px-[6%] text-center opacity-90"
             style={{
-              left: "30.4%", top: "82.6%", width: "22%",
+              top: "77.5%", width: "92%",
               transform: "translate(-50%, -50%)",
-              fontSize: `${ty.caption.size}cqw`,
-              letterSpacing: ty.caption.ls,
+              fontSize: `${ty.lore.size}cqw`,
+              letterSpacing: ty.lore.ls,
               ...engrave,
+              textTransform: "none",
             }}
           >
-            {CARD_LABEL.rating[locale]}
-          </span>
-          <span
-            className="absolute flex items-center justify-center text-center leading-none opacity-90"
-            style={{
-              left: "70%", top: "82.6%", width: "22%",
-              transform: "translate(-50%, -50%)",
-              fontSize: `${ty.caption.size}cqw`,
-              letterSpacing: ty.caption.ls,
-              ...engrave,
-            }}
-          >
-            {CARD_LABEL.stars[locale]}
-          </span>
+            <span className="line-clamp-1">{lore}</span>
+          </div>
 
-          {/* rating */}
-          <span
-            className="absolute flex items-center justify-center font-black leading-none"
-            style={{
-              left: "30.4%",
-              top: "89.4%",
-              width: "19%",
-              transform: "translate(-50%, -50%)",
-              fontSize: "9.2cqw",
-              ...engrave,
-              fontFamily: "'Cinzel', serif",
-            }}
+          {/* footer caption */}
+          <div
+            className="absolute flex w-full items-center justify-center gap-[1.2cqw] opacity-70"
+            style={{ top: "92%", transform: "translateY(-50%)" }}
           >
-            {c.overall}
-          </span>
-
-          {/* rarity motes */}
-          {[14, 38, 62, 86].map((x, i) => (
+            <span style={{ width: "5cqw", height: "0.09cqw", background: m.bright, opacity: 0.6 }} />
             <span
-              key={x}
-              aria-hidden
-              className="pointer-events-none absolute rounded-full"
-              style={{
-                left: `${x}%`,
-                bottom: "-4%",
-                width: "0.9cqw",
-                height: "0.9cqw",
-                background: `radial-gradient(circle, ${ink}, transparent 70%)`,
-                animation: `reiatsu-float ${13 + i * 3}s linear ${i * 2.5}s infinite`,
-                ["--drift" as string]: `${(i % 2 ? -1 : 1) * 30}px`,
-                opacity: 0,
-              }}
-            />
-          ))}
+              className="whitespace-nowrap"
+              style={{ fontSize: `${ty.lore.size * 0.8}cqw`, letterSpacing: "0.3em", ...engrave, opacity: 0.75 }}
+            >
+              {CARD_LABEL.rating[locale]} · {c.overall}
+            </span>
+            <span style={{ width: "5cqw", height: "0.09cqw", background: m.bright, opacity: 0.6 }} />
+          </div>
         </div>
 
-        {/* BACK — official card back for this rarity */}
+        {/* ============================================================= BACK */}
         <div
-          className="absolute inset-0 overflow-hidden rounded-[3.5%] bg-black"
+          className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-[6.5%]"
           style={{
             aspectRatio: "1128 / 1394",
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
+            background: `radial-gradient(120% 90% at 50% 42%, ${m.base} 0%, ${m.deep} 60%, #08090c 100%)`,
           }}
         >
-          {/* Blurred fill keeps the frame identical to the front while the
-              sharp layer above preserves the artwork's exact aspect ratio. */}
-          <img
-            src={back}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl"
-          />
-          <img
-            src={back}
-            alt=""
-            aria-hidden
-            decoding="async"
-            className="absolute inset-0 h-full w-full object-contain"
-          />
+          <CardChrome rarity={c.rarity} uid={`${uid}-b`} />
+          <div className="relative flex h-full w-full flex-col items-center justify-center">
+            <CardSigil rarity={c.rarity} uid={uid} />
+            <span
+              className="mt-[3cqw] font-bold leading-none opacity-90"
+              style={{ fontSize: `${ty.rarityPill.size * 1.1}cqw`, letterSpacing: ty.rarityPill.ls, ...engrave }}
+            >
+              {RARITY_LABEL[c.rarity][locale]}
+            </span>
+          </div>
           <span
             aria-hidden
             className="pointer-events-none absolute inset-0 transition-opacity duration-500"
             style={{
-              background: `radial-gradient(circle at 50% 45%, ${glow}, transparent 65%)`,
+              background: `radial-gradient(circle at 50% 45%, ${m.glow}, transparent 65%)`,
               mixBlendMode: "screen",
               opacity: flipping ? 0.5 : 0,
             }}

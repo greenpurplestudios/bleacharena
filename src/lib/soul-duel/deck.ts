@@ -5,7 +5,59 @@ import { costOf } from "./engine";
 /** A Soul Duel deck is exactly twelve characters — two rows of six. */
 export const DECK_CARDS = 12;
 
-const KEY = "bd:sd:deck";
+/** Five saved deck slots. */
+export const DECK_SLOTS = 5;
+
+const LEGACY_KEY = "bd:sd:deck";
+const KEY = "bd:sd:decks";
+
+interface DeckStore {
+  slots: string[][];
+  active: number;
+}
+
+function sanitize(slugs: unknown): string[] {
+  if (!Array.isArray(slugs)) return [];
+  return deckCharacters(slugs.filter((x): x is string => typeof x === "string"))
+    .slice(0, DECK_CARDS)
+    .map((c) => c.slug);
+}
+
+function emptyStore(): DeckStore {
+  return { slots: Array.from({ length: DECK_SLOTS }, () => []), active: 0 };
+}
+
+function readStore(): DeckStore {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<DeckStore>;
+      const slots = Array.from({ length: DECK_SLOTS }, (_, i) => sanitize(parsed.slots?.[i]));
+      const active = typeof parsed.active === "number" && parsed.active >= 0 && parsed.active < DECK_SLOTS
+        ? parsed.active
+        : 0;
+      return { slots, active };
+    }
+    // Migrate the legacy single-deck key into slot 1.
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    const store = emptyStore();
+    if (legacy) {
+      try {
+        store.slots[0] = sanitize(JSON.parse(legacy));
+      } catch {}
+    }
+    writeStore(store);
+    return store;
+  } catch {
+    return emptyStore();
+  }
+}
+
+function writeStore(store: DeckStore) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(store));
+  } catch {}
+}
 
 export function deckCharacters(slugs: string[]): Character[] {
   return slugs
@@ -13,24 +65,44 @@ export function deckCharacters(slugs: string[]): Character[] {
     .filter((c): c is Character => !!c);
 }
 
+/** Returns the currently active saved deck. */
 export function loadDeck(): string[] {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return deckCharacters(parsed.filter((x): x is string => typeof x === "string"))
-      .slice(0, DECK_CARDS)
-      .map((c) => c.slug);
-  } catch {
-    return [];
-  }
+  const store = readStore();
+  return store.slots[store.active] ?? [];
 }
 
+/** Saves the deck into the currently active slot. */
 export function saveDeck(slugs: string[]) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(slugs.slice(0, DECK_CARDS)));
-  } catch {}
+  const store = readStore();
+  store.slots[store.active] = slugs.slice(0, DECK_CARDS);
+  writeStore(store);
+}
+
+/** All five saved slots. */
+export function loadAllSlots(): string[][] {
+  return readStore().slots;
+}
+
+/** Index (0-4) of the active slot. */
+export function loadActiveSlot(): number {
+  return readStore().active;
+}
+
+/** Saves a specific slot's deck without changing which slot is active. */
+export function saveSlot(index: number, slugs: string[]) {
+  const store = readStore();
+  if (index < 0 || index >= DECK_SLOTS) return;
+  store.slots[index] = slugs.slice(0, DECK_CARDS);
+  writeStore(store);
+}
+
+/** Switches the active slot and returns its deck. */
+export function setActiveSlot(index: number): string[] {
+  const store = readStore();
+  if (index < 0 || index >= DECK_SLOTS) return store.slots[store.active] ?? [];
+  store.active = index;
+  writeStore(store);
+  return store.slots[index] ?? [];
 }
 
 /** Average Reiatsu cost of a deck — the headline stat of the builder. */

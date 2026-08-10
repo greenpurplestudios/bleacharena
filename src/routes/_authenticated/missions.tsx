@@ -6,11 +6,14 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { useI18n } from "@/lib/i18n";
 import {
   claimMission,
+  DIFFICULTY_COLOR,
+  DIFFICULTY_LABEL,
   getMyMissions,
   MISSION_ICON,
-  MISSION_LABEL,
+  missionName,
+  rerollMission,
   type Mission,
-  type MissionId,
+  type MissionEvent,
 } from "@/lib/missions";
 import { useSouls } from "@/hooks/use-souls";
 import { play } from "@/lib/sound";
@@ -46,14 +49,16 @@ function useResetCountdown() {
 function MissionsPage() {
   const { t, locale } = useI18n();
   const [missions, setMissions] = useState<Mission[] | null>(null);
-  const [busy, setBusy] = useState<MissionId | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
   const { refresh: refreshSouls } = useSouls();
   const reset = useResetCountdown();
 
   const load = async () => setMissions(await getMyMissions());
   useEffect(() => { load(); }, []);
 
-  const doClaim = async (id: MissionId) => {
+  const rerollsLeft = missions?.[0]?.rerolls_left ?? 0;
+
+  const doClaim = async (id: string) => {
     if (busy) return;
     setBusy(id);
     const res = await claimMission(id);
@@ -65,6 +70,14 @@ function MissionsPage() {
     } else {
       play("skip");
     }
+  };
+
+  const doReroll = async (id: string) => {
+    if (busy) return;
+    setBusy(id);
+    const res = await rerollMission(id);
+    setBusy(null);
+    if (res.ok) { play("reveal"); load(); } else { play("skip"); }
   };
 
   return (
@@ -89,14 +102,21 @@ function MissionsPage() {
           </div>
         </header>
 
-        <p className="mb-6 text-sm text-muted-foreground">{t("missionsDesc")}</p>
+        <p className="mb-3 text-sm text-muted-foreground">{t("missionsDesc")}</p>
+        <p className="mb-6 text-xs text-muted-foreground">
+          {locale === "ar"
+            ? `٤ تحديات عشوائية كل يوم — إعادة توزيع متبقية: ${rerollsLeft}`
+            : `4 random challenges each day — rerolls left: ${rerollsLeft}`}
+        </p>
 
         <ul className="space-y-3">
           {(missions ?? []).map((m) => {
-            const id = m.mission_id as MissionId;
+            const id = m.mission_id;
+            const ev = m.event_key as MissionEvent;
             const pct = Math.min(100, Math.round((m.progress / Math.max(1, m.target)) * 100));
             const complete = m.progress >= m.target;
-            const label = MISSION_LABEL[id]?.[locale] ?? id;
+            const label = missionName(m, locale);
+            const diff = m.difficulty ?? "easy";
             return (
               <li
                 key={id}
@@ -107,11 +127,17 @@ function MissionsPage() {
                     className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background/60 text-2xl"
                     aria-hidden
                   >
-                    {MISSION_ICON[id] ?? "✦"}
+                    {MISSION_ICON[ev] ?? "✦"}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <h2 className="font-display text-base font-bold">{label}</h2>
+                      <span
+                        className="rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rtl:tracking-normal"
+                        style={{ color: DIFFICULTY_COLOR[diff], borderColor: `${DIFFICULTY_COLOR[diff]}55` }}
+                      >
+                        {DIFFICULTY_LABEL[diff][locale]}
+                      </span>
                       <span className="text-xs font-semibold text-primary">
                         +{m.reward_souls} ✦
                       </span>
@@ -143,6 +169,15 @@ function MissionsPage() {
                           className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:brightness-110 disabled:opacity-60"
                         >
                           {busy === id ? "…" : t("claim")}
+                        </button>
+                      ) : rerollsLeft > 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => doReroll(id)}
+                          disabled={busy === id}
+                          className="rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs font-semibold text-muted-foreground transition hover:text-foreground disabled:opacity-60"
+                        >
+                          {busy === id ? "…" : locale === "ar" ? "إعادة توزيع ↻" : "Reroll ↻"}
                         </button>
                       ) : null}
                     </div>

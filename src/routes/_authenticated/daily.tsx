@@ -7,6 +7,7 @@ import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import { claimDailyLogin, DAILY_CALENDAR, getDailyLoginState, trackAchievement, type DailyLoginState } from "@/lib/progression";
 import { useSouls } from "@/hooks/use-souls";
+import { trackMission } from "@/lib/missions";
 import { play } from "@/lib/sound";
 
 export const Route = createFileRoute("/_authenticated/daily")({
@@ -48,6 +49,7 @@ function DailyPage() {
     if (r.ok) {
       setLastReward({ souls: r.souls, pack: r.pack });
       refreshSouls();
+      void trackMission("login_claim", 1);
       // Streak-based achievement
       if ((r.streak ?? 0) >= 30) trackAchievement("gen_login_30", 30, true);
       load();

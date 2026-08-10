@@ -9,9 +9,11 @@ export interface DuelMatchRow {
   status: string;
   state: DuelState | null;
   guest_moves: RoundMoves | null;
+  guest_weapon_id: string | null;
   host_ready: boolean;
   guest_ready: boolean;
   winner: string | null;
+  updated_at?: string;
 }
 
 export interface RoundMoves {
@@ -152,6 +154,30 @@ export async function pushState(id: string, state: DuelState): Promise<void> {
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
+}
+
+/**
+ * Host's very first write for a match: only succeeds if nobody has published
+ * a state yet, so a duplicate "host init" effect (StrictMode, re-subscribe,
+ * a second tab) can never stomp an already-started match.
+ */
+export async function pushInitialState(id: string, state: DuelState): Promise<boolean> {
+  const { data } = await db
+    .from("duel_matches")
+    .update({ state, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .is("state", null)
+    .select("id");
+  return Array.isArray(data) && data.length > 0;
+}
+
+/** The guest reports its equipped Ultimate Weapon so the host can build the match. */
+export async function setGuestWeapon(id: string, weaponId: string): Promise<void> {
+  await db
+    .from("duel_matches")
+    .update({ guest_weapon_id: weaponId, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .is("guest_weapon_id", null);
 }
 
 export async function submitGuestMoves(id: string, moves: RoundMoves): Promise<void> {

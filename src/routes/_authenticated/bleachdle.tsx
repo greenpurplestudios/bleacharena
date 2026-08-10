@@ -22,6 +22,7 @@ import {
 import { play } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
 import { addXp, trackAchievement, XP } from "@/lib/progression";
+import { trackMission } from "@/lib/missions";
 
 export const Route = createFileRoute("/_authenticated/bleachdle")({
   head: () => ({
@@ -173,6 +174,8 @@ function BleachdlePage() {
     setWon(didWin);
     play(didWin ? "rare" : "tap");
     if (practice || !puzzle) return;
+    void trackMission("bleachdle_play", 1);
+    if (didWin) void trackMission("bleachdle_win", 1);
     const res = await submitBleachdle(puzzle.day_key, finalRows.length, didWin);
     if (res.ok) {
       setSoulsAwarded(res.souls ?? 0);

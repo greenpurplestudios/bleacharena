@@ -281,6 +281,8 @@ function ResultScreen({
     const award = await awardPackFromScore(score.overall);
     if (award.awarded && award.tier) setPackAward(award.tier);
     trackMission("draft_play", 1);
+    if (["A", "S", "SS", "SS+"].includes(score.rank)) trackMission("draft_rank", 1);
+    if (team.some((c) => c?.rarity === "mythic")) trackMission("draft_mythic", 1);
     // Progression
     await Promise.all([
       addXp(XP.draft(score.overall), "draft"),
