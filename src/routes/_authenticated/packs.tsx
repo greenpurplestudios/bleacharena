@@ -77,6 +77,8 @@ function PacksPage() {
       if (res.rarity === "mythic" || res.rarity === "legendary") play("rare");
       else play("success");
       trackMission("pack_open", 1);
+      if (res.rarity === "mythic" || res.rarity === "legendary") trackMission("pack_legendary", 1);
+      if (res.duplicate === false) trackMission("collect_new", 1);
       // Progression
       await Promise.all([
         addXp(XP.packOpen, "pack"),
@@ -123,6 +125,10 @@ function PacksPage() {
       play(gotRare ? "rare" : "success");
       const mythics = res.results.filter((r) => r.rarity === "mythic").length;
       trackMission("pack_open", res.opened);
+      const rares = res.results.filter((r) => r.rarity === "mythic" || r.rarity === "legendary").length;
+      if (rares > 0) trackMission("pack_legendary", rares);
+      const fresh = res.results.filter((r) => r.duplicate === false).length;
+      if (fresh > 0) trackMission("collect_new", fresh);
       await Promise.all([
         addXp(XP.packOpen * res.opened, "pack"),
         bumpProfileStats({ packs_opened: res.opened }),

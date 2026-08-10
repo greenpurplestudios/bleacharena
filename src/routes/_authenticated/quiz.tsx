@@ -6,6 +6,7 @@ import type { Character, TraitKey } from "@/types/character";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
+import { trackMission } from "@/lib/missions";
 import { RARITY_COLOR } from "@/lib/rarity";
 
 export const Route = createFileRoute("/_authenticated/quiz")({
@@ -41,6 +42,7 @@ function QuizPage() {
     setTotals(t);
     if (idx + 1 >= total) {
       setStep("result");
+      void trackMission("personality_quiz", 1);
     } else {
       setIdx(idx + 1);
     }
