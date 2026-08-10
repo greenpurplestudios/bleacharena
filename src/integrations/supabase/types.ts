@@ -666,19 +666,34 @@ export type Database = {
       }
       mission_defs: {
         Row: {
+          active: boolean
+          difficulty: string
+          event_key: string | null
           id: string
+          name_ar: string | null
+          name_en: string | null
           reward_souls: number
           sort_order: number
           target: number
         }
         Insert: {
+          active?: boolean
+          difficulty?: string
+          event_key?: string | null
           id: string
+          name_ar?: string | null
+          name_en?: string | null
           reward_souls: number
           sort_order?: number
           target: number
         }
         Update: {
+          active?: boolean
+          difficulty?: string
+          event_key?: string | null
           id?: string
+          name_ar?: string | null
+          name_en?: string | null
           reward_souls?: number
           sort_order?: number
           target?: number
@@ -1061,6 +1076,30 @@ export type Database = {
           },
         ]
       }
+      user_daily_missions: {
+        Row: {
+          created_at: string
+          day_key: string
+          mission_ids: string[]
+          rerolls_used: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_key: string
+          mission_ids: string[]
+          rerolls_used?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day_key?: string
+          mission_ids?: string[]
+          rerolls_used?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_inventory: {
         Row: {
           acquired_at: string
@@ -1279,6 +1318,7 @@ export type Database = {
         Returns: undefined
       }
       duel_week_start: { Args: never; Returns: string }
+      ensure_daily_missions: { Args: never; Returns: string[] }
       ensure_weekly_announcement: { Args: never; Returns: undefined }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       equip_weapon: { Args: { p_weapon_id: string }; Returns: Json }
@@ -1469,8 +1509,13 @@ export type Database = {
         Args: never
         Returns: {
           claimed: boolean
+          difficulty: string
+          event_key: string
           mission_id: string
+          name_ar: string
+          name_en: string
           progress: number
+          rerolls_left: number
           reward_souls: number
           sort_order: number
           target: number
@@ -1596,6 +1641,7 @@ export type Database = {
       redeem_referral: { Args: { p_code: string }; Returns: Json }
       remove_friend: { Args: { p_other: string }; Returns: Json }
       request_join_clan: { Args: { p_clan_id: string }; Returns: Json }
+      reroll_mission: { Args: { p_mission_id: string }; Returns: Json }
       respond_friend_request: {
         Args: { p_accept: boolean; p_request_id: string }
         Returns: Json
