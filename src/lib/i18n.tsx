@@ -766,6 +766,17 @@ export const dict = {
     en: "No deck saved — a random deck will be drawn.",
     ar: "لا يوجد فريق محفوظ — سيتم سحب فريق عشوائي.",
   },
+  sdDeckSlots: { en: "Slots", ar: "الخانات" },
+  sdDeckSlot: { en: "Slot", ar: "خانة" },
+  sdChangeWeapon: { en: "Change Weapon", ar: "تغيير السلاح" },
+
+  /* ---- Tutorial ---- */
+  sdTutorial: { en: "Tutorial", ar: "التعليمات" },
+  sdTutorialCoach: { en: "Rukia", ar: "روكيا" },
+  sdTutorialNext: { en: "Next", ar: "التالي" },
+  sdTutorialFinish: { en: "Finish", ar: "إنهاء" },
+  sdTutorialSkip: { en: "Skip", ar: "تخطي" },
+  sdTutorialDoneBadge: { en: "Done", ar: "تم" },
 
   /* ---- Hidden battlefields, live count, notifications ---- */
   sdMystery: { en: "Unknown Battlefield", ar: "ساحة مجهولة" },
