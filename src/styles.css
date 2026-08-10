@@ -534,3 +534,22 @@ body {
   0% { opacity: 0; transform: translateY(18px) scale(0.96); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ---- New CSS/SVG character card (CardChrome / CardSigil) ---- */
+@keyframes legendary-sheen {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(340%); }
+}
+.legendary-sheen {
+  animation: legendary-sheen 3.4s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes mythic-arc {
+  to { stroke-dashoffset: -260; }
+}
+.mythic-arc {
+  animation: mythic-arc 3.6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .legendary-sheen, .mythic-arc { animation: none; }
+}
