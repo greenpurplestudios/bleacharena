@@ -33,7 +33,7 @@ function Vignette() {
       className="absolute inset-0"
       style={{
         background:
-          "radial-gradient(ellipse at center, transparent 35%, oklch(0.14 0.015 260 / 0.92) 100%)",
+          "radial-gradient(ellipse at center, transparent 55%, oklch(0.14 0.015 260 / 0.5) 100%)",
       }}
     />
   );
