@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type ReactElement } from "react";
 
 /**
  * SceneBackground — layered atmospheric backdrop for each major screen.
@@ -248,7 +248,7 @@ function ProfileArt() {
 
 const SCENE_CONFIG: Record<
   Scene,
-  { pools: { x: string; y: string; size: string; color: string; delay?: number }[]; hue: string; Art: () => JSX.Element | null }
+  { pools: { x: string; y: string; size: string; color: string; delay?: number }[]; hue: string; Art: () => ReactElement | null }
 > = {
   home: {
     hue: "55",

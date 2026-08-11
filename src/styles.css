@@ -550,8 +550,29 @@ body {
 .mythic-arc {
   animation: mythic-arc 3.6s linear infinite;
 }
+@keyframes mythic-bolt {
+  0%, 100% { opacity: 0.15; }
+  6% { opacity: 1; }
+  11% { opacity: 0.35; }
+  16% { opacity: 0.95; }
+  26% { opacity: 0.2; }
+  55% { opacity: 0.5; }
+  62% { opacity: 0.12; }
+}
+.mythic-bolt {
+  animation-name: mythic-bolt;
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+  animation-duration: 2.4s;
+}
+@keyframes card-back-rays {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.card-back-rays {
+  animation: card-back-rays 34s linear infinite;
+}
 @media (prefers-reduced-motion: reduce) {
-  .legendary-sheen, .mythic-arc { animation: none; }
+  .legendary-sheen, .mythic-arc, .mythic-bolt, .card-back-rays { animation: none; }
 }
 
 /* ---------------------------------------- Scene backgrounds (Task A) */
