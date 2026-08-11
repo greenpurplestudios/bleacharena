@@ -83,45 +83,8 @@ export function CardChrome({ rarity, uid }: { rarity: Rarity; uid: string }) {
         </div>
       )}
 
-      {/* MYTHIC — arcing lightning around the border */}
-      {rarity === "mythic" && (
-        <svg
-          aria-hidden
-          viewBox="0 0 200 248"
-          preserveAspectRatio="none"
-          className="pointer-events-none absolute inset-0 h-full w-full overflow-visible rounded-[6.5%]"
-        >
-          <defs>
-            <filter id={gid} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="1.1" result="b" />
-              <feMerge>
-                <feMergeNode in="b" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <rect
-            x="4" y="4" width="192" height="240" rx="12"
-            fill="none"
-            stroke={m.bright}
-            strokeWidth="1.4"
-            strokeDasharray="4 22"
-            filter={`url(#${gid})`}
-            className="mythic-arc"
-            opacity="0.9"
-          />
-          <rect
-            x="4" y="4" width="192" height="240" rx="12"
-            fill="none"
-            stroke={m.base}
-            strokeWidth="0.8"
-            strokeDasharray="2 34"
-            className="mythic-arc"
-            style={{ animationDirection: "reverse", animationDuration: "5.2s" }}
-            opacity="0.7"
-          />
-        </svg>
-      )}
+      {/* MYTHIC lightning is rendered outside the clipped face (MythicLightning). */}
+      {gid ? null : null}
     </>
   );
 }

@@ -22,9 +22,9 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/5 bg-background/60 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
-        <Link to="/" className="flex items-center">
+    <header className="sticky top-0 z-30 border-b border-white/5 bg-background/70 shadow-[inset_0_-1px_0_oklch(1_0_0/0.04)] backdrop-blur-xl" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      <div className="mx-auto flex h-12 max-w-6xl items-center justify-between gap-3 px-3 sm:h-14 sm:px-4">
+        <Link to="/" className="flex min-h-11 items-center transition-transform active:scale-95">
           <BleachLogo size="sm" />
         </Link>
         <nav className="hidden items-center gap-6 text-sm sm:flex">
@@ -102,14 +102,14 @@ export function SiteHeader() {
           {user ? (
             <button
               onClick={signOut}
-              className="hidden rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground sm:block"
+              className="game-btn hidden px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground sm:inline-flex"
             >
               {t("signOut")}
             </button>
           ) : (
             <Link
               to="/auth"
-              className="hidden rounded-lg bg-primary px-3 py-1.5 text-xs font-black uppercase tracking-widest text-primary-foreground sm:block"
+              className="game-btn hidden bg-primary px-3 py-1.5 text-xs font-black uppercase tracking-widest text-primary-foreground glow-orange sm:inline-flex"
             >
               {t("signIn")}
             </Link>
