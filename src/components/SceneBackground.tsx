@@ -324,6 +324,13 @@ export function SceneBackground({ scene = "generic", className = "" }: { scene?:
       <div className="absolute inset-0 bg-background" />
       <LightPools pools={cfg.pools} />
       <ReiatsuStreaks hue={cfg.hue} n={3} />
+      {/* horizon haze so the silhouettes have something to stand against */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-[52vh]"
+        style={{
+          background: `linear-gradient(180deg, transparent 0%, oklch(0.42 0.07 ${cfg.hue} / 0.18) 55%, oklch(0.24 0.05 ${cfg.hue} / 0.34) 100%)`,
+        }}
+      />
       <Art />
       <Grain />
       <Vignette />
