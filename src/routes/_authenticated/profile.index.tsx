@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { getMyProfileFull, setAvatar, setFavorite, type ProfileFull } from "@/lib/progression";
 import { fetchMyCollection } from "@/lib/packs";
@@ -87,7 +87,7 @@ function MyProfilePage() {
 
   return (
     <>
-      <ReiatsuBackground count={16} />
+      <SceneBackground scene="profile" />
       <SiteHeader />
       <main className="mx-auto max-w-4xl px-4 py-6 sm:py-10">
         <header className="rounded-3xl border border-white/10 bg-card/60 p-6 backdrop-blur-xl" style={{ animation: "card-in 0.4s ease-out both" }}>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Atmosphere } from "@/components/Atmosphere";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { DuelBoard } from "@/components/soulduel/DuelBoard";
 import { OnlineDuel } from "@/components/soulduel/OnlineDuel";
@@ -72,7 +72,7 @@ function SoulDuelPage() {
   if (tutorial) {
     return (
       <>
-        <Atmosphere variant="sparks" count={16} parallax={false} />
+        <SceneBackground scene="duel" />
         <SiteHeader />
         <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
           <Tutorial onExit={() => { setTutorial(false); setTutDone(tutorialDone()); }} />
@@ -84,7 +84,7 @@ function SoulDuelPage() {
   if (online) {
     return (
       <>
-        <Atmosphere variant="sparks" count={16} parallax={false} />
+        <SceneBackground scene="duel" />
         <SiteHeader />
         <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
           <OnlineDuel pool={pool} weaponId={forge?.equipped} onExit={() => setOnline(false)} />
@@ -96,7 +96,7 @@ function SoulDuelPage() {
   if (playing) {
     return (
       <>
-        <Atmosphere variant="sparks" count={16} parallax={false} />
+        <SceneBackground scene="duel" />
         <SiteHeader />
         <main className="page-enter mx-auto max-w-2xl px-4 pb-28 pt-4">
           <DuelBoard
@@ -112,7 +112,7 @@ function SoulDuelPage() {
 
   return (
     <>
-      <Atmosphere variant="sparks" count={28} />
+      <SceneBackground scene="duel" />
       <SiteHeader />
 
       <main className="page-enter mx-auto max-w-4xl px-4 pb-24 pt-8 sm:pt-12">

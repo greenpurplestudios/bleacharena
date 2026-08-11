@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { characters } from "@/data/characters";
 import { RARITY_COLOR } from "@/lib/rarity";
@@ -167,7 +167,7 @@ function RivalsPage() {
 
   return (
     <>
-      <ReiatsuBackground count={22} />
+      <SceneBackground scene="social" />
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
         <div style={{ animation: "card-in 0.5s ease-out both" }}>

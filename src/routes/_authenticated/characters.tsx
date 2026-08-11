@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { characters } from "@/data/characters";
 import { RARITY_COLOR, RARITY_LABEL, RARITY_ORDER } from "@/lib/rarity";
@@ -52,7 +52,7 @@ function CharactersPage() {
 
   return (
     <>
-      <ReiatsuBackground count={18} />
+      <SceneBackground scene="collection" />
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div style={{ animation: "card-in 0.5s ease-out both" }}>

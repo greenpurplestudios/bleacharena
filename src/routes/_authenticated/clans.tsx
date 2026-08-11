@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
@@ -44,7 +44,7 @@ function ClansPage() {
 
   return (
     <>
-      <ReiatsuBackground count={10} />
+      <SceneBackground scene="social" />
       <SiteHeader />
       <main className="mx-auto max-w-4xl px-4 py-6 sm:py-10">
         <header className="mb-6">

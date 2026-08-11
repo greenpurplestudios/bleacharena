@@ -6,7 +6,7 @@ import { pickWeighted } from "@/lib/rarity";
 import { scoreTeam } from "@/lib/scoring";
 import { CharacterCard } from "@/components/CharacterCard";
 import { TeamSlots } from "@/components/TeamSlots";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
@@ -133,7 +133,7 @@ function DraftPage() {
 
   return (
     <>
-      <ReiatsuBackground count={22} />
+      <SceneBackground scene="draft" />
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
         {potionRunning && (

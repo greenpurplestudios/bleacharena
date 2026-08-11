@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -159,7 +159,7 @@ function PacksPage() {
 
   return (
     <>
-      <ReiatsuBackground count={18} />
+      <SceneBackground scene="draft" />
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
         <div className="mb-8 text-center">

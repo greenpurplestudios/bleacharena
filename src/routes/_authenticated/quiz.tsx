@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { quizQuestions, characterTraits } from "@/data/quiz";
 import { characters } from "@/data/characters";
 import type { Character, TraitKey } from "@/types/character";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { trackMission } from "@/lib/missions";
@@ -84,7 +84,7 @@ function QuizPage() {
 
   return (
     <>
-      <ReiatsuBackground count={20} />
+      <SceneBackground scene="social" />
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
         {step === "intro" && (

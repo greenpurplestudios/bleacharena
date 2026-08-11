@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { BleachLogo } from "@/components/BleachLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Atmosphere } from "@/components/Atmosphere";
+import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
 
@@ -24,7 +24,7 @@ function Home() {
   if (loading || user) {
     return (
       <>
-        <Atmosphere variant="reiatsu" count={18} parallax={false} />
+        <SceneBackground scene="home" />
         <main className="relative z-10 flex min-h-screen flex-col items-center justify-center gap-6 px-4">
           <div style={{ animation: "card-in 0.5s ease-out both" }}>
             <BleachLogo size="lg" />
@@ -40,7 +40,7 @@ function Home() {
 
   return (
     <>
-      <Atmosphere variant="reiatsu" count={30} />
+      <SceneBackground scene="home" />
       <header className="relative z-10 mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <BleachLogo size="sm" />
         <div className="flex items-center gap-2">

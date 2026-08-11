@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
@@ -55,7 +55,7 @@ function LeaderboardPage() {
 
   return (
     <>
-      <ReiatsuBackground count={22} />
+      <SceneBackground scene="social" />
       <SiteHeader />
       <UsernamePrompt
         open={editing}

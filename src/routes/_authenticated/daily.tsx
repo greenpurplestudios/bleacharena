@@ -2,7 +2,7 @@ import { formatHMS, msUntilServerMidnight } from "@/lib/server-time";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import { claimDailyLogin, DAILY_CALENDAR, getDailyLoginState, trackAchievement, type DailyLoginState } from "@/lib/progression";
@@ -60,7 +60,7 @@ function DailyPage() {
 
   return (
     <>
-      <ReiatsuBackground count={16} />
+      <SceneBackground scene="profile" />
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
         <div className="mb-6 text-center" style={{ animation: "card-in 0.4s ease-out both" }}>

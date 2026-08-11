@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Atmosphere } from "@/components/Atmosphere";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ForgeCinematic } from "@/components/soulduel/ForgeCinematic";
 import { useI18n } from "@/lib/i18n";
@@ -88,7 +88,7 @@ function ForgePage() {
 
   return (
     <>
-      <Atmosphere variant="sparks" count={26} />
+      <SceneBackground scene="draft" />
       <SiteHeader />
 
       <main className="page-enter mx-auto max-w-4xl px-4 pb-24 pt-8">

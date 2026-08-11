@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { NameFrame } from "@/components/NameFrame";
 import { useI18n } from "@/lib/i18n";
@@ -38,7 +38,7 @@ function ChatPage() {
 
   return (
     <>
-      <ReiatsuBackground count={14} />
+      <SceneBackground scene="social" />
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
         <h1 className="font-display text-3xl font-black">{t("chat")}</h1>
