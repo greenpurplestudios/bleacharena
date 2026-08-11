@@ -74,7 +74,7 @@ function buildBolts(uid: string): Bolt[] {
 
     bolts.push({
       d,
-      w: 0.9 + rnd() * 1.1,
+      w: 1.5 + rnd() * 1.4,
       delay: rnd() * 2.4,
       dur: 1.6 + rnd() * 1.8,
     });
@@ -120,7 +120,7 @@ export const MythicLightning = memo(function MythicLightning({
       {/* diffuse crimson charge hugging the frame */}
       <rect
         x="1" y="1" width={W - 2} height={H - 2} rx="13"
-        fill="none" stroke="#ff2d16" strokeWidth="3.2" opacity="0.28"
+        fill="none" stroke="#ff2d16" strokeWidth="2.2" opacity="0.16"
         filter={`url(#${gid}-g)`}
       />
 
