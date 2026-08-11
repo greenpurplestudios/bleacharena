@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
@@ -91,7 +91,7 @@ function SettingsPage() {
 
   return (
     <>
-      <ReiatsuBackground count={18} />
+      <SceneBackground scene="profile" />
       <SiteHeader />
       <UsernamePrompt
         open={editing}

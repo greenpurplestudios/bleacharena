@@ -550,6 +550,85 @@ body {
 .mythic-arc {
   animation: mythic-arc 3.6s linear infinite;
 }
+@keyframes mythic-bolt {
+  0%, 100% { opacity: 0.15; }
+  6% { opacity: 1; }
+  11% { opacity: 0.35; }
+  16% { opacity: 0.95; }
+  26% { opacity: 0.2; }
+  55% { opacity: 0.5; }
+  62% { opacity: 0.12; }
+}
+.mythic-bolt {
+  animation-name: mythic-bolt;
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+  animation-duration: 2.4s;
+}
+@keyframes card-back-rays {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.card-back-rays {
+  animation: card-back-rays 34s linear infinite;
+}
 @media (prefers-reduced-motion: reduce) {
-  .legendary-sheen, .mythic-arc { animation: none; }
+  .legendary-sheen, .mythic-arc, .mythic-bolt, .card-back-rays { animation: none; }
+}
+
+/* ---------------------------------------- Scene backgrounds (Task A) */
+@keyframes scene-orb-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2vw, -2vh, 0) scale(1.06); }
+}
+@keyframes scene-streak-drift {
+  0% { transform: translateX(-10%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(40vw); opacity: 0; }
+}
+.scene-orb {
+  animation: scene-orb-drift 22s ease-in-out infinite;
+  will-change: transform;
+}
+.scene-streak {
+  animation: scene-streak-drift 16s linear infinite;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-orb, .scene-streak { animation: none !important; }
+}
+
+/* ---------------------------------------- Shared mobile-game surfaces (Task B) */
+@utility panel {
+  position: relative;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-border);
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.05), oklch(0 0 0 / 0.08)), var(--color-card);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.06),
+    0 10px 28px -16px oklch(0 0 0 / 0.65);
+}
+
+@utility game-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: var(--radius-xl);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.14), oklch(0 0 0 / 0.06));
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.18),
+    0 8px 18px -10px oklch(0 0 0 / 0.6);
+  transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, filter 0.2s ease;
+  &:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.1), 0 2px 8px -4px oklch(0 0 0 / 0.6);
+  }
+}
+
+@utility section-enter {
+  animation: page-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

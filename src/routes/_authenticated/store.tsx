@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { fetchStore, purchaseItem, type StoreItem, type StoreKind } from "@/lib/store";
 import { NameFrame } from "@/components/NameFrame";
@@ -122,7 +122,7 @@ function StorePage() {
 
   return (
     <>
-      <ReiatsuBackground count={16} />
+      <SceneBackground scene="store" />
       <SiteHeader />
       <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
         {/* Shopkeeper counter */}

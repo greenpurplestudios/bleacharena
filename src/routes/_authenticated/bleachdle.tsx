@@ -2,7 +2,7 @@ import { formatHMS, msUntilServerMidnight } from "@/lib/server-time";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { characters } from "@/data/characters";
 import { RARITY_LABEL } from "@/lib/rarity";
@@ -253,7 +253,7 @@ function BleachdlePage() {
 
   return (
     <>
-      <ReiatsuBackground count={16} />
+      <SceneBackground scene="social" />
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
         <header className="mb-6 text-center" style={{ animation: "card-in 0.5s ease-out both" }}>

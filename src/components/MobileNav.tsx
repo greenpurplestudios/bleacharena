@@ -169,15 +169,15 @@ export function MobileNav() {
           type="button"
           onClick={onToggle}
           aria-expanded={isOpen}
-          className={`flex w-full items-center gap-3 px-4 py-3 text-start transition-colors ${
+          className={`flex w-full items-center gap-3 px-4 py-3 min-h-11 text-start transition-colors active:scale-[0.98] ${
             hasActive ? "text-primary" : "text-foreground hover:bg-white/5"
           }`}
         >
           <span
             aria-hidden
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-base ${
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-base shadow-[inset_0_1px_0_oklch(1_0_0/0.08)] ${
               hasActive
-                ? "border-primary/40 bg-primary/10"
+                ? "border-primary/40 bg-primary/10 shadow-[0_0_14px_-2px_oklch(0.75_0.18_55/0.6)]"
                 : "border-white/10 bg-white/5"
             }`}
           >
@@ -207,9 +207,9 @@ export function MobileNav() {
                   <li key={`${g.id}:${it.key}`}>
                     <Link
                       to={it.to}
-                      className={`mx-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                      className={`mx-2 flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors active:scale-[0.98] ${
                         active
-                          ? "bg-primary/15 text-primary"
+                          ? "bg-primary/15 text-primary shadow-[inset_0_1px_0_oklch(1_0_0/0.08)]"
                           : "text-foreground/90 hover:bg-white/5"
                       }`}
                     >
@@ -238,7 +238,8 @@ export function MobileNav() {
         aria-label={t("menu")}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className={`fixed bottom-5 ${corner} z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_10px_30px_-8px_oklch(0.75_0.18_55/0.7)] transition-transform hover:scale-105 active:scale-95`}
+        className={`fixed ${corner} z-50 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[inset_0_1px_0_oklch(1_0_0/0.35),0_10px_30px_-8px_oklch(0.75_0.18_55/0.7)] transition-transform duration-150 hover:scale-105 active:scale-90`}
+        style={{ bottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
       >
         <span className="text-2xl font-black">{open ? "×" : "≡"}</span>
       </button>
@@ -251,8 +252,8 @@ export function MobileNav() {
             style={{ animation: "fade-in 0.2s ease-out both" }}
           />
           <nav
-            className={`fixed bottom-24 ${corner} z-50 flex max-h-[70vh] w-[min(20rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-card/95 shadow-2xl backdrop-blur-xl sm:w-72`}
-            style={{ animation: "scale-in 0.22s ease-out both" }}
+            className={`panel fixed ${corner} z-50 flex max-h-[70vh] w-[min(20rem,calc(100vw-2rem))] flex-col overflow-hidden bg-card/95 backdrop-blur-xl sm:w-72`}
+            style={{ animation: "scale-in 0.22s ease-out both", bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
           >
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">

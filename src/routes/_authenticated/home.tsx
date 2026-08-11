@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Atmosphere } from "@/components/Atmosphere";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { UraharaGuide } from "@/components/UraharaGuide";
 import { NewsFeed, NewsNotification } from "@/components/NewsFeed";
@@ -70,7 +70,7 @@ function HomeHub() {
 
   return (
     <>
-      <Atmosphere variant="reiatsu" count={26} />
+      <SceneBackground scene="home" />
       <SiteHeader />
 
       <main className="page-enter mx-auto max-w-5xl px-4 pb-24 pt-8 sm:pt-12">

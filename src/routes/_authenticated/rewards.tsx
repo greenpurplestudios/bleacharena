@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { haptic } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -56,7 +56,7 @@ function RewardsPage() {
 
   return (
     <>
-      <ReiatsuBackground count={16} />
+      <SceneBackground scene="profile" />
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
         <header className="mb-6">

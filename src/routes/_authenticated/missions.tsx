@@ -2,7 +2,7 @@ import { msUntilServerMidnight } from "@/lib/server-time";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import {
   claimMission,
@@ -82,7 +82,7 @@ function MissionsPage() {
 
   return (
     <>
-      <ReiatsuBackground count={16} />
+      <SceneBackground scene="profile" />
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
         <header className="mb-6 flex items-end justify-between gap-4">

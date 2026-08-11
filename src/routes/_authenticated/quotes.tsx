@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { quotes, type Quote } from "@/data/quotes";
-import { ReiatsuBackground } from "@/components/ReiatsuBackground";
+import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
 import { trackMission } from "@/lib/missions";
@@ -89,7 +89,7 @@ function QuotesPage() {
 
   return (
     <>
-      <ReiatsuBackground count={18} />
+      <SceneBackground scene="social" />
       <SiteHeader />
       <main className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
         {!started ? (
