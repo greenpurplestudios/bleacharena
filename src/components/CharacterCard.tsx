@@ -9,7 +9,7 @@ import { RARITY_LABEL } from "@/lib/rarity";
 import { loadPrefs, play, playReveal } from "@/lib/sound";
 import { haptic, hapticRarity } from "@/lib/haptics";
 import { preloadCardArt } from "@/lib/card-preload";
-import { CARD_LABEL, localizeFaction, localizeRank, localizeDivision } from "@/lib/card-i18n";
+import { localizeFaction, localizeRank, localizeDivision } from "@/lib/card-i18n";
 import { CardChrome } from "@/components/card/CardChrome";
 import { CardSigil } from "@/components/card/CardSigil";
 import { CardBackPattern } from "@/components/card/CardBackPattern";
