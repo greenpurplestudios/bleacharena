@@ -93,13 +93,13 @@ function LightPools({ pools }: { pools: { x: string; y: string; size: string; co
 function HomeArt() {
   return (
     <svg
-      className="absolute inset-x-0 bottom-0 h-[42vh] w-full opacity-[0.22]"
+      className="absolute inset-x-0 bottom-0 h-[42vh] w-full opacity-[0.5]"
       viewBox="0 0 400 160"
       preserveAspectRatio="xMidYMax slice"
       aria-hidden
     >
       {/* Soul Society tiled rooftops */}
-      <g fill="oklch(0.08 0.02 260)">
+      <g fill="oklch(0.34 0.05 262)">
         <path d="M0 130 L40 100 L80 130 Z" />
         <path d="M60 140 L110 100 L160 140 Z" />
         <path d="M140 130 L190 95 L240 130 Z" />
@@ -121,19 +121,19 @@ function HomeArt() {
 function DraftArt() {
   return (
     <svg
-      className="absolute inset-x-0 bottom-0 h-[46vh] w-full opacity-[0.18]"
+      className="absolute inset-x-0 bottom-0 h-[46vh] w-full opacity-[0.42]"
       viewBox="0 0 400 200"
       preserveAspectRatio="xMidYMax slice"
       aria-hidden
     >
       {/* crossed sword silhouettes */}
-      <g fill="oklch(0.08 0.02 260)">
+      <g fill="oklch(0.34 0.05 262)">
         <rect x="196" y="10" width="8" height="150" transform="rotate(18 200 85)" />
         <polygon points="200,4 210,20 190,20" transform="rotate(18 200 85)" />
         <rect x="196" y="10" width="8" height="150" transform="rotate(-18 200 85)" />
         <polygon points="200,4 210,20 190,20" transform="rotate(-18 200 85)" />
       </g>
-      <rect x="0" y="180" width="400" height="20" fill="oklch(0.08 0.02 260)" />
+      <rect x="0" y="180" width="400" height="20" fill="oklch(0.34 0.05 262)" />
     </svg>
   );
 }
@@ -141,13 +141,13 @@ function DraftArt() {
 function CollectionArt() {
   return (
     <svg
-      className="absolute inset-x-0 bottom-0 h-[44vh] w-full opacity-[0.2]"
+      className="absolute inset-x-0 bottom-0 h-[44vh] w-full opacity-[0.46]"
       viewBox="0 0 400 180"
       preserveAspectRatio="xMidYMax slice"
       aria-hidden
     >
       {/* Seireitei towers */}
-      <g fill="oklch(0.08 0.02 260)">
+      <g fill="oklch(0.34 0.05 262)">
         <rect x="20" y="70" width="26" height="90" />
         <rect x="12" y="60" width="42" height="12" />
         <rect x="90" y="40" width="30" height="120" />
@@ -166,15 +166,15 @@ function CollectionArt() {
 function DuelArt() {
   return (
     <svg
-      className="absolute inset-x-0 bottom-0 h-[48vh] w-full opacity-[0.22]"
+      className="absolute inset-x-0 bottom-0 h-[48vh] w-full opacity-[0.5]"
       viewBox="0 0 400 200"
       preserveAspectRatio="xMidYMax slice"
       aria-hidden
     >
       {/* Hueco Mundo crescent moon + dunes */}
       <circle cx="330" cy="34" r="26" fill="oklch(0.9 0.05 220 / 0.5)" />
-      <circle cx="342" cy="28" r="24" fill="oklch(0.05 0.02 260)" />
-      <g fill="oklch(0.07 0.02 260)">
+      <circle cx="342" cy="28" r="24" fill="oklch(0.12 0.02 260)" />
+      <g fill="oklch(0.32 0.055 265)">
         <path d="M0 150 Q100 110 200 150 T400 150 V200 H0 Z" />
         <path d="M0 175 Q120 140 240 175 T400 165 V200 H0 Z" opacity="0.7" />
       </g>
@@ -185,13 +185,13 @@ function DuelArt() {
 function StoreArt() {
   return (
     <svg
-      className="absolute inset-x-0 bottom-0 h-[40vh] w-full opacity-[0.2]"
+      className="absolute inset-x-0 bottom-0 h-[40vh] w-full opacity-[0.46]"
       viewBox="0 0 400 160"
       preserveAspectRatio="xMidYMax slice"
       aria-hidden
     >
       {/* shop awning + hanging lanterns */}
-      <g fill="oklch(0.08 0.02 260)">
+      <g fill="oklch(0.34 0.05 262)">
         <rect x="0" y="60" width="400" height="14" />
         <path d="M0 74 L400 74 L380 100 L20 100 Z" />
       </g>
@@ -200,7 +200,7 @@ function StoreArt() {
         <ellipse cx="200" cy="128" rx="10" ry="14" />
         <ellipse cx="310" cy="122" rx="10" ry="14" />
       </g>
-      <g stroke="oklch(0.08 0.02 260)" strokeWidth="2">
+      <g stroke="oklch(0.34 0.05 262)" strokeWidth="2">
         <line x1="90" y1="100" x2="90" y2="108" />
         <line x1="200" y1="100" x2="200" y2="114" />
         <line x1="310" y1="100" x2="310" y2="108" />
@@ -212,13 +212,13 @@ function StoreArt() {
 function SocialArt() {
   return (
     <svg
-      className="absolute inset-x-0 bottom-0 h-[38vh] w-full opacity-[0.18]"
+      className="absolute inset-x-0 bottom-0 h-[38vh] w-full opacity-[0.42]"
       viewBox="0 0 400 150"
       preserveAspectRatio="xMidYMax slice"
       aria-hidden
     >
       {/* distant sekkiseki walls */}
-      <g fill="oklch(0.08 0.02 260)">
+      <g fill="oklch(0.34 0.05 262)">
         <rect x="0" y="90" width="400" height="60" />
         {Array.from({ length: 10 }).map((_, i) => (
           <rect key={i} x={i * 40} y="70" width="34" height="24" opacity={i % 2 ? 0.7 : 1} />
@@ -231,12 +231,12 @@ function SocialArt() {
 function ProfileArt() {
   return (
     <svg
-      className="absolute inset-x-0 bottom-0 h-[38vh] w-full opacity-[0.18]"
+      className="absolute inset-x-0 bottom-0 h-[38vh] w-full opacity-[0.42]"
       viewBox="0 0 400 150"
       preserveAspectRatio="xMidYMax slice"
       aria-hidden
     >
-      <g fill="oklch(0.08 0.02 260)">
+      <g fill="oklch(0.34 0.05 262)">
         <rect x="0" y="100" width="400" height="50" />
         <rect x="30" y="60" width="60" height="40" />
         <rect x="150" y="50" width="80" height="50" />
