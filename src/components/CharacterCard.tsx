@@ -135,6 +135,7 @@ function CharacterCardBase({
         aspectRatio: "1128 / 1394",
         perspective: "1400px",
         contain: "layout paint style",
+        contentVisibility: "auto",
         animation: "card-in 0.5s ease-out both",
       }}
       dir={rtl ? "rtl" : "ltr"}
