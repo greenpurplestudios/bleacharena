@@ -20,6 +20,7 @@ export const DuelMiniCard = memo(function DuelMiniCard({
   entering = false,
   statuses = [],
   movable = false,
+  inked = false,
 }: {
   card: DuelCard;
   rating: number;
@@ -28,6 +29,8 @@ export const DuelMiniCard = memo(function DuelMiniCard({
   entering?: boolean;
   statuses?: StatusInstance[];
   movable?: boolean;
+  /** Ichimonji: this card's name was blackened — permanently marked at Rating 0. */
+  inked?: boolean;
 }) {
   const { locale } = useI18n();
   const c = card.character;
@@ -78,6 +81,28 @@ export const DuelMiniCard = memo(function DuelMiniCard({
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-[6%] bg-purple-500/25"
         />
+      ) : null}
+
+      {inked ? (
+        <span
+          aria-hidden
+          title="Ichimonji"
+          className="pointer-events-none absolute inset-0 overflow-hidden rounded-[6%]"
+        >
+          <span className="absolute inset-0 bg-black/35" />
+          <span
+            className="absolute rounded-[42%_58%_53%_47%/48%_44%_56%_52%] bg-black/92 mix-blend-multiply"
+            style={{ left: "8%", top: "12%", width: "72%", height: "58%", transform: "rotate(-9deg)" }}
+          />
+          <span
+            className="absolute rounded-[58%_42%_46%_54%/44%_56%_40%_60%] bg-black/88 mix-blend-multiply"
+            style={{ left: "42%", top: "48%", width: "42%", height: "38%", transform: "rotate(18deg)" }}
+          />
+          <span
+            className="absolute rounded-full bg-black/85 mix-blend-multiply"
+            style={{ left: "18%", top: "62%", width: "16%", height: "12%" }}
+          />
+        </span>
       ) : null}
     </div>
   );

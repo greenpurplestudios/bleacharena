@@ -5,7 +5,7 @@ import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
-type NavItem = { to: string; key: TKey; icon: string };
+type NavItem = { to: string; key: TKey; icon: string; label?: { en: string; ar: string } };
 type NavGroup = { id: string; labelKey: TKey; icon: string; items: NavItem[] };
 
 const GROUPS: NavGroup[] = [
@@ -50,7 +50,6 @@ const GROUPS: NavGroup[] = [
     items: [
       { to: "/characters", key: "characters", icon: "☰" },
       { to: "/collection", key: "collection", icon: "▦" },
-      { to: "/packs", key: "packs", icon: "✦" },
     ],
   },
   {
@@ -71,6 +70,7 @@ const GROUPS: NavGroup[] = [
     items: [
       { to: "/store", key: "store", icon: "✧" },
       { to: "/forge", key: "forge", icon: "🔨" },
+      { to: "/packs", key: "packs", icon: "\u5352", label: { en: "Kon's Kiosk", ar: "كشك كون" } },
     ],
   },
   {
@@ -87,7 +87,7 @@ const GROUPS: NavGroup[] = [
 const STORAGE_KEY = "ba:mobilenav:lastGroup";
 
 export function MobileNav() {
-  const { t, dir } = useI18n();
+  const { t, dir, locale } = useI18n();
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useSession();
@@ -219,7 +219,7 @@ export function MobileNav() {
                       >
                         {it.icon}
                       </span>
-                      <span className="min-w-0 truncate font-medium">{t(it.key)}</span>
+                      <span className="min-w-0 truncate font-medium">{it.label ? it.label[locale] : t(it.key)}</span>
                     </Link>
                   </li>
                 );

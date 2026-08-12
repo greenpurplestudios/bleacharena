@@ -20,6 +20,8 @@ export interface RoundMoves {
   plays: { uid: string; lane: number }[];
   relocations: { uid: string; lane: number }[];
   ultimate: boolean;
+  /** Ichimonji / Kannonbiraki: uids the local player picked for their Ultimate. */
+  ultimateTargets?: string[];
 }
 
 export const EMPTY_MOVES: RoundMoves = { plays: [], relocations: [], ultimate: false };
@@ -66,7 +68,9 @@ export function mirrorState(s: DuelState): DuelState {
       lockedRound: swapPartial(s.mods.lockedRound),
       laneBonus: swapPartial(s.mods.laneBonus),
       hijack: s.mods.hijack ? { ...s.mods.hijack, side: flip(s.mods.hijack.side) } : null,
+      inkedUids: s.mods.inkedUids ?? [],
     },
+    ultimateTargets: swapPartial(s.ultimateTargets ?? {}),
     ultimateEvent: s.ultimateEvent
       ? {
           ...s.ultimateEvent,
@@ -111,12 +115,16 @@ export function extractMoves(server: DuelState, local: DuelState): RoundMoves {
       .filter((p) => known.has(p.uid) && known.get(p.uid) !== p.lane)
       .map((p) => ({ uid: p.uid, lane: p.lane })),
     ultimate: local.gauge.player.pending && !server.gauge.player.pending,
+    ultimateTargets: local.ultimateTargets?.player,
   };
 }
 
 /** Replays a side's submitted moves on the host's authoritative state. */
 export function applyMoves(state: DuelState, side: Side, moves: RoundMoves): DuelState {
   let next = state;
+  if (moves.ultimateTargets) {
+    next = { ...next, ultimateTargets: { ...next.ultimateTargets, [side]: moves.ultimateTargets } };
+  }
   if (moves.ultimate) next = activateUltimate(next, side);
   for (const m of moves.plays) next = playCard(next, side, m.uid, m.lane);
   for (const m of moves.relocations) next = moveCard(next, m.uid, m.lane);

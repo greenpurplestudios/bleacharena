@@ -97,6 +97,8 @@ export interface DuelMods {
   laneBonus: Partial<Record<Side, number>>;
   /** Character slugs whose abilities now serve `side` instead of their owner. */
   hijack: { side: Side; slugs: string[] } | null;
+  /** Ichimonji: uids permanently blackened (Rating 0) — rendered with an ink mark until the match ends. */
+  inkedUids: string[];
 }
 
 export type DuelPhase = "reveal" | "play" | "resolve" | "ended";
@@ -174,6 +176,9 @@ export interface DuelState {
   weapons: Record<Side, string>;
   /** Ultimate Weapon modifiers currently shaping the match. */
   mods: DuelMods;
+  /** Player-chosen uids for the next Ultimate that requires manual targeting
+   * (Ichimonji, Kannonbiraki). Consumed and cleared once the Ultimate resolves. */
+  ultimateTargets: Partial<Record<Side, string[]>>;
   /** Opponent intelligence for this match. */
   difficulty: Difficulty;
   /** Set for one resolution so the cinematic layer can stage it. */

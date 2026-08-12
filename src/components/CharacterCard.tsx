@@ -116,13 +116,14 @@ function CharacterCardBase({
     window.setTimeout(() => setFlipping(false), 850);
     play("flip");
     haptic("flip");
-    setShowBack((v) => {
-      if (v) {
-        window.setTimeout(() => { playReveal(c.rarity); hapticRarity(c.rarity); }, 320);
-        onReveal?.();
-      }
-      return !v;
-    });
+    // Side effects must live OUTSIDE the state updater: updaters can be
+    // replayed by React, which would fire onReveal twice (and during render).
+    const revealing = showBack;
+    setShowBack(!showBack);
+    if (revealing) {
+      window.setTimeout(() => { playReveal(c.rarity); hapticRarity(c.rarity); }, 320);
+      onReveal?.();
+    }
   };
 
   return (

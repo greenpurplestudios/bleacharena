@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useRef } from "react";
 import type { Character } from "@/types/character";
 import { characters } from "@/data/characters";
 import { pickWeighted } from "@/lib/rarity";
@@ -44,19 +44,42 @@ const MAX_SKIPS = 5;
 
 type Phase = "drafting" | "result";
 
+/**
+ * The whole draft lives in ONE state object so a pick/skip is a single atomic
+ * transition: the character leaves the pool, the team/skip counter updates and
+ * the card is cleared together. `current` is real state (never derived from an
+ * impure useMemo), so re-renders can never regenerate, duplicate or swap the
+ * displayed card.
+ */
+interface DraftState {
+  team: (Character | null)[];
+  skipsLeft: number;
+  /** picked + skipped ids — excluded from the pool */
+  usedIds: string[];
+  current: Character | null;
+  phase: Phase;
+  /** increments on every new card, used purely as a render key */
+  cardKey: number;
+}
+
+function initialDraft(): DraftState {
+  return {
+    team: Array.from({ length: TEAM_SIZE }, () => null),
+    skipsLeft: MAX_SKIPS,
+    usedIds: [],
+    current: null,
+    phase: "drafting",
+    cardKey: 0,
+  };
+}
+
 function DraftPage() {
   const { t, locale } = useI18n();
-  const [team, setTeam] = useState<(Character | null)[]>(
-    () => Array.from({ length: TEAM_SIZE }, () => null),
-  );
-  const [skipsLeft, setSkipsLeft] = useState(MAX_SKIPS);
-  const [seenIds, setSeenIds] = useState<Set<string>>(new Set());
-  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
-  const [phase, setPhase] = useState<Phase>("drafting");
-  const [rerollKey, setRerollKey] = useState(0);
+  const [st, setSt] = useState<DraftState>(initialDraft);
   const [confirmReset, setConfirmReset] = useState(false);
   const [potion, setPotion] = useState<ActivePotion>({ active: false, luck: 0 });
-  const [revealed, setRevealed] = useState(() => loadPrefs().flipReveal === false);
+  /** id of the card the player has flipped — resets implicitly with each card */
+  const [revealedId, setRevealedId] = useState<string | null>(null);
   const [nowTs, setNowTs] = useState(() => Date.now());
 
   useEffect(() => {
@@ -71,22 +94,31 @@ function DraftPage() {
   const potionLeft = potion.endsAt ? potion.endsAt - nowTs : 0;
   const potionRunning = potion.active && potionLeft > 0;
   const activeLuck = potionRunning ? potion.luck : 0;
+  const luckRef = useRef(0);
+  luckRef.current = activeLuck;
 
-  const filled = team.filter(Boolean).length;
+  const { team, skipsLeft, current, phase, cardKey } = st;
+  const filled = useMemo(() => team.filter(Boolean).length, [team]);
+  const poolEmpty = st.usedIds.length >= characters.length;
+  const flipReveal = loadPrefs().flipReveal !== false;
+  const revealed = !flipReveal || (!!current && revealedId === current.id);
 
-  const pool = useMemo(
-    () => characters.filter((c) => !seenIds.has(c.id) && !skippedIds.has(c.id)),
-    [seenIds, skippedIds],
-  );
-
-  const current: Character | null = useMemo(() => {
-    if (phase !== "drafting" || filled >= TEAM_SIZE) return null;
-    if (pool.length === 0) return null;
-    // rerollKey participates so React re-picks after actions.
-    void rerollKey;
-    return pickWeighted(pool, Math.random, activeLuck);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool, phase, filled, rerollKey]);
+  /**
+   * Draw exactly one card whenever the board is empty and the draft is live.
+   * Because `current` is nulled atomically by the action that consumed it, this
+   * can never run twice for the same slot.
+   */
+  useEffect(() => {
+    if (phase !== "drafting" || current || filled >= TEAM_SIZE) return;
+    setSt((s) => {
+      if (s.phase !== "drafting" || s.current || s.team.filter(Boolean).length >= TEAM_SIZE) return s;
+      const used = new Set(s.usedIds);
+      const pool = characters.filter((c) => !used.has(c.id));
+      const next = pool.length ? pickWeighted(pool, Math.random, luckRef.current) : null;
+      if (!next) return s;
+      return { ...s, current: next, cardKey: s.cardKey + 1 };
+    });
+  }, [phase, current, filled]);
 
   // Play a reveal / rare flourish whenever a new card is presented.
   useEffect(() => {
@@ -94,40 +126,51 @@ function DraftPage() {
     haptic("draft");
     if (current.rarity === "mythic" || current.rarity === "legendary") play("rare");
     else play("reveal");
-  }, [current?.id, rerollKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [current?.id, cardKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const commitPick = useCallback(
-    (c: Character) => {
-      play("pick");
-      haptic("press");
-      setTeam((prev) => {
-        const next = [...prev];
-        const idx = next.findIndex((x) => x === null);
-        if (idx !== -1) next[idx] = c;
-        if (next.every(Boolean)) { setPhase("result"); play("success"); }
-        return next;
-      });
-      setSeenIds((s) => new Set(s).add(c.id));
-      setRerollKey((k) => k + 1);
-    },
-    [],
-  );
+  const commitPick = useCallback(() => {
+    let completed = false;
+    setSt((s) => {
+      const c = s.current;
+      if (!c || s.phase !== "drafting") return s; // rapid double-tap guard
+      const team = [...s.team];
+      const idx = team.findIndex((x) => x === null);
+      if (idx === -1) return s;
+      team[idx] = c;
+      const done = team.every(Boolean);
+      completed = done;
+      return {
+        ...s,
+        team,
+        usedIds: [...s.usedIds, c.id],
+        current: null,
+        phase: done ? "result" : "drafting",
+      };
+    });
+    play("pick");
+    haptic("press");
+    if (completed) play("success");
+  }, []);
 
   const onSkip = useCallback(() => {
-    if (!current || skipsLeft <= 0) return;
-    play("skip");
-    setSkippedIds((s) => new Set(s).add(current.id));
-    setSkipsLeft((n) => n - 1);
-    setRerollKey((k) => k + 1);
-  }, [current, skipsLeft]);
+    let skipped = false;
+    setSt((s) => {
+      const c = s.current;
+      if (!c || s.phase !== "drafting" || s.skipsLeft <= 0) return s;
+      skipped = true;
+      return {
+        ...s,
+        usedIds: [...s.usedIds, c.id],
+        skipsLeft: s.skipsLeft - 1,
+        current: null,
+      };
+    });
+    if (skipped) play("skip");
+  }, []);
 
   const reset = useCallback(() => {
-    setTeam(Array.from({ length: TEAM_SIZE }, () => null));
-    setSkipsLeft(MAX_SKIPS);
-    setSeenIds(new Set());
-    setSkippedIds(new Set());
-    setPhase("drafting");
-    setRerollKey((k) => k + 1);
+    setSt(initialDraft());
+    setRevealedId(null);
     setConfirmReset(false);
   }, []);
 
@@ -172,11 +215,11 @@ function DraftPage() {
             </div>
 
             {current ? (
-              <div key={current.id + rerollKey} className="w-full max-w-sm">
+              <div key={`${current.id}-${cardKey}`} className="w-full max-w-sm">
                 <CharacterCard
                   character={current}
                   faceDown
-                  onReveal={() => setRevealed(true)}
+                  onReveal={() => setRevealedId(current.id)}
                 />
                 {!revealed && (
                   <p className="mt-3 text-center text-xs uppercase tracking-[0.3em] text-muted-foreground">
@@ -185,14 +228,14 @@ function DraftPage() {
                 )}
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => { setRevealed(loadPrefs().flipReveal === false); commitPick(current); }}
+                    onClick={commitPick}
                     disabled={!revealed}
                     className="glow-orange rounded-xl bg-primary px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary-foreground transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {t("add")}
                   </button>
                   <button
-                    onClick={() => { setRevealed(loadPrefs().flipReveal === false); onSkip(); }}
+                    onClick={onSkip}
                     disabled={skipsLeft <= 0 || !revealed}
                     className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-foreground transition-all hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                   >
@@ -209,9 +252,13 @@ function DraftPage() {
                 )}
               </div>
             ) : (
-              <div className="rounded-xl border border-white/10 bg-white/5 px-6 py-10 text-center text-sm text-muted-foreground">
-                {t("noMore")}
-              </div>
+              poolEmpty ? (
+                <div className="rounded-xl border border-white/10 bg-white/5 px-6 py-10 text-center text-sm text-muted-foreground">
+                  {t("noMore")}
+                </div>
+              ) : (
+                <div className="h-[420px] w-full max-w-sm rounded-xl border border-white/5 bg-white/[0.02]" aria-hidden />
+              )
             )}
 
             {confirmReset && (

@@ -5,7 +5,7 @@ import { haptic } from "@/lib/haptics";
 import { play, playDuelClash, playDuelPlace } from "@/lib/sound";
 import { takeOpponentTurn } from "@/lib/soul-duel/ai";
 import { awardFragments, fragmentReward } from "@/lib/forge";
-import { ultimateOf } from "@/lib/soul-duel/ultimates";
+import { ultimateOf, TARGET_COUNT } from "@/lib/soul-duel/ultimates";
 import {
   activateUltimate, canActivateUltimate, canMove, canPlay, cancelUltimate, createDuel,
   isBlinded, isHidden, isLockedOut, laneTotals, moveCard, playCard,
@@ -24,6 +24,7 @@ import { DuelLane } from "./DuelLane";
 import { DuelResultPanel } from "./DuelResultPanel";
 import { ReiatsuGauge } from "./ReiatsuGauge";
 import { UltimateOverlay } from "./UltimateOverlay";
+import { UltimateTargeting } from "./UltimateTargeting";
 
 /** Online duels drive the board from outside: state lives with the session. */
 export interface OnlineController {
@@ -69,6 +70,7 @@ export function DuelBoard({
   const announced = useRef<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [cinematic, setCinematic] = useState<DuelState["ultimateEvent"]>(null);
+  const [targeting, setTargeting] = useState<string[] | null>(null);
   const [fragments, setFragments] = useState<number | null>(null);
   const [hideResult, setHideResult] = useState(false);
   const rewarded = useRef(false);
@@ -254,6 +256,8 @@ export function DuelBoard({
                 return;
               }
               if (!ultReady) return;
+              const need = TARGET_COUNT[state.weapons.player as keyof typeof TARGET_COUNT];
+              if (need) { setTargeting([]); play("tap"); return; }
               setState((s) => activateUltimate(s, "player"));
               play("reveal");
               haptic("flip");
@@ -437,6 +441,35 @@ export function DuelBoard({
       {cinematic ? (
         <UltimateOverlay event={cinematic} onDone={() => setCinematic(null)} />
       ) : null}
+
+      {targeting ? (
+          <UltimateTargeting
+            state={state}
+            weapon={weapon}
+            count={TARGET_COUNT[state.weapons.player as keyof typeof TARGET_COUNT] ?? 1}
+            selected={targeting}
+            hiddenOf={(p) => p.side === "opponent" && hiddenFor(p.lane)}
+            onToggle={(uid) =>
+              setTargeting((sel) => {
+                if (!sel) return sel;
+                if (sel.includes(uid)) return sel.filter((x) => x !== uid);
+                const max = TARGET_COUNT[state.weapons.player as keyof typeof TARGET_COUNT] ?? 1;
+                return sel.length >= max ? sel : [...sel, uid];
+              })
+            }
+            onConfirm={() => {
+              const picks = targeting;
+              setTargeting(null);
+              setState((s) => activateUltimate(
+                { ...s, ultimateTargets: { ...s.ultimateTargets, player: picks } },
+                "player",
+              ));
+              play("reveal");
+              haptic("flip");
+            }}
+            onCancel={() => { setTargeting(null); play("tap"); }}
+          />
+        ) : null}
 
       {state.result && !cinematic && hideResult ? (
         <button

@@ -17,9 +17,9 @@ export const Route = createFileRoute("/_authenticated/store")({
   head: () => ({
     meta: [
       { title: "Urahara's Shop — Bleach Arena" },
-      { name: "description", content: "Spend Souls on titles, username colors and extra packs." },
+      { name: "description", content: "Spend Souls on titles, username colors, name frames and potions." },
       { property: "og:title", content: "Bleach Arena — Urahara's Shop" },
-      { property: "og:description", content: "Cosmetics and packs for Souls." },
+      { property: "og:description", content: "Cosmetics and potions for Souls." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -27,9 +27,9 @@ export const Route = createFileRoute("/_authenticated/store")({
   component: StorePage,
 });
 
-const KIND_ORDER: StoreKind[] = ["pack", "potion", "name_frame", "title", "username_color"];
-const KIND_ICON: Record<StoreKind, string> = {
-  pack: "卍", title: "❖", username_color: "✧", name_frame: "▩", potion: "⚗",
+const KIND_ORDER: Exclude<StoreKind, "pack">[] = ["potion", "name_frame", "title", "username_color"];
+const KIND_ICON: Record<Exclude<StoreKind, "pack">, string> = {
+  title: "❖", username_color: "✧", name_frame: "▩", potion: "⚗",
 };
 
 function StorePage() {
@@ -38,7 +38,7 @@ function StorePage() {
   const [items, setItems] = useState<StoreItem[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [flash, setFlash] = useState<{ id: string; kind: "ok" | "err"; msg: string } | null>(null);
-  const [active, setActive] = useState<StoreKind | null>(null);
+  const [active, setActive] = useState<Exclude<StoreKind, "pack"> | null>(null);
   const [potions, setPotions] = useState<PotionRow[]>([]);
   const [activePotion, setActivePotion] = useState<ActivePotion>({ active: false, luck: 0 });
   const [now, setNow] = useState(() => Date.now());
@@ -57,17 +57,19 @@ function StorePage() {
   }, [activePotion.active]);
 
   const grouped = useMemo(() => {
-    const g: Record<StoreKind, StoreItem[]> = {
-      pack: [], title: [], username_color: [], name_frame: [], potion: [],
+    const g: Record<Exclude<StoreKind, "pack">, StoreItem[]> = {
+      title: [], username_color: [], name_frame: [], potion: [],
     };
-    (items ?? []).forEach((i) => g[i.kind].push(i));
+    (items ?? []).forEach((i) => {
+      if (i.kind === "pack") return;
+      g[i.kind].push(i);
+    });
     return g;
   }, [items]);
 
   const potionCount = (id: string) => potions.find((p) => p.itemId === id)?.count ?? 0;
-  const kindLabel = (k: StoreKind) =>
-    k === "pack" ? t("packs")
-    : k === "title" ? t("titles")
+  const kindLabel = (k: Exclude<StoreKind, "pack">) =>
+    k === "title" ? t("titles")
     : k === "username_color" ? t("usernameColors")
     : k === "name_frame" ? t("nameFrames")
     : t("potions");
@@ -242,8 +244,7 @@ function StorePage() {
                             {it.name[locale]}
                           </div>
                           <p className="mt-1 text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                            {kind === "pack" ? t("openable")
-                              : kind === "title" ? t("cosmeticTitle")
+                            {kind === "title" ? t("cosmeticTitle")
                               : kind === "username_color" ? t("cosmeticColor")
                               : kind === "name_frame" ? `${t("cosmeticNameFrame")} · ${animated ? t("animatedLabel") : t("staticLabel")}`
                               : `${t("cosmeticPotion")} · ${t("fiveMinutes")}`}
@@ -269,9 +270,6 @@ function StorePage() {
                           >
                             {it.name[locale]}
                           </span>
-                        )}
-                        {kind === "pack" && (
-                          <span aria-hidden className="font-display text-2xl text-primary">卍</span>
                         )}
                         {kind === "potion" && (
                           <span
