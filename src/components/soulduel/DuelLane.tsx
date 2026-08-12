@@ -46,6 +46,7 @@ function Slots({
             entering={p.round === round}
             statuses={hiddenSide ? [] : p.statuses}
             movable={picked === p.uid || (!!interactive && canRelocate(p) && state.phase === "play")}
+            inked={!hiddenSide && (state.mods.inkedUids ?? []).includes(p.uid)}
           />
         );
         return onCard && !hiddenSide ? (

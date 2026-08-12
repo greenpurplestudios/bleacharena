@@ -106,8 +106,29 @@ const EFFECTS: Record<string, (state: DuelState, side: Side) => DuelState> = {
     mods: { ...state.mods, revealUntil: { ...state.mods.revealUntil, [side]: state.round + 1 } },
   }),
 
-  /* Kannonbiraki Benihime Aratame — Urahara rearranges the board, up to 3 cards. */
+  /* Kannonbiraki Benihime Aratame — Urahara rearranges the board. The wielder
+     picks exactly 3 cards (either side); each moves to its best battlefield.
+     With no selection (AI, or an invalid/expired pick) the old auto-pick runs. */
   "kannon-biraki": (state, side) => {
+    const picks = (state.ultimateTargets?.[side] ?? []).filter((uid) =>
+      state.placements.some((p) => p.uid === uid),
+    );
+    if (picks.length) {
+      let next = state;
+      for (const targetUid of picks.slice(0, 3)) {
+        const p = next.placements.find((x) => x.uid === targetUid);
+        if (!p) continue;
+        let best: { lane: number; gain: number } | null = null;
+        const before = advantage(next, side);
+        for (let lane = 0; lane < next.lanes.length; lane++) {
+          if (lane === p.lane || laneRoom(next, lane, p.side) <= 0) continue;
+          const gain = advantage(relocate(next, p.uid, lane), side) - before;
+          if (!best || gain > best.gain) best = { lane, gain };
+        }
+        if (best) next = relocate(next, p.uid, best.lane);
+      }
+      return next;
+    }
     let next = state;
     for (let n = 0; n < 3; n++) {
       let best: { uid: string; lane: number; gain: number } | null = null;
@@ -180,10 +201,18 @@ const EFFECTS: Record<string, (state: DuelState, side: Side) => DuelState> = {
     return next;
   },
 
-  /* Ichimonji — a name is blackened and the card is reduced to nothing. */
+  /* Ichimonji — a name is blackened and the card is reduced to nothing. The
+     wielder's own choice, when one was made; otherwise the strongest enemy. */
   ichimonji: (state, side) => {
-    const target = highestOf(enemies(state, side));
-    return target ? forceZero(state, target.uid) : state;
+    const pickedUid = state.ultimateTargets?.[side]?.[0];
+    const picked = pickedUid ? state.placements.find((p) => p.uid === pickedUid) : undefined;
+    const target = picked ?? highestOf(enemies(state, side));
+    if (!target) return state;
+    const zeroed = forceZero(state, target.uid);
+    return {
+      ...zeroed,
+      mods: { ...zeroed.mods, inkedUids: [...(zeroed.mods.inkedUids ?? []), target.uid] },
+    };
   },
 
   /* Enma Kōrogi — the dream falls; the opponent duels blind for two rounds. */
@@ -239,6 +268,12 @@ export const ULTIMATES: UltimateDef[] = ULTIMATE_WEAPONS.map((w) => ({
 
 const BY_ID = new Map(ULTIMATES.map((u) => [u.id, u]));
 
+/** Weapons resolved from a player's own board pick instead of an automatic rule. */
+export const TARGET_COUNT: Record<string, number> = {
+  ichimonji: 1,
+  "kannon-biraki": 3,
+};
+
 export const STARTER_WEAPON = "zangetsu";
 
 export function ultimateOf(id: string | undefined): UltimateDef {
@@ -256,8 +291,8 @@ export const ULTIMATE_EFFECT_TEXT: Record<string, Record<Locale, string>> = {
     ar: "يكشف كل بطاقات الخصم خلال الجولتين القادمتين.",
   },
   "kannon-biraki": {
-    en: "Moves up to 3 cards — yours, the opponent's or both — between battlefields.",
-    ar: "ينقل حتى ٣ بطاقات — لك أو للخصم أو للاثنين — بين الساحات.",
+    en: "You choose 3 cards — yours, the opponent's or both — and move each to its best battlefield.",
+    ar: "تختار ٣ بطاقات — لك أو للخصم أو للاثنين — وتنقل كل واحدة إلى أفضل ساحة لها.",
   },
   sakanade: {
     en: "Three random enemy abilities serve you instead for the rest of the match.",
@@ -272,8 +307,8 @@ export const ULTIMATE_EFFECT_TEXT: Record<string, Record<Locale, string>> = {
     ar: "يخلط كل بطاقات الخصم عشوائياً بين الساحات.",
   },
   ichimonji: {
-    en: "Chooses one enemy card — its Rating becomes 0.",
-    ar: "يختار بطاقة معادية واحدة — يصبح تقييمها ٠.",
+    en: "You choose one card on the board — its name is blackened and its Rating becomes 0 for the rest of the match.",
+    ar: "تختار بطاقة واحدة على الساحة — يُشطب اسمها ويصبح تقييمها ٠ حتى نهاية المباراة.",
   },
   "enma-korogi": {
     en: "The opponent cannot see your played cards or battlefield Ratings for 2 rounds.",
