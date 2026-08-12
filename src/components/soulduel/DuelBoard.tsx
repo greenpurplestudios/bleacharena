@@ -439,7 +439,9 @@ export function DuelBoard({
 
       {cinematic ? (
         <UltimateOverlay event={cinematic} onDone={() => setCinematic(null)} />
-        {targeting ? (
+      ) : null}
+
+      {targeting ? (
           <UltimateTargeting
             state={state}
             weapon={weapon}
@@ -467,7 +469,6 @@ export function DuelBoard({
             onCancel={() => { setTargeting(null); play("tap"); }}
           />
         ) : null}
-      ) : null}
 
       {state.result && !cinematic && hideResult ? (
         <button
