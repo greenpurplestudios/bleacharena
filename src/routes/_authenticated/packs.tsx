@@ -1,14 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SceneBackground } from "@/components/SceneBackground";
-import { haptic } from "@/lib/haptics";
+import { haptic, hapticRarity } from "@/lib/haptics";
 import { useI18n } from "@/lib/i18n";
 import {
   PACK_TIERS,
-  PACK_LABEL,
   PACK_COLOR,
-  PACK_DESCRIPTION,
   fetchMyPacks,
   openPack,
   openAllPacks,
@@ -21,19 +19,30 @@ import { RARITY_COLOR, RARITY_LABEL } from "@/lib/rarity";
 import { CharacterCard } from "@/components/CharacterCard";
 import { ElementIcon } from "@/components/ElementIcon";
 import { elementOf } from "@/lib/elements";
-import { play } from "@/lib/sound";
+import { play, playReveal } from "@/lib/sound";
 import { loadPrefs } from "@/lib/sound";
 import { useSouls } from "@/hooks/use-souls";
 import { trackMission } from "@/lib/missions";
 import { addXp, bumpProfileStats, trackAchievement, XP } from "@/lib/progression";
 import { fetchMyCollection } from "@/lib/packs";
+import { PackObject } from "@/components/packs/PackObject";
+import { PackTear } from "@/components/packs/PackTear";
+import { PackKeyframes } from "@/components/packs/PackKeyframes";
+import { KonHero } from "@/components/packs/KonHero";
+
+const L = {
+  eyebrow: { en: "Kon's Kiosk", ar: "كشك كون" },
+  title: { en: "Kon's Kiosk", ar: "كشك كون" },
+  empty: { en: "No packs yet — go earn some in a draft!", ar: "لا توجد حزم بعد — اربح بعضها من مسودة!" },
+  ready: { en: "pack(s) ready to tear open", ar: "حزمة جاهزة للتمزيق" },
+};
 
 export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
     meta: [
-      { title: "Packs — Bleach Arena" },
-      { name: "description", content: "Open packs earned from drafts to grow your permanent collection." },
-      { property: "og:title", content: "Bleach Arena — Packs" },
+      { title: "Kon's Kiosk — Bleach Arena" },
+      { name: "description", content: "Kon's Kiosk: tear open packs earned from drafts to grow your permanent collection." },
+      { property: "og:title", content: "Bleach Arena — Kon's Kiosk" },
       { property: "og:description", content: "Rip open packs to collect Shinigami, Quincy and Espada." },
     ],
   }),
@@ -43,10 +52,13 @@ export const Route = createFileRoute("/_authenticated/packs")({
 function PacksPage() {
   const { t, locale } = useI18n();
   const [inventory, setInventory] = useState<PackInventoryRow[] | null>(null);
+  const [tearing, setTearing] = useState<PackTier | null>(null);
+  const [bulkTearing, setBulkTearing] = useState<PackTier | null>(null);
   const [opening, setOpening] = useState<PackTier | null>(null);
   const [result, setResult] = useState<OpenPackResult | null>(null);
   const [bulk, setBulk] = useState<{ tier: PackTier; opened: number; souls: number; results: OpenPackResult[] } | null>(null);
   const { refresh: refreshSouls } = useSouls();
+  const pendingRef = useRef<Promise<unknown> | null>(null);
 
   const load = async () => {
     const list = await fetchMyPacks();
@@ -63,43 +75,53 @@ function PacksPage() {
     [inventory],
   );
 
-  const doOpen = async (tier: PackTier) => {
-    if (opening) return;
+  const applySingleSideEffects = async (res: OpenPackResult) => {
+    trackMission("pack_open", 1);
+    if (res.rarity === "mythic" || res.rarity === "legendary") trackMission("pack_legendary", 1);
+    if (res.duplicate === false) trackMission("collect_new", 1);
+    await Promise.all([
+      addXp(XP.packOpen, "pack"),
+      bumpProfileStats({ packs_opened: 1 }),
+      trackAchievement("pack_10", 1),
+      trackAchievement("pack_100", 1),
+      trackAchievement("pack_500", 1),
+      res.rarity === "mythic" ? trackAchievement("pack_first_mythic", 1) : Promise.resolve(),
+      res.rarity === "mythic" ? trackAchievement("pack_25_mythic", 1) : Promise.resolve(),
+    ]);
+    try {
+      const coll = await fetchMyCollection();
+      const owned = coll.length;
+      await Promise.all([
+        trackAchievement("col_10", owned, true),
+        trackAchievement("col_25", owned, true),
+        trackAchievement("col_50", owned, true),
+        trackAchievement("col_complete", owned >= characters.length ? 1 : 0, true),
+      ]);
+    } catch { /* silent */ }
+  };
+
+  const startOpen = (tier: PackTier) => {
+    if (opening || tearing || bulkTearing) return;
     if (countFor(tier) < 1) return;
     setOpening(tier);
     setResult(null);
-    play("reveal");
-    // brief suspense
-    await new Promise((r) => setTimeout(r, 900));
-    const res = await openPack(tier);
+    setTearing(tier);
+    // Fire the RPC immediately so the tear gesture doesn't add latency.
+    pendingRef.current = openPack(tier);
+  };
+
+  const onTornThrough = async () => {
+    const tier = tearing;
+    setTearing(null);
+    if (!tier) return;
+    const res = (await pendingRef.current) as OpenPackResult;
+    pendingRef.current = null;
     if (res.ok) {
       haptic("pack");
-      if (res.rarity === "mythic" || res.rarity === "legendary") play("rare");
+      if (res.rarity) hapticRarity(res.rarity);
+      if (res.rarity) playReveal(res.rarity);
       else play("success");
-      trackMission("pack_open", 1);
-      if (res.rarity === "mythic" || res.rarity === "legendary") trackMission("pack_legendary", 1);
-      if (res.duplicate === false) trackMission("collect_new", 1);
-      // Progression
-      await Promise.all([
-        addXp(XP.packOpen, "pack"),
-        bumpProfileStats({ packs_opened: 1 }),
-        trackAchievement("pack_10", 1),
-        trackAchievement("pack_100", 1),
-        trackAchievement("pack_500", 1),
-        res.rarity === "mythic" ? trackAchievement("pack_first_mythic", 1) : Promise.resolve(),
-        res.rarity === "mythic" ? trackAchievement("pack_25_mythic", 1) : Promise.resolve(),
-      ]);
-      // Collection milestones (absolute count)
-      try {
-        const coll = await fetchMyCollection();
-        const owned = coll.length;
-        await Promise.all([
-          trackAchievement("col_10", owned, true),
-          trackAchievement("col_25", owned, true),
-          trackAchievement("col_50", owned, true),
-          trackAchievement("col_complete", owned >= characters.length ? 1 : 0, true),
-        ]);
-      } catch { /* silent */ }
+      await applySingleSideEffects(res);
     } else {
       play("skip");
     }
@@ -111,142 +133,130 @@ function PacksPage() {
 
   const closeResult = () => setResult(null);
 
-  const doOpenAll = async (tier: PackTier) => {
-    if (opening) return;
+  const startOpenAll = (tier: PackTier) => {
+    if (opening || tearing || bulkTearing) return;
     if (countFor(tier) < 1) return;
     setOpening(tier);
     setResult(null);
     setBulk(null);
+    setBulkTearing(tier);
     play("reveal");
-    await new Promise((r) => setTimeout(r, 700));
-    const res = await openAllPacks(tier);
-    if (res.ok && res.opened > 0) {
-      const gotRare = res.results.some((r) => r.rarity === "mythic" || r.rarity === "legendary");
-      play(gotRare ? "rare" : "success");
-      const mythics = res.results.filter((r) => r.rarity === "mythic").length;
-      trackMission("pack_open", res.opened);
-      const rares = res.results.filter((r) => r.rarity === "mythic" || r.rarity === "legendary").length;
-      if (rares > 0) trackMission("pack_legendary", rares);
-      const fresh = res.results.filter((r) => r.duplicate === false).length;
-      if (fresh > 0) trackMission("collect_new", fresh);
-      await Promise.all([
-        addXp(XP.packOpen * res.opened, "pack"),
-        bumpProfileStats({ packs_opened: res.opened }),
-        trackAchievement("pack_10", res.opened),
-        trackAchievement("pack_100", res.opened),
-        trackAchievement("pack_500", res.opened),
-        mythics > 0 ? trackAchievement("pack_first_mythic", 1) : Promise.resolve(),
-        mythics > 0 ? trackAchievement("pack_25_mythic", mythics) : Promise.resolve(),
-      ]);
-      try {
-        const coll = await fetchMyCollection();
-        const owned = coll.length;
-        await Promise.all([
-          trackAchievement("col_10", owned, true),
-          trackAchievement("col_25", owned, true),
-          trackAchievement("col_50", owned, true),
-          trackAchievement("col_complete", owned >= characters.length ? 1 : 0, true),
-        ]);
-      } catch { /* silent */ }
-      setBulk({ tier, opened: res.opened, souls: res.soulsAwarded, results: res.results });
-    } else {
-      play("skip");
-    }
-    setOpening(null);
-    load();
-    refreshSouls();
+    haptic("pack");
+    pendingRef.current = openAllPacks(tier);
   };
+
+  useEffect(() => {
+    if (!bulkTearing) return;
+    const id = window.setTimeout(async () => {
+      const tier = bulkTearing;
+      setBulkTearing(null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await (pendingRef.current as any);
+      pendingRef.current = null;
+      if (res.ok && res.opened > 0) {
+        const gotRare = res.results.some((r: OpenPackResult) => r.rarity === "mythic" || r.rarity === "legendary");
+        play(gotRare ? "rare" : "success");
+        const mythics = res.results.filter((r: OpenPackResult) => r.rarity === "mythic").length;
+        trackMission("pack_open", res.opened);
+        const rares = res.results.filter((r: OpenPackResult) => r.rarity === "mythic" || r.rarity === "legendary").length;
+        if (rares > 0) trackMission("pack_legendary", rares);
+        const fresh = res.results.filter((r: OpenPackResult) => r.duplicate === false).length;
+        if (fresh > 0) trackMission("collect_new", fresh);
+        await Promise.all([
+          addXp(XP.packOpen * res.opened, "pack"),
+          bumpProfileStats({ packs_opened: res.opened }),
+          trackAchievement("pack_10", res.opened),
+          trackAchievement("pack_100", res.opened),
+          trackAchievement("pack_500", res.opened),
+          mythics > 0 ? trackAchievement("pack_first_mythic", 1) : Promise.resolve(),
+          mythics > 0 ? trackAchievement("pack_25_mythic", mythics) : Promise.resolve(),
+        ]);
+        try {
+          const coll = await fetchMyCollection();
+          const owned = coll.length;
+          await Promise.all([
+            trackAchievement("col_10", owned, true),
+            trackAchievement("col_25", owned, true),
+            trackAchievement("col_50", owned, true),
+            trackAchievement("col_complete", owned >= characters.length ? 1 : 0, true),
+          ]);
+        } catch { /* silent */ }
+        setBulk({ tier, opened: res.opened, souls: res.soulsAwarded, results: res.results });
+      } else {
+        play("skip");
+      }
+      setOpening(null);
+      load();
+      refreshSouls();
+    }, 620);
+    return () => window.clearTimeout(id);
+  }, [bulkTearing]);
 
   return (
     <>
+      <PackKeyframes />
       <SceneBackground scene="draft" />
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
-        <div className="mb-8 text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">{t("packs")}</p>
-          <h1 className="mt-2 font-display text-4xl font-black text-glow-orange sm:text-5xl">
-            {t("packsTitle")}
-          </h1>
-          <p className="mt-3 text-sm text-muted-foreground">
+        <KonHero>
+          <p className="mt-4 text-xs text-muted-foreground">
             {inventory === null
               ? t("loading")
               : totalPacks === 0
-                ? t("packsEmpty")
-                : `${totalPacks} ${t("packsAvailable")}`}
+                ? L.empty[locale]
+                : `${totalPacks} ${L.ready[locale]}`}
           </p>
-        </div>
+        </KonHero>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {PACK_TIERS.map((tier) => {
-            const count = countFor(tier);
-            const color = PACK_COLOR[tier];
-            const disabled = count < 1 || !!opening;
-            return (
-              <div
-                key={tier}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-card/70 p-5 text-start backdrop-blur-md transition-all hover:border-white/25"
-                style={{ boxShadow: count > 0 ? `0 0 30px -12px ${color}` : undefined }}
-              >
-                <div
-                  aria-hidden
-                  className="absolute inset-x-0 top-0 h-1.5"
-                  style={{ background: color }}
-                />
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div
-                      className="font-display text-lg font-black uppercase tracking-widest"
-                      style={{ color }}
-                    >
-                      {PACK_LABEL[tier][locale]}
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {PACK_DESCRIPTION[tier][locale]}
-                    </p>
-                  </div>
-                  <span
-                    className="flex h-10 min-w-10 items-center justify-center rounded-lg border px-2 font-display text-base font-black"
-                    style={{ borderColor: `${color}66`, background: `${color}1a`, color }}
-                  >
-                    ×{count}
-                  </span>
-                </div>
-                <div className="mt-5 flex items-center justify-between">
-                  <button
-                    onClick={() => doOpen(tier)}
-                    disabled={disabled}
-                    className="rounded-lg bg-primary px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-primary-foreground disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    {count > 0 ? t("tapToOpen") : t("noPacks")}
-                  </button>
-                  {count > 1 && (
-                    <button
-                      onClick={() => doOpenAll(tier)}
-                      disabled={disabled}
-                      className="rounded-lg border px-3 py-1.5 text-[11px] font-black uppercase tracking-widest disabled:cursor-not-allowed disabled:opacity-40"
-                      style={{ borderColor: `${color}66`, background: `${color}1a`, color }}
-                    >
-                      {t("openAll")} ×{count}
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+        <div className="mt-8 flex flex-wrap items-start justify-center gap-6 sm:gap-8">
+          {PACK_TIERS.map((tier, i) => (
+            <PackObject
+              key={tier}
+              tier={tier}
+              index={i}
+              count={countFor(tier)}
+              disabled={!!opening}
+              onOpen={() => startOpen(tier)}
+              onOpenAll={() => startOpenAll(tier)}
+            />
+          ))}
         </div>
       </main>
 
-      {(opening || result || bulk) && (
+      {(tearing || bulkTearing) && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/85 px-4 backdrop-blur-md">
+          {tearing && <PackTear tier={tearing} onTorn={onTornThrough} />}
+          {bulkTearing && <BulkTearAnim tier={bulkTearing} />}
+        </div>
+      )}
+
+      {(result || bulk) && (
         <div
           className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 px-4 backdrop-blur-md"
-          onClick={result ? closeResult : bulk ? () => setBulk(null) : undefined}
+          onClick={result ? closeResult : () => setBulk(null)}
         >
-          {opening && !result && !bulk && <PackOpeningAnim tier={opening} />}
           {result && <PackResultCard result={result} onClose={closeResult} />}
           {bulk && <BulkResultCard bulk={bulk} onClose={() => setBulk(null)} />}
         </div>
       )}
     </>
+  );
+}
+
+function BulkTearAnim({ tier }: { tier: PackTier }) {
+  const color = PACK_COLOR[tier];
+  return (
+    <div
+      className="flex h-56 w-40 items-center justify-center rounded-2xl border"
+      style={{
+        borderColor: `${color}88`,
+        background: `radial-gradient(circle at 50% 40%, ${color}66, transparent 70%)`,
+        boxShadow: `0 0 60px -10px ${color}`,
+        animation: "pulse-glow 0.5s ease-in-out infinite",
+      }}
+    >
+      <span className="font-display text-5xl" style={{ color, animation: "pack-burst 0.6s ease-out infinite" }}>卍</span>
+    </div>
   );
 }
 
@@ -299,23 +309,6 @@ function BulkResultCard({ bulk, onClose }: {
       >
         {t("close")}
       </button>
-    </div>
-  );
-}
-
-function PackOpeningAnim({ tier }: { tier: PackTier }) {
-  const color = PACK_COLOR[tier];
-  return (
-    <div
-      className="flex h-56 w-40 items-center justify-center rounded-2xl border"
-      style={{
-        borderColor: `${color}88`,
-        background: `radial-gradient(circle at 50% 40%, ${color}66, transparent 70%)`,
-        boxShadow: `0 0 60px -10px ${color}`,
-        animation: "pulse-glow 0.9s ease-in-out infinite",
-      }}
-    >
-      <span className="font-display text-5xl" style={{ color }}>卍</span>
     </div>
   );
 }
