@@ -5,7 +5,7 @@ import { haptic } from "@/lib/haptics";
 import { play, playDuelClash, playDuelPlace } from "@/lib/sound";
 import { takeOpponentTurn } from "@/lib/soul-duel/ai";
 import { awardFragments, fragmentReward } from "@/lib/forge";
-import { ultimateOf } from "@/lib/soul-duel/ultimates";
+import { ultimateOf, TARGET_COUNT } from "@/lib/soul-duel/ultimates";
 import {
   activateUltimate, canActivateUltimate, canMove, canPlay, cancelUltimate, createDuel,
   isBlinded, isHidden, isLockedOut, laneTotals, moveCard, playCard,
@@ -69,6 +69,7 @@ export function DuelBoard({
   const announced = useRef<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [cinematic, setCinematic] = useState<DuelState["ultimateEvent"]>(null);
+  const [targeting, setTargeting] = useState<string[] | null>(null);
   const [fragments, setFragments] = useState<number | null>(null);
   const [hideResult, setHideResult] = useState(false);
   const rewarded = useRef(false);
@@ -254,6 +255,8 @@ export function DuelBoard({
                 return;
               }
               if (!ultReady) return;
+              const need = TARGET_COUNT[state.weapons.player as keyof typeof TARGET_COUNT];
+              if (need) { setTargeting([]); play("tap"); return; }
               setState((s) => activateUltimate(s, "player"));
               play("reveal");
               haptic("flip");
