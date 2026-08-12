@@ -24,6 +24,7 @@ import { DuelLane } from "./DuelLane";
 import { DuelResultPanel } from "./DuelResultPanel";
 import { ReiatsuGauge } from "./ReiatsuGauge";
 import { UltimateOverlay } from "./UltimateOverlay";
+import { UltimateTargeting } from "./UltimateTargeting";
 
 /** Online duels drive the board from outside: state lives with the session. */
 export interface OnlineController {
