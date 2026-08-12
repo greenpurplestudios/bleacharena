@@ -27,8 +27,8 @@ export const Route = createFileRoute("/_authenticated/store")({
   component: StorePage,
 });
 
-const KIND_ORDER: StoreKind[] = ["potion", "name_frame", "title", "username_color"];
-const KIND_ICON: Record<StoreKind, string> = {
+const KIND_ORDER: Exclude<StoreKind, "pack">[] = ["potion", "name_frame", "title", "username_color"];
+const KIND_ICON: Record<Exclude<StoreKind, "pack">, string> = {
   title: "❖", username_color: "✧", name_frame: "▩", potion: "⚗",
 };
 
