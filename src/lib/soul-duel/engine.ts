@@ -89,6 +89,7 @@ export const emptyMods = (): DuelState["mods"] => ({
   lockedRound: {},
   laneBonus: {},
   hijack: null,
+  inkedUids: [],
 });
 
 export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState {
@@ -125,6 +126,7 @@ export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState
     difficulty,
     ultimateEvent: null,
     mods: emptyMods(),
+    ultimateTargets: {},
   };
 }
 
