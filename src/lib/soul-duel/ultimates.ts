@@ -205,7 +205,11 @@ const EFFECTS: Record<string, (state: DuelState, side: Side) => DuelState> = {
      wielder's own choice, when one was made; otherwise the strongest enemy. */
   ichimonji: (state, side) => {
     const pickedUid = state.ultimateTargets?.[side]?.[0];
-    const picked = pickedUid ? state.placements.find((p) => p.uid === pickedUid) : undefined;
+    // Only an enemy card is ever a legal Ichimonji target — validated here, not
+    // just in the picker, so PvP/AI payloads cannot blacken your own board.
+    const picked = pickedUid
+      ? state.placements.find((p) => p.uid === pickedUid && p.side === foe(side))
+      : undefined;
     const target = picked ?? highestOf(enemies(state, side));
     if (!target) return state;
     const zeroed = forceZero(state, target.uid);
