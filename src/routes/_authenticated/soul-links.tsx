@@ -6,7 +6,6 @@ import { useI18n } from "@/lib/i18n";
 import { play } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
 import { addXp } from "@/lib/progression";
-import { trackMission } from "@/lib/missions";
 import {
   GROUP_COLOR, MAX_MISTAKES, dailyLinks, evaluate, loadProgress, saveProgress,
   shareText, type LinksProgress,
@@ -102,7 +101,6 @@ function SoulLinksPage() {
         play("success");
         const xp = Math.max(20, 60 - progress.mistakes * 10);
         addXp(xp, "soul-links");
-        trackMission("bleachdle_solve", 1).catch(() => { /* optional mission */ });
       }
       return;
     }
