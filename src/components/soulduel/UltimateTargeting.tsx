@@ -4,7 +4,7 @@ import type { UltimateDef } from "@/lib/soul-duel/ultimates";
 import { DuelMiniCard } from "./DuelMiniCard";
 
 const L = {
-  pick1: { en: "Choose 1 card on the board — its Rating becomes 0.", ar: "اختر بطاقة واحدة على الساحة — يصبح تقييمها ٠." },
+  pick1: { en: "Choose 1 opponent card — its Rating becomes 0.", ar: "اختر بطاقة واحدة للخصم — يصبح تقييمها ٠." },
   pick3: { en: "Choose 3 cards — yours, the opponent's or both.", ar: "اختر ٣ بطاقات — لك أو للخصم أو للاثنين." },
   confirm: { en: "Confirm", ar: "تأكيد" },
   cancel: { en: "Cancel", ar: "إلغاء" },
@@ -21,6 +21,7 @@ export function UltimateTargeting({
   count,
   selected,
   hiddenOf,
+  targetSide,
   onToggle,
   onConfirm,
   onCancel,
@@ -30,11 +31,16 @@ export function UltimateTargeting({
   count: number;
   selected: string[];
   hiddenOf: (p: Placement) => boolean;
+  /** Restricts which side's cards can be picked (Ichimonji: opponent only). */
+  targetSide?: "player" | "opponent";
   onToggle: (uid: string) => void;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
   const { locale } = useI18n();
+  const targets = targetSide
+    ? state.placements.filter((p) => p.side === targetSide)
+    : state.placements;
 
   return (
     <div
@@ -52,7 +58,7 @@ export function UltimateTargeting({
       </p>
 
       <div className="grid w-full max-w-md grid-cols-4 gap-2">
-        {state.placements.map((p) => {
+        {targets.map((p) => {
           const hidden = hiddenOf(p);
           const isSelected = selected.includes(p.uid);
           const order = selected.indexOf(p.uid);
