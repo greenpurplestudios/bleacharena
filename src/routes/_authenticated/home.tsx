@@ -114,7 +114,7 @@ function HomeHub() {
               {t("bleachDraftDesc")}
             </span>
           </span>
-          <span aria-hidden className="relative font-display text-4xl sm:text-5xl">卍</span>
+          <span aria-hidden className="relative font-display text-4xl sm:text-5xl">刀</span>
         </Link>
 
         {/* Soul Duel launch banner */}
