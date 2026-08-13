@@ -89,19 +89,27 @@ export const DuelMiniCard = memo(function DuelMiniCard({
           title="Ichimonji"
           className="pointer-events-none absolute inset-0 overflow-hidden rounded-[6%]"
         >
-          <span className="absolute inset-0 bg-black/35" />
+          <span className="absolute inset-0 bg-black/70 backdrop-grayscale" />
           <span
-            className="absolute rounded-[42%_58%_53%_47%/48%_44%_56%_52%] bg-black/92 mix-blend-multiply"
-            style={{ left: "8%", top: "12%", width: "72%", height: "58%", transform: "rotate(-9deg)" }}
+            className="absolute rounded-[42%_58%_53%_47%/48%_44%_56%_52%] bg-black"
+            style={{ left: "4%", top: "8%", width: "88%", height: "66%", transform: "rotate(-9deg)" }}
           />
           <span
-            className="absolute rounded-[58%_42%_46%_54%/44%_56%_40%_60%] bg-black/88 mix-blend-multiply"
-            style={{ left: "42%", top: "48%", width: "42%", height: "38%", transform: "rotate(18deg)" }}
+            className="absolute rounded-[58%_42%_46%_54%/44%_56%_40%_60%] bg-black"
+            style={{ left: "30%", top: "44%", width: "62%", height: "48%", transform: "rotate(16deg)" }}
           />
           <span
-            className="absolute rounded-full bg-black/85 mix-blend-multiply"
-            style={{ left: "18%", top: "62%", width: "16%", height: "12%" }}
+            className="absolute rounded-full bg-black"
+            style={{ left: "12%", top: "66%", width: "26%", height: "18%" }}
           />
+          {/* Blackened-name stroke across the plate so the kill is unmistakable */}
+          <span
+            className="absolute start-[6%] end-[6%] top-[52%] h-[7%] -rotate-6 bg-black"
+            style={{ boxShadow: "0 0 10px 2px #000" }}
+          />
+          <span className="absolute inset-x-0 top-[26%] text-center font-display text-[13px] font-black text-white/90" style={{ textShadow: "0 2px 6px #000" }}>
+            0
+          </span>
         </span>
       ) : null}
     </div>
