@@ -93,7 +93,7 @@ export function PackTear({ tier, onTorn }: { tier: PackTier; onTorn: () => void 
           }}
         />
         <span aria-hidden className="pointer-events-none font-display text-5xl font-black opacity-40" style={{ color }}>
-          卍
+          霊
         </span>
         {/* Light burst */}
         {torn && (

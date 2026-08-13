@@ -16,6 +16,7 @@ import {
   SettingSlider,
 } from "@/components/settings/SettingsRow";
 import { InstallAppRow } from "@/components/InstallAppRow";
+import { loadNavPrefs, saveNavPrefs, type NavPrefs } from "@/lib/nav-prefs";
 import {
   notificationPermission, notificationsEnabled, notificationsSupported,
   setNotificationsEnabled,
@@ -48,6 +49,16 @@ function SettingsPage() {
   const [notifOn, setNotifOn] = useState(false);
   const [notifBlocked, setNotifBlocked] = useState(false);
   const [notifSupported, setNotifSupported] = useState(false);
+  const [navPrefs, setNavPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+
+  const NAV_L = {
+    section: { en: "Navigation", ar: "التنقل" },
+    floating: { en: "Floating menu button", ar: "زر القائمة العائم" },
+    floatingDesc: {
+      en: "Drag it anywhere — it snaps to the nearest edge. When off, use the menu button in the header.",
+      ar: "اسحبه لأي مكان — يلتصق بأقرب حافة. عند إيقافه استخدم زر القائمة في الأعلى.",
+    },
+  } as const;
 
   const loadProfile = async () => {
     const p = (await getMyProfile()) as { username: string | null; title?: string | null; username_color?: string | null } | null;
@@ -140,6 +151,20 @@ function SettingsPage() {
             description={t("hapticsDesc")}
             value={prefs.haptics !== false}
             onChange={(v) => { update({ haptics: v }); if (v) haptic("press"); }}
+          />
+        </SettingsSection>
+
+        <SettingsSection title={NAV_L.section[locale]}>
+          <SettingToggle
+            label={NAV_L.floating[locale]}
+            description={NAV_L.floatingDesc[locale]}
+            value={navPrefs.floating}
+            onChange={(v) => {
+              const next = { ...navPrefs, floating: v };
+              setNavPrefs(next);
+              saveNavPrefs(next);
+              play("tap");
+            }}
           />
         </SettingsSection>
 

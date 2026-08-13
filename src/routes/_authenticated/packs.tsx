@@ -255,7 +255,7 @@ function BulkTearAnim({ tier }: { tier: PackTier }) {
         animation: "pulse-glow 0.5s ease-in-out infinite",
       }}
     >
-      <span className="font-display text-5xl" style={{ color, animation: "pack-burst 0.6s ease-out infinite" }}>卍</span>
+      <span className="font-display text-5xl" style={{ color, animation: "pack-burst 0.6s ease-out infinite" }}>霊</span>
     </div>
   );
 }

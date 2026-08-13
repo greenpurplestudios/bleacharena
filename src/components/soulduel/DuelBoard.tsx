@@ -449,6 +449,7 @@ export function DuelBoard({
             count={TARGET_COUNT[state.weapons.player as keyof typeof TARGET_COUNT] ?? 1}
             selected={targeting}
             hiddenOf={(p) => p.side === "opponent" && hiddenFor(p.lane)}
+            targetSide={state.weapons.player === "ichimonji" ? "opponent" : undefined}
             onToggle={(uid) =>
               setTargeting((sel) => {
                 if (!sel) return sel;

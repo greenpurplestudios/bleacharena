@@ -6,6 +6,7 @@ import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSouls } from "@/hooks/use-souls";
+import { openNavDrawer } from "@/lib/nav-prefs";
 
 export function SiteHeader() {
   const { t } = useI18n();
@@ -115,6 +116,14 @@ export function SiteHeader() {
             </Link>
           )}
           <LanguageSwitcher />
+          <button
+            type="button"
+            onClick={openNavDrawer}
+            aria-label={t("menu")}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-lg font-black text-foreground transition-transform active:scale-90 sm:hidden"
+          >
+            ≡
+          </button>
         </div>
       </div>
     </header>

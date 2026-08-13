@@ -97,7 +97,7 @@ export function PackObject({
           className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-2xl font-black"
           style={{ borderColor: color, background: `${color}22`, color, boxShadow: `0 0 22px -4px ${color}` }}
         >
-          卍
+          霊
         </span>
         {/* Shine sweep */}
         {!empty && (

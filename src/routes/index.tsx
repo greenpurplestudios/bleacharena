@@ -81,7 +81,7 @@ function Home() {
           className="glow-orange tactile group mt-10 inline-flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 font-display text-base font-black uppercase tracking-[0.25em] text-primary-foreground sm:text-lg"
           style={{ animation: "pulse-glow 2.8s ease-in-out infinite, card-in 0.9s 0.2s ease-out both" }}
         >
-          <span aria-hidden>卍</span>
+          <span aria-hidden>刀</span>
           {t("startDraft")}
           <span aria-hidden className="transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1">→</span>
         </Link>
@@ -112,7 +112,7 @@ function Home() {
           style={{ animation: "card-in 1.1s 0.4s ease-out both" }}
         >
           {[
-            { to: "/draft", key: "draft", desc: "bleachDraftDesc", icon: "卍" },
+            { to: "/draft", key: "draft", desc: "bleachDraftDesc", icon: "刀" },
             { to: "/soul-duel", key: "soulDuel", desc: "soulDuelShort", icon: "⚔" },
             { to: "/packs", key: "packs", desc: "packsDesc", icon: "✦" },
             { to: "/collection", key: "collection", desc: "collectionDesc", icon: "▦" },
