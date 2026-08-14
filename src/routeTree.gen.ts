@@ -23,6 +23,7 @@ import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
 import { Route as AuthenticatedQuotesRouteImport } from './routes/_authenticated/quotes'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
+import { Route as AuthenticatedPlayRouteImport } from './routes/_authenticated/play'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
 import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated/levels'
@@ -108,6 +109,11 @@ const AuthenticatedQuotesRoute = AuthenticatedQuotesRouteImport.update({
 const AuthenticatedQuizRoute = AuthenticatedQuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPlayRoute = AuthenticatedPlayRouteImport.update({
+  id: '/play',
+  path: '/play',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPacksRoute = AuthenticatedPacksRouteImport.update({
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
+  '/play': typeof AuthenticatedPlayRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/rewards': typeof AuthenticatedRewardsRoute
@@ -251,6 +258,7 @@ export interface FileRoutesByTo {
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
+  '/play': typeof AuthenticatedPlayRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/rewards': typeof AuthenticatedRewardsRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/levels': typeof AuthenticatedLevelsRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
+  '/_authenticated/play': typeof AuthenticatedPlayRoute
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
   '/_authenticated/quotes': typeof AuthenticatedQuotesRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
@@ -319,6 +328,7 @@ export interface FileRouteTypes {
     | '/levels'
     | '/missions'
     | '/packs'
+    | '/play'
     | '/quiz'
     | '/quotes'
     | '/rewards'
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/levels'
     | '/missions'
     | '/packs'
+    | '/play'
     | '/quiz'
     | '/quotes'
     | '/rewards'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/_authenticated/levels'
     | '/_authenticated/missions'
     | '/_authenticated/packs'
+    | '/_authenticated/play'
     | '/_authenticated/quiz'
     | '/_authenticated/quotes'
     | '/_authenticated/rewards'
@@ -503,6 +515,13 @@ declare module '@tanstack/react-router' {
       path: '/quiz'
       fullPath: '/quiz'
       preLoaderRoute: typeof AuthenticatedQuizRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/play': {
+      id: '/_authenticated/play'
+      path: '/play'
+      fullPath: '/play'
+      preLoaderRoute: typeof AuthenticatedPlayRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/packs': {
@@ -643,6 +662,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLevelsRoute: typeof AuthenticatedLevelsRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
+  AuthenticatedPlayRoute: typeof AuthenticatedPlayRoute
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
   AuthenticatedQuotesRoute: typeof AuthenticatedQuotesRoute
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
@@ -672,6 +692,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLevelsRoute: AuthenticatedLevelsRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
+  AuthenticatedPlayRoute: AuthenticatedPlayRoute,
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
   AuthenticatedQuotesRoute: AuthenticatedQuotesRoute,
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,

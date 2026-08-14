@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/lib/i18n";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileNav } from "@/components/MobileNav";
+import { BottomNav } from "@/components/BottomNav";
 import { EasterEggHeart } from "@/components/EasterEggHeart";
 import { PWAUpdateToast } from "@/components/PWAUpdateToast";
 import { supabase } from "@/integrations/supabase/client";
@@ -103,7 +104,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Bleach Arena" },
       { name: "twitter:description", content: "Draft, quotes, quiz, and weekly leaderboard — bilingual (EN / AR)." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/ca06c988-e804-47b9-825e-0b45dd4caae0" },
@@ -173,6 +173,7 @@ function RootComponent() {
           <Outlet />
           <SiteFooter />
           <MobileNav />
+          <BottomNav />
           <EasterEggHeart />
           <PWAUpdateToast />
           </div>

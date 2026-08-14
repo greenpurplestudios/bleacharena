@@ -632,3 +632,8 @@ body {
 @utility section-enter {
   animation: page-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* Keeps page content clear of the fixed mobile tab bar. */
+body.has-bottom-nav {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+}
