@@ -3,7 +3,8 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
 import { loadNavPrefs, openNavDrawer, type NavPrefs } from "@/lib/nav-prefs";
-import { play } from "@/lib/sound";
+import { play, playDuelClash } from "@/lib/sound";
+import { haptic } from "@/lib/haptics";
 
 type Tab = {
   id: string;
@@ -13,6 +14,30 @@ type Tab = {
   /** Matches these path prefixes for the active state. */
   match: string[];
 };
+
+/** Crossed swords — the Play tab's hero icon. */
+function SwordsIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M14.5 17.5 20 22l2-2-4.5-5.5" />
+      <path d="m3 2 9.5 9.5" />
+      <path d="M20 2h-3l-9 9" />
+      <path d="M9.5 17.5 4 22l-2-2 4.5-5.5" />
+      <path d="M4 2h3l2.5 2.5" />
+      <path d="m13 13 3 3" />
+    </svg>
+  );
+}
+
+/** Simple user silhouette for the Profile tab. */
+function UserIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-3.9 3.6-6.5 8-6.5s8 2.6 8 6.5v1H4v-1Z" />
+    </svg>
+  );
+}
 
 const TABS: Tab[] = [
   { id: "play", to: "/play", label: { en: "Play", ar: "العب" }, glyph: "▶", match: ["/play", "/soul-duel", "/draft", "/rivals", "/bleachdle", "/soul-links", "/quiz", "/quotes"] },
