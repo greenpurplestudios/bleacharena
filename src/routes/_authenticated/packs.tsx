@@ -301,8 +301,8 @@ function BulkTearAnim({ tier }: { tier: PackTier }) {
     <div
       className="flex h-56 w-40 items-center justify-center rounded-2xl border"
       style={{
-        borderColor: `${color}88`,
-        background: `radial-gradient(circle at 50% 40%, ${color}66, transparent 70%)`,
+        borderColor: packAlpha(color, 55),
+        background: `radial-gradient(circle at 50% 40%, ${packAlpha(color, 42)}, transparent 70%)`,
         boxShadow: `0 0 60px -10px ${color}`,
         animation: "pulse-glow 0.5s ease-in-out infinite",
       }}
@@ -398,7 +398,7 @@ function PackResultCard({ result, tier, onClose }: { result: OpenPackResult; tie
           aria-hidden
           className="pointer-events-none absolute inset-x-4 bottom-[-6%] h-24 rounded-b-[1.1rem] border-x border-b"
           style={{
-            borderColor: `${color}88`,
+            borderColor: packAlpha(color, 55),
             background: `linear-gradient(180deg, #1c1712 0%, #0d0a08 100%)`,
             boxShadow: `0 18px 40px -14px ${color}`,
             animation: "pack-shell-open 0.7s ease-out 0.25s both",
