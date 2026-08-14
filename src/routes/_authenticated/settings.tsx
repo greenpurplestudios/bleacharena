@@ -17,6 +17,7 @@ import {
 } from "@/components/settings/SettingsRow";
 import { InstallAppRow } from "@/components/InstallAppRow";
 import { loadNavPrefs, saveNavPrefs, type NavPrefs } from "@/lib/nav-prefs";
+import { loadPerf, savePerf, type PerfPrefs } from "@/lib/perf";
 import { useSession } from "@/hooks/use-session";
 import { amIAdmin } from "@/lib/admin";
 import {
@@ -52,6 +53,7 @@ function SettingsPage() {
   const [notifBlocked, setNotifBlocked] = useState(false);
   const [notifSupported, setNotifSupported] = useState(false);
   const [navPrefs, setNavPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+  const [perf, setPerf] = useState<PerfPrefs>(() => loadPerf());
   const { isGuest } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -70,6 +72,21 @@ function SettingsPage() {
   } as const;
 
   const GUEST_L = {
+
+  const PERF_L = {
+    section: { en: "Performance", ar: "الأداء" },
+    lag: { en: "Lag Reducer", ar: "تقليل التقطيع" },
+    lagDesc: {
+      en: "Disables heavy visual effects such as the Legendary card shine, Mythic lightning and animated backgrounds.",
+      ar: "يعطّل التأثيرات البصرية الثقيلة مثل لمعان البطاقات الأسطورية وبرق الأسطورية والخلفيات المتحركة.",
+    },
+    warn: {
+      en: "The game may not look as good with this option enabled.",
+      ar: "قد لا تبدو اللعبة بنفس الجمال عند تفعيل هذا الخيار.",
+    },
+  } as const;
+
+  const GUEST_L_UNUSED = {
     section: { en: "Guest account", ar: "حساب الضيف" },
     label: { en: "You're playing as a guest", ar: "أنت تلعب كضيف" },
     desc: {
