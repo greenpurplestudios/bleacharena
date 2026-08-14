@@ -21,6 +21,20 @@ export const PACK_COLOR: Record<PackTier, string> = {
   legend: "oklch(0.72 0.24 25)",
 };
 
+/**
+ * Alpha helper for the pack colors. They are `oklch()` strings, so appending
+ * hex alpha (`${color}88`) produces an invalid value that browsers drop —
+ * which is what made the packs render see-through. Use color-mix instead.
+ */
+export function packAlpha(color: string, pct: number): string {
+  return `color-mix(in oklab, ${color} ${pct}%, transparent)`;
+}
+
+/** Blend a pack color toward black for solid, opaque surfaces. */
+export function packShade(color: string, pct: number): string {
+  return `color-mix(in oklab, ${color} ${pct}%, #0b0806)`;
+}
+
 export const PACK_DESCRIPTION: Record<PackTier, { en: string; ar: string }> = {
   bronze: { en: "Common → Uncommon, small Rare chance.", ar: "عادي إلى غير مألوف، فرصة صغيرة للنادر." },
   silver: { en: "Uncommon → Rare, small Epic chance.", ar: "غير مألوف إلى نادر، فرصة صغيرة للملحمي." },
