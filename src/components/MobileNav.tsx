@@ -40,6 +40,7 @@ const SECTIONS: NavSection[] = [
         id: "battle",
         label: { en: "Battle", ar: "قتال" },
         items: [
+          { to: "/play", label: { en: "All Modes", ar: "كل الأوضاع" }, icon: "▶" },
           { to: "/soul-duel", key: "soulDuel", icon: "VS", primary: true },
           { to: "/draft", key: "draft", icon: "刀", primary: true },
           { to: "/rivals", key: "rivals", icon: "⚔" },
@@ -68,7 +69,8 @@ const SECTIONS: NavSection[] = [
     labelKey: "storeHub",
     icon: "🛒",
     items: [
-      { to: "/store", key: "store", icon: "✧" },
+      { to: "/store", label: { en: "Store", ar: "المتجر" }, icon: "🛍" },
+      { to: "/shop", label: { en: "Urahara's Shop", ar: "متجر أوراهارا" }, icon: "✧" },
       { to: "/forge", key: "forge", icon: "🔨" },
       { to: "/packs", label: { en: "Kon's Kiosk", ar: "كشك كون" }, icon: "🎪" },
     ],
