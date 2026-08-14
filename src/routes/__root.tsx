@@ -20,6 +20,7 @@ import { PWAUpdateToast } from "@/components/PWAUpdateToast";
 import { supabase } from "@/integrations/supabase/client";
 import { ProgressionProvider } from "@/hooks/use-progression";
 import { capturePendingReferral, consumePendingReferral } from "@/lib/referrals";
+import { initPerf } from "@/lib/perf";
 
 function NotFoundComponent() {
   return (
@@ -151,6 +152,7 @@ function RootComponent() {
 
   const router = useRouter();
   useEffect(() => {
+    initPerf();
     capturePendingReferral();
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) consumePendingReferral();
