@@ -4,8 +4,9 @@ import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { useSouls } from "@/hooks/use-souls";
 import { play } from "@/lib/sound";
-import uraharaArt from "@/assets/brand/urahara_shop.jpeg.asset.json";
-import konArt from "@/assets/brand/kon_kiosk.png.asset.json";
+import uraharaArt from "@/assets/characters/urahara.jpeg.asset.json";
+import konArt from "@/assets/characters/kon.jpeg.asset.json";
+import nimaiyaArt from "@/assets/characters/nimaya.jpeg.asset.json";
 
 export const Route = createFileRoute("/_authenticated/store")({
   head: () => ({
@@ -55,7 +56,8 @@ const DOORS: Door[] = [
       en: "Spend fragments to forge and equip Ultimate Weapons for Soul Duel.",
       ar: "استخدم الشظايا لصهر وتجهيز الأسلحة النهائية لنزال الأرواح.",
     },
-    glyph: "🔨",
+    art: nimaiyaArt.url,
+    glyph: "刀",
     bg: "linear-gradient(135deg, oklch(0.34 0.11 25 / 0.9), oklch(0.15 0.03 20 / 0.96))",
     accent: "oklch(0.72 0.19 30)",
   },
@@ -68,7 +70,7 @@ const DOORS: Door[] = [
       ar: "مزّق العبوات القابلة للجمع واسحب شخصيات جديدة لمجموعتك.",
     },
     art: konArt.url,
-    glyph: "🎪",
+    glyph: "霊",
     bg: "linear-gradient(135deg, oklch(0.33 0.09 145 / 0.85), oklch(0.15 0.03 150 / 0.96))",
     accent: "oklch(0.78 0.15 150)",
   },

@@ -1,4 +1,4 @@
-import konArt from "@/assets/brand/kon_kiosk.png.asset.json";
+import konArt from "@/assets/characters/kon.jpeg.asset.json";
 import { useI18n } from "@/lib/i18n";
 
 const L = {
@@ -33,7 +33,11 @@ export function KonHero({ children }: { children?: React.ReactNode }) {
           src={konArt.url}
           alt={L.title[locale]}
           loading="lazy"
-          className="h-40 w-24 shrink-0 self-end object-contain object-bottom drop-shadow-[0_0_25px_rgba(0,0,0,0.8)] sm:h-64 sm:w-40"
+          className="h-40 w-28 shrink-0 self-end rounded-2xl border border-white/10 object-cover object-top shadow-[0_18px_40px_-16px_rgba(0,0,0,0.9)] sm:h-56 sm:w-40"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 82%, transparent)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 82%, transparent)",
+          }}
         />
       </div>
     </section>

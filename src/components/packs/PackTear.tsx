@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { PACK_COLOR, PACK_LABEL, type PackTier } from "@/lib/packs";
+import { PACK_COLOR, PACK_LABEL, packAlpha, packShade, type PackTier } from "@/lib/packs";
 import { play } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
 
@@ -65,8 +65,9 @@ export function PackTear({ tier, onTorn }: { tier: PackTier; onTorn: () => void 
         onPointerCancel={stop}
         className="relative flex h-64 w-44 cursor-pointer touch-none items-center justify-center overflow-hidden rounded-[1.2rem] border-2"
         style={{
-          borderColor: `${color}aa`,
-          background: `linear-gradient(155deg, ${color}33 0%, #14100c 32%, #1c1712 55%, ${color}22 78%, #0d0a08 100%)`,
+          borderColor: packAlpha(color, 70),
+          backgroundColor: "#0b0806",
+          backgroundImage: `linear-gradient(155deg, ${packShade(color, 55)} 0%, #1d150e 38%, #120d09 64%, ${packShade(color, 35)} 100%)`,
           boxShadow: `0 0 ${40 + progress * 60}px -8px ${color}`,
           transform: `scale(${1 + progress * 0.04})`,
         }}
