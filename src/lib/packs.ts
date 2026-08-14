@@ -89,6 +89,33 @@ export async function openPack(tier: PackTier): Promise<OpenPackResult> {
 
 export interface PackInventoryRow { tier: PackTier; count: number }
 
+/** Souls price per pack tier at Kon's Kiosk (mirrors the server-side buy_pack prices). */
+export const PACK_PRICE: Record<PackTier, number> = {
+  bronze: 150,
+  silver: 350,
+  gold: 700,
+  ultra: 1400,
+  legend: 2800,
+};
+
+export interface BuyPackResult {
+  ok: boolean;
+  tier?: PackTier;
+  count?: number;
+  spent?: number;
+  souls?: number;
+  error?: string;
+}
+
+export async function buyPack(tier: PackTier, count = 1): Promise<BuyPackResult> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase.rpc as any)("buy_pack", { p_tier: tier, p_count: count });
+  if (error) return { ok: false, error: error.message };
+  const p = (data ?? {}) as { ok: boolean; tier?: PackTier; count?: number; spent?: number; souls?: number; error?: string };
+  if (!p.ok) return { ok: false, error: p.error };
+  return { ok: true, tier: p.tier, count: Number(p.count ?? 0), spent: Number(p.spent ?? 0), souls: Number(p.souls ?? 0) };
+}
+
 export interface OpenAllResult {
   ok: boolean;
   opened: number;
