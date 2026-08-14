@@ -9,6 +9,7 @@ import {
   PACK_COLOR,
   PACK_PRICE,
   PACK_LABEL,
+  packAlpha,
   buyPack,
   fetchMyPacks,
   openPack,
