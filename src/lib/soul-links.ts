@@ -75,6 +75,25 @@ export function dailyLinks(dayKey = serverDayKey()): DailyLinks {
   return { dayKey, puzzleNumber: (seed % VALID.length) + 1, puzzle, tiles };
 }
 
+/**
+ * A freely replayable board for Practice mode. Never touches the daily seed,
+ * daily progress, streaks or rewards.
+ */
+export function practiceLinks(nonce = Math.floor(Math.random() * 1e9)): DailyLinks {
+  const rnd = mulberry(hash(`practice:${nonce}`));
+  const index = Math.floor(rnd() * VALID.length);
+  const puzzle = VALID[index];
+  const tiles = shuffle(
+    puzzle.groups.flatMap((g, gi) =>
+      g.slugs.map((slug) => ({ slug, character: bySlug.get(slug)!, groupIndex: gi })),
+    ),
+    rnd,
+  );
+  return { dayKey: `practice:${nonce}`, puzzleNumber: index + 1, puzzle, tiles };
+}
+
+export const MAX_HINT_LEVEL = 3;
+
 export function groupOf(puzzle: LinkPuzzle, index: number): LinkGroup {
   return puzzle.groups[index];
 }
@@ -103,6 +122,8 @@ export interface LinksProgress {
   solved: number[];
   mistakes: number;
   hintUsed: boolean;
+  /** 0 = none revealed, up to MAX_HINT_LEVEL. */
+  hintLevel: number;
   finished: boolean;
   won: boolean;
   /** Order of guesses for the spoiler-free share grid. */
@@ -112,7 +133,7 @@ export interface LinksProgress {
 const KEY = "ba:soul-links";
 
 export function emptyProgress(dayKey: string): LinksProgress {
-  return { dayKey, solved: [], mistakes: 0, hintUsed: false, finished: false, won: false, history: [] };
+  return { dayKey, solved: [], mistakes: 0, hintUsed: false, hintLevel: 0, finished: false, won: false, history: [] };
 }
 
 export function loadProgress(dayKey: string): LinksProgress {
