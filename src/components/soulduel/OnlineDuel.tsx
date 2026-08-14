@@ -160,6 +160,23 @@ export function OnlineDuel({
     if (row?.status === "ended" && !row.state?.result) setNotice(t("sdOpponentLeft"));
   }, [row?.status, row?.state?.result, t]);
 
+  /* Resolve the opponent's public username once both seats are filled, and
+   * keep retrying briefly in case their profile row lands a moment later. */
+  useEffect(() => {
+    const id = row?.id;
+    if (!id || !row?.guest_id) return;
+    let alive = true;
+    let tries = 0;
+    const load = async () => {
+      const name = await fetchOpponentName(id);
+      if (!alive) return;
+      if (name) setOpponentName(name);
+      else if (++tries < 5) window.setTimeout(load, 1500);
+    };
+    void load();
+    return () => { alive = false; };
+  }, [row?.id, row?.guest_id]);
+
   const quit = useCallback(() => {
     if (row) void leaveMatch(row.id);
     onExit();
@@ -210,6 +227,7 @@ export function OnlineDuel({
           setState: (updater) => setStaged((s) => (s ? updater(s) : s)),
           onEndRound: endRound,
           waiting,
+          opponentName: opponentName ?? undefined,
         }}
       />
     </>
