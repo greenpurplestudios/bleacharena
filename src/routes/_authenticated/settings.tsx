@@ -17,6 +17,7 @@ import {
 } from "@/components/settings/SettingsRow";
 import { InstallAppRow } from "@/components/InstallAppRow";
 import { loadNavPrefs, saveNavPrefs, type NavPrefs } from "@/lib/nav-prefs";
+import { loadPerf, savePerf, type PerfPrefs } from "@/lib/perf";
 import { useSession } from "@/hooks/use-session";
 import { amIAdmin } from "@/lib/admin";
 import {
@@ -52,6 +53,7 @@ function SettingsPage() {
   const [notifBlocked, setNotifBlocked] = useState(false);
   const [notifSupported, setNotifSupported] = useState(false);
   const [navPrefs, setNavPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+  const [perf, setPerf] = useState<PerfPrefs>(() => loadPerf());
   const { isGuest } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -66,6 +68,19 @@ function SettingsPage() {
     floatingDesc: {
       en: "Drag it anywhere — it snaps to the nearest edge. When off, use the menu button in the header.",
       ar: "اسحبه لأي مكان — يلتصق بأقرب حافة. عند إيقافه استخدم زر القائمة في الأعلى.",
+    },
+  } as const;
+
+  const PERF_L = {
+    section: { en: "Performance", ar: "الأداء" },
+    lag: { en: "Lag Reducer", ar: "تقليل التقطيع" },
+    lagDesc: {
+      en: "Disables heavy visual effects such as the Legendary card shine, Mythic lightning and animated backgrounds.",
+      ar: "يعطّل التأثيرات البصرية الثقيلة مثل لمعان البطاقات الأسطورية وبرق الأسطورية والخلفيات المتحركة.",
+    },
+    warn: {
+      en: "The game may not look as good with this option enabled.",
+      ar: "قد لا تبدو اللعبة بنفس الجمال عند تفعيل هذا الخيار.",
     },
   } as const;
 
@@ -173,6 +188,21 @@ function SettingsPage() {
             value={prefs.haptics !== false}
             onChange={(v) => { update({ haptics: v }); if (v) haptic("press"); }}
           />
+        </SettingsSection>
+
+        <SettingsSection title={PERF_L.section[locale]}>
+          <SettingToggle
+            label={PERF_L.lag[locale]}
+            description={PERF_L.lagDesc[locale]}
+            value={perf.lagReducer}
+            onChange={(v) => {
+              const next = { ...perf, lagReducer: v };
+              setPerf(next);
+              savePerf(next);
+              play("tap");
+            }}
+          />
+          <p className="px-1 pb-1 text-[11px] text-accent">{PERF_L.warn[locale]}</p>
         </SettingsSection>
 
         <SettingsSection title={NAV_L.section[locale]}>

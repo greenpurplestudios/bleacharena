@@ -1324,6 +1324,10 @@ export type Database = {
         Args: { p_streak: number; p_user: string }
         Returns: Json
       }
+      admin_set_username: {
+        Args: { p_user: string; p_username: string }
+        Returns: Json
+      }
       admin_transfer_progress: {
         Args: { p_from: string; p_to: string }
         Returns: Json
@@ -1389,6 +1393,7 @@ export type Database = {
         }[]
       }
       duel_leave_match: { Args: { p_match: string }; Returns: undefined }
+      duel_opponent_username: { Args: { p_match: string }; Returns: string }
       duel_report_result: {
         Args: { p_match: string; p_winner: string }
         Returns: undefined

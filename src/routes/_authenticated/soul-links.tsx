@@ -98,10 +98,15 @@ function SoulLinksPage() {
   const progress = mode === "daily" ? dailyProgress : practiceProgress;
   if (!progress) return null;
 
+  const slugsOnBoard = new Map(board.tiles.map((tl) => [tl.slug, tl] as const));
   const solvedSlugs = new Set(
-    progress.solved.flatMap((gi) => board.puzzle.groups[gi].slugs),
+    progress.solved.flatMap((gi) => board.puzzle.groups[gi]?.slugs ?? []),
   );
-  const remaining = order.filter((s) => !solvedSlugs.has(s));
+  // `order` can briefly hold the previous board's slugs right after switching
+  // mode or reshuffling — always resolve against the board that is rendering.
+  const ordered = order.filter((s) => slugsOnBoard.has(s));
+  const remaining = (ordered.length === board.tiles.length ? ordered : board.tiles.map((tl) => tl.slug))
+    .filter((s) => !solvedSlugs.has(s));
   const finished = progress.finished;
 
   const toggle = (slug: string) => {
@@ -169,9 +174,9 @@ function SoulLinksPage() {
   };
 
   const useHint = () => {
-    if (progress.hintUsed || finished) return;
+    if (finished || progress.hintLevel >= MAX_HINT_LEVEL) return;
     play("tap");
-    commit({ ...progress, hintUsed: true });
+    commit({ ...progress, hintUsed: true, hintLevel: progress.hintLevel + 1 });
   };
 
   const hintGroup = board.puzzle.groups.find((_g, i) => !progress.solved.includes(i));
@@ -223,6 +228,7 @@ function SoulLinksPage() {
         <div className="mt-6 space-y-2">
           {progress.solved.map((gi) => {
             const grp = board.puzzle.groups[gi];
+              if (!grp) return null;
             const color = GROUP_COLOR[gi];
             return (
               <div
@@ -235,7 +241,7 @@ function SoulLinksPage() {
                 </div>
                 <div className="mt-1 text-xs text-foreground/85">
                   {grp.slugs
-                    .map((s) => board.tiles.find((t) => t.slug === s)?.character.name[locale])
+                    .map((s) => slugsOnBoard.get(s)?.character.name[locale] ?? s)
                     .join(" · ")}
                 </div>
               </div>
@@ -247,7 +253,8 @@ function SoulLinksPage() {
         {remaining.length > 0 && (
           <div className="mt-3 grid grid-cols-4 gap-2">
             {remaining.map((slug) => {
-              const tile = board.tiles.find((t) => t.slug === slug)!;
+              const tile = slugsOnBoard.get(slug);
+              if (!tile) return null;
               const on = selected.includes(slug);
               return (
                 <button

@@ -7,7 +7,7 @@ import { createDuel, resolveRound } from "@/lib/soul-duel/engine";
 import type { DuelState } from "@/lib/soul-duel/types";
 import {
   applyMoves, EMPTY_MOVES, extractMoves, fetchMatch, findMatch, leaveMatch, mirrorState,
-  pushInitialState, pushState, reportResult, setGuestWeapon, setHostReady, submitGuestMoves,
+  fetchOpponentName, pushInitialState, pushState, reportResult, setGuestWeapon, setHostReady, submitGuestMoves,
   subscribeMatch, type DuelMatchRow,
 } from "@/lib/soul-duel/pvp";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,7 @@ export function OnlineDuel({
   const [staged, setStaged] = useState<DuelState | null>(null);
   const [waiting, setWaiting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [opponentName, setOpponentName] = useState<string | null>(null);
 
   const stagedRef = useRef<DuelState | null>(null);
   const serverRef = useRef<DuelState | null>(null);
@@ -159,6 +160,23 @@ export function OnlineDuel({
     if (row?.status === "ended" && !row.state?.result) setNotice(t("sdOpponentLeft"));
   }, [row?.status, row?.state?.result, t]);
 
+  /* Resolve the opponent's public username once both seats are filled, and
+   * keep retrying briefly in case their profile row lands a moment later. */
+  useEffect(() => {
+    const id = row?.id;
+    if (!id || !row?.guest_id) return;
+    let alive = true;
+    let tries = 0;
+    const load = async () => {
+      const name = await fetchOpponentName(id);
+      if (!alive) return;
+      if (name) setOpponentName(name);
+      else if (++tries < 5) window.setTimeout(load, 1500);
+    };
+    void load();
+    return () => { alive = false; };
+  }, [row?.id, row?.guest_id]);
+
   const quit = useCallback(() => {
     if (row) void leaveMatch(row.id);
     onExit();
@@ -209,6 +227,7 @@ export function OnlineDuel({
           setState: (updater) => setStaged((s) => (s ? updater(s) : s)),
           onEndRound: endRound,
           waiting,
+          opponentName: opponentName ?? undefined,
         }}
       />
     </>
