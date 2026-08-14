@@ -7,8 +7,8 @@ import { play } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
 import { addXp } from "@/lib/progression";
 import {
-  GROUP_COLOR, MAX_MISTAKES, dailyLinks, evaluate, loadProgress, saveProgress,
-  shareText, type LinksProgress,
+  GROUP_COLOR, MAX_HINT_LEVEL, MAX_MISTAKES, dailyLinks, emptyProgress, evaluate,
+  loadProgress, practiceLinks, saveProgress, shareText, type LinksProgress,
 } from "@/lib/soul-links";
 
 const L = {
@@ -22,8 +22,13 @@ const L = {
   submit: { en: "Submit", ar: "تأكيد" },
   deselect: { en: "Deselect all", ar: "إلغاء التحديد" },
   shuffle: { en: "Shuffle", ar: "خلط" },
-  hint: { en: "Hint", ar: "تلميح" },
-  hintText: { en: "One group starts with:", ar: "إحدى المجموعات تبدأ بـ:" },
+  hint: { en: "Get help?", ar: "تحتاج مساعدة؟" },
+  hintLevel: { en: "Clue", ar: "تلميح" },
+  hintsDone: { en: "No more clues", ar: "لا مزيد من التلميحات" },
+  daily: { en: "Daily", ar: "اليومي" },
+  practice: { en: "Practice", ar: "تدريب" },
+  newBoard: { en: "New practice puzzle", ar: "لغز تدريب جديد" },
+  practiceNote: { en: "Practice does not affect your daily streak or rewards.", ar: "التدريب لا يؤثر على سلسلتك اليومية أو مكافآتك." },
   oneAway: { en: "One away…", ar: "على بُعد واحدة…" },
   wrong: { en: "Not a link.", ar: "ليست صلة." },
   won: { en: "Perfect reading of the threads!", ar: "قراءة مثالية للروابط!" },
@@ -54,20 +59,47 @@ export const Route = createFileRoute("/_authenticated/soul-links")({
 function SoulLinksPage() {
   const { locale, dir } = useI18n();
   const daily = useMemo(() => dailyLinks(), []);
-  const [progress, setProgress] = useState<LinksProgress | null>(null);
+  const [mode, setMode] = useState<"daily" | "practice">("daily");
+  const [nonce, setNonce] = useState(0);
+  const practice = useMemo(() => practiceLinks(nonce + 1), [nonce]);
+  const board = mode === "daily" ? daily : practice;
+  const [dailyProgress, setDailyProgress] = useState<LinksProgress | null>(null);
+  const [practiceProgress, setPracticeProgress] = useState<LinksProgress>(() => emptyProgress("practice"));
   const [selected, setSelected] = useState<string[]>([]);
   const [order, setOrder] = useState<string[]>(() => daily.tiles.map((t) => t.slug));
   const [flash, setFlash] = useState<"one" | "wrong" | null>(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => { setProgress(loadProgress(daily.dayKey)); }, [daily.dayKey]);
+  useEffect(() => { setDailyProgress(loadProgress(daily.dayKey)); }, [daily.dayKey]);
 
-  const commit = (next: LinksProgress) => { setProgress(next); saveProgress(next); };
+  // Keep the visible board in sync when switching mode or reshuffling practice.
+  useEffect(() => {
+    setOrder(board.tiles.map((t) => t.slug));
+    setSelected([]);
+  }, [board]);
 
+  const commit = (next: LinksProgress) => {
+    if (mode === "daily") { setDailyProgress(next); saveProgress(next); }
+    else setPracticeProgress(next);
+  };
+
+  const switchMode = (next: "daily" | "practice") => {
+    play("tap");
+    setMode(next);
+    if (next === "practice") setPracticeProgress(emptyProgress("practice"));
+  };
+
+  const newPractice = () => {
+    play("tap");
+    setPracticeProgress(emptyProgress("practice"));
+    setNonce((n) => n + 1);
+  };
+
+  const progress = mode === "daily" ? dailyProgress : practiceProgress;
   if (!progress) return null;
 
   const solvedSlugs = new Set(
-    progress.solved.flatMap((gi) => daily.puzzle.groups[gi].slugs),
+    progress.solved.flatMap((gi) => board.puzzle.groups[gi].slugs),
   );
   const remaining = order.filter((s) => !solvedSlugs.has(s));
   const finished = progress.finished;
@@ -85,9 +117,9 @@ function SoulLinksPage() {
   const submit = async () => {
     if (selected.length !== 4 || finished) return;
     const row = selected.map(
-      (s) => daily.tiles.find((t) => t.slug === s)?.groupIndex ?? 0,
+      (s) => board.tiles.find((t) => t.slug === s)?.groupIndex ?? 0,
     );
-    const res = evaluate(daily.puzzle, selected);
+    const res = evaluate(board.puzzle, selected);
     const history = [...progress.history, row];
 
     if (res && "solved" in res) {
@@ -99,8 +131,10 @@ function SoulLinksPage() {
       setSelected([]);
       if (won) {
         play("success");
-        const xp = Math.max(20, 60 - progress.mistakes * 10);
-        addXp(xp, "soul-links");
+        if (mode === "daily") {
+          const xp = Math.max(20, 60 - progress.mistakes * 10);
+          addXp(xp, "soul-links");
+        }
       }
       return;
     }
@@ -140,10 +174,10 @@ function SoulLinksPage() {
     commit({ ...progress, hintUsed: true });
   };
 
-  const hintGroup = daily.puzzle.groups.find((_g, i) => !progress.solved.includes(i));
+  const hintGroup = board.puzzle.groups.find((_g, i) => !progress.solved.includes(i));
 
   const share = async () => {
-    const text = shareText(daily, progress, locale);
+    const text = shareText(board, progress, locale);
     try {
       if (navigator.share) await navigator.share({ text });
       else { await navigator.clipboard.writeText(text); setCopied(true); }
@@ -164,14 +198,31 @@ function SoulLinksPage() {
             {L.howto[locale]}
           </p>
           <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-            {L.puzzle[locale]} #{daily.puzzleNumber}
+            {L.puzzle[locale]} #{board.puzzleNumber}
           </p>
+          <div className="mt-4 inline-flex rounded-xl border border-white/12 bg-card/60 p-1">
+            {(["daily", "practice"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => switchMode(m)}
+                className={`rounded-lg px-4 py-2 text-[11px] font-black uppercase tracking-widest rtl:tracking-normal ${
+                  mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {L[m][locale]}
+              </button>
+            ))}
+          </div>
+          {mode === "practice" ? (
+            <p className="mt-2 text-[10px] text-muted-foreground">{L.practiceNote[locale]}</p>
+          ) : null}
         </header>
 
         {/* solved bands */}
         <div className="mt-6 space-y-2">
           {progress.solved.map((gi) => {
-            const grp = daily.puzzle.groups[gi];
+            const grp = board.puzzle.groups[gi];
             const color = GROUP_COLOR[gi];
             return (
               <div
@@ -184,7 +235,7 @@ function SoulLinksPage() {
                 </div>
                 <div className="mt-1 text-xs text-foreground/85">
                   {grp.slugs
-                    .map((s) => daily.tiles.find((t) => t.slug === s)?.character.name[locale])
+                    .map((s) => board.tiles.find((t) => t.slug === s)?.character.name[locale])
                     .join(" · ")}
                 </div>
               </div>
@@ -196,7 +247,7 @@ function SoulLinksPage() {
         {remaining.length > 0 && (
           <div className="mt-3 grid grid-cols-4 gap-2">
             {remaining.map((slug) => {
-              const tile = daily.tiles.find((t) => t.slug === slug)!;
+              const tile = board.tiles.find((t) => t.slug === slug)!;
               const on = selected.includes(slug);
               return (
                 <button
@@ -254,13 +305,20 @@ function SoulLinksPage() {
           </p>
         ) : null}
 
-        {progress.hintUsed && hintGroup && !finished ? (
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            {L.hintText[locale]}{" "}
-            <span className="font-bold text-foreground">
-              {daily.tiles.find((t) => t.slug === hintGroup.slugs[0])?.character.name[locale]}
-            </span>
-          </p>
+        {progress.hintLevel > 0 && hintGroup && !finished ? (
+          <div className="mt-3 space-y-1.5">
+            {hintGroup.hints.slice(0, progress.hintLevel).map((h, i) => (
+              <p
+                key={i}
+                className="rounded-xl border border-accent/25 bg-accent/5 px-3 py-2 text-center text-xs text-foreground/85"
+              >
+                <span className="me-2 font-black uppercase tracking-widest text-accent">
+                  {L.hintLevel[locale]} {i + 1}
+                </span>
+                {h[locale]}
+              </p>
+            ))}
+          </div>
         ) : null}
 
         {!finished ? (
@@ -279,10 +337,12 @@ function SoulLinksPage() {
             <button
               type="button"
               onClick={useHint}
-              disabled={progress.hintUsed}
+              disabled={progress.hintLevel >= MAX_HINT_LEVEL}
               className="game-btn rounded-xl border border-accent/40 bg-accent/10 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-accent disabled:opacity-40 rtl:tracking-normal"
             >
-              {L.hint[locale]}
+              {progress.hintLevel >= MAX_HINT_LEVEL
+                ? L.hintsDone[locale]
+                : `${L.hint[locale]} (${progress.hintLevel}/${MAX_HINT_LEVEL})`}
             </button>
             <button
               type="button"
@@ -298,7 +358,9 @@ function SoulLinksPage() {
             <p className={`font-display text-lg font-black ${progress.won ? "text-emerald-400" : "text-accent"}`}>
               {(progress.won ? L.won : L.lost)[locale]}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">{L.done[locale]}</p>
+            {mode === "daily" ? (
+              <p className="mt-1 text-xs text-muted-foreground">{L.done[locale]}</p>
+            ) : null}
             <button
               type="button"
               onClick={share}
@@ -306,6 +368,15 @@ function SoulLinksPage() {
             >
               {copied ? L.copied[locale] : L.share[locale]}
             </button>
+            {mode === "practice" ? (
+              <button
+                type="button"
+                onClick={newPractice}
+                className="mt-3 block w-full rounded-xl border border-white/12 px-6 py-3 text-xs font-black uppercase tracking-widest rtl:tracking-normal"
+              >
+                {L.newBoard[locale]}
+              </button>
+            ) : null}
           </div>
         )}
       </main>
