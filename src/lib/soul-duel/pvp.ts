@@ -147,6 +147,13 @@ export async function fetchMatch(id: string): Promise<DuelMatchRow | null> {
   return (data as DuelMatchRow | null) ?? null;
 }
 
+/** The other player's public display name — nothing else about them. */
+export async function fetchOpponentName(matchId: string): Promise<string | null> {
+  const { data, error } = await db.rpc("duel_opponent_username", { p_match: matchId });
+  if (error) return null;
+  return (data as string | null) ?? null;
+}
+
 export async function leaveMatch(id: string): Promise<void> {
   await db.rpc("duel_leave_match", { p_match: id });
 }
