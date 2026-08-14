@@ -1,5 +1,5 @@
 import { useI18n } from "@/lib/i18n";
-import { PACK_LABEL, PACK_COLOR, PACK_DESCRIPTION, PACK_PRICE, type PackTier } from "@/lib/packs";
+import { PACK_LABEL, PACK_COLOR, PACK_DESCRIPTION, PACK_PRICE, packAlpha, packShade, type PackTier } from "@/lib/packs";
 import { play } from "@/lib/sound";
 
 const L = {
@@ -64,19 +64,19 @@ export function PackObject({
           aria-hidden
           className="absolute inset-0 overflow-hidden rounded-[1.1rem] border-2 transition-transform duration-300 group-hover:-translate-y-1"
           style={{
-            borderColor: `${color}cc`,
+            borderColor: packAlpha(color, 80),
             backgroundColor: "#0b0806",
-            backgroundImage: `linear-gradient(160deg, ${color} 0%, #1d150e 34%, #120d09 62%, ${color}88 100%)`,
+            backgroundImage: `linear-gradient(160deg, ${packShade(color, 55)} 0%, #1d150e 38%, #120d09 64%, ${packShade(color, 35)} 100%)`,
             boxShadow: empty
               ? "inset 0 0 40px rgba(0,0,0,0.85)"
-              : `0 18px 40px -14px ${color}aa, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -18px 30px -10px rgba(0,0,0,0.8)`,
+              : `0 18px 40px -14px ${packAlpha(color, 65)}, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -18px 30px -10px rgba(0,0,0,0.8)`,
           }}
         >
           {/* top foil crimp band */}
           <span
             className="absolute inset-x-0 top-0 h-6"
             style={{
-              background: `linear-gradient(180deg, ${color}dd, ${color}22)`,
+              background: `linear-gradient(180deg, ${packShade(color, 92)}, ${packShade(color, 18)})`,
               borderBottom: `1px dashed rgba(0,0,0,0.5)`,
             }}
           />
@@ -84,14 +84,14 @@ export function PackObject({
           <span
             className="absolute inset-x-0 bottom-0 h-6"
             style={{
-              background: `linear-gradient(0deg, ${color}dd, ${color}22)`,
+              background: `linear-gradient(0deg, ${packShade(color, 92)}, ${packShade(color, 18)})`,
               borderTop: `1px dashed rgba(0,0,0,0.5)`,
             }}
           />
           {/* diagonal sheen band */}
           <span
             className="absolute -inset-x-6 top-1/2 h-16 -translate-y-1/2 -rotate-12 opacity-30"
-            style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+            style={{ background: `linear-gradient(90deg, transparent, ${packAlpha(color, 60)}, transparent)` }}
           />
         </span>
         {/* Preserved kiosk logo: reiatsu seal over the tier kanji */}
@@ -138,7 +138,7 @@ export function PackObject({
         {count > 0 && (
         <span
           className="absolute -end-2 -top-2 flex h-8 min-w-8 items-center justify-center rounded-full border px-1.5 font-display text-sm font-black shadow-lg"
-          style={{ borderColor: `${color}aa`, background: `${color}dd`, color: "#0a0806" }}
+          style={{ borderColor: packAlpha(color, 70), background: color, color: "#0a0806" }}
         >
           ×{count}
         </span>
@@ -159,7 +159,7 @@ export function PackObject({
           onClick={() => { play("tap"); onOpenAll(); }}
           disabled={disabled}
           className="mt-2 rounded-lg border px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
-          style={{ borderColor: `${color}66`, background: `${color}1a`, color }}
+          style={{ borderColor: packAlpha(color, 45), background: packAlpha(color, 14), color }}
         >
           {L.openAll[locale]} ×{count}
         </button>
