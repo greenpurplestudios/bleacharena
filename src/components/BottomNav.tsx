@@ -78,31 +78,62 @@ export function BottomNav() {
 
   if (!show) return null;
 
+  const clashAt = { current: 0 } as { current: number };
+
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-background/85 backdrop-blur-xl"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-primary/25 bg-[#080604]/95 backdrop-blur-xl"
       style={{
         paddingBottom: "env(safe-area-inset-bottom)",
-        boxShadow: "0 -12px 30px -18px oklch(0 0 0 / 0.9), inset 0 1px 0 oklch(1 0 0 / 0.06)",
+        boxShadow:
+          "0 -18px 40px -22px oklch(0 0 0 / 1), inset 0 1px 0 color-mix(in oklab, var(--color-primary) 30%, transparent)",
       }}
     >
+      {/* Hot orange hairline along the top edge */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -top-px h-px"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-primary) 85%, transparent), transparent)",
+        }}
+      />
       <ul className="mx-auto grid max-w-lg grid-cols-5">
         {TABS.map((tab) => {
           const active = tab.match.some((m) => pathname === m || pathname.startsWith(`${m}/`));
+          const isPlay = tab.id === "play";
           const inner = (
             <>
               <span
                 aria-hidden
-                className={`flex h-7 w-12 items-center justify-center rounded-full font-display text-base transition-all ${
-                  active ? "bg-primary/20 text-primary" : "text-muted-foreground"
+                className={`flex items-center justify-center rounded-2xl font-display transition-all duration-200 ${
+                  isPlay
+                    ? "h-11 w-11 -mt-5 border border-primary/70 text-primary-foreground shadow-[0_10px_26px_-8px_oklch(0.75_0.18_55/0.85)] group-active:scale-90"
+                    : active
+                      ? "h-8 w-12 bg-primary/15 text-primary"
+                      : "h-8 w-12 text-muted-foreground"
                 }`}
+                style={
+                  isPlay
+                    ? {
+                        background:
+                          "linear-gradient(180deg, color-mix(in oklab, var(--color-primary) 92%, white 8%), color-mix(in oklab, var(--color-primary) 70%, black 30%))",
+                      }
+                    : undefined
+                }
               >
-                {tab.glyph}
+                {isPlay ? (
+                  <SwordsIcon className="h-6 w-6" />
+                ) : tab.id === "profile" ? (
+                  <UserIcon className="h-[18px] w-[18px]" />
+                ) : (
+                  <span className="text-base">{tab.glyph}</span>
+                )}
               </span>
               <span
                 className={`mt-0.5 block truncate text-[10px] font-bold uppercase tracking-wider ${
-                  active ? "text-primary" : "text-muted-foreground"
+                  isPlay ? "text-primary" : active ? "text-primary" : "text-muted-foreground"
                 }`}
               >
                 {tab.label[locale]}
@@ -110,11 +141,22 @@ export function BottomNav() {
             </>
           );
           return (
-            <li key={tab.id} className="min-w-0">
+            <li key={tab.id} className="group min-w-0">
               {tab.to ? (
                 <Link
                   to={tab.to}
-                  onClick={() => play("tap")}
+                  onClick={() => {
+                    if (isPlay) {
+                      const now = Date.now();
+                      if (now - clashAt.current > 700) {
+                        clashAt.current = now;
+                        playDuelClash();
+                        haptic("pack");
+                      }
+                    } else {
+                      play("tap");
+                    }
+                  }}
                   className="flex min-h-14 flex-col items-center justify-center px-1 py-1.5 transition-transform active:scale-90"
                 >
                   {inner}
