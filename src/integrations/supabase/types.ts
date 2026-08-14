@@ -1336,6 +1336,7 @@ export type Database = {
       award_fragments: { Args: { p_amount: number }; Returns: Json }
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
+      buy_pack: { Args: { p_count?: number; p_tier: string }; Returns: Json }
       cancel_join_request: { Args: { p_clan_id: string }; Returns: Json }
       claim_clan_weekly_reward: { Args: never; Returns: Json }
       claim_daily_login: { Args: never; Returns: Json }
