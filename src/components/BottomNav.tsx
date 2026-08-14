@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
@@ -57,6 +57,7 @@ export function BottomNav() {
   const { user } = useSession();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [prefs, setPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+  const clashAt = useRef(0);
 
   useEffect(() => {
     const onPrefs = (e: Event) => setPrefs((e as CustomEvent<NavPrefs>).detail ?? loadNavPrefs());
@@ -77,8 +78,6 @@ export function BottomNav() {
   }, [show]);
 
   if (!show) return null;
-
-  const clashAt = { current: 0 } as { current: number };
 
   return (
     <nav
