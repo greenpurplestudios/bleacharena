@@ -144,6 +144,18 @@ function AuthPage() {
     }
   };
 
+  const playAsGuest = async () => {
+    setBusy(true);
+    setMsg(null);
+    const res = await signInAsGuest();
+    setBusy(false);
+    if (!res.ok) {
+      setMsg({ kind: "err", text: res.error ?? "Guest sign-in failed" });
+      return;
+    }
+    nav({ to: safeRedirect(search.redirect) as "/" });
+  };
+
   return (
     <>
       <ReiatsuBackground count={22} />
@@ -154,13 +166,17 @@ function AuthPage() {
       <main className="relative z-10 mx-auto flex min-h-[calc(100vh-8rem)] max-w-md flex-col items-center justify-center px-4 pb-16" dir={dir}>
         <div className="w-full rounded-2xl border border-white/10 bg-card/70 p-6 shadow-2xl backdrop-blur-xl" style={{ animation: "card-in 0.5s ease-out both" }}>
           <h1 className="font-display text-2xl font-black text-glow-orange">
-            {mode === "signin" ? t("authSignIn") : mode === "signup" ? t("authCreateAccount") : t("authResetPassword")}
+            {guest ? L.upgradeTitle[locale]
+              : mode === "signin" ? t("authSignIn")
+              : mode === "signup" ? t("authCreateAccount") : t("authResetPassword")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {mode === "signin" ? t("authSignInDesc") : mode === "signup" ? t("authSignUpDesc") : t("authResetDesc")}
+            {guest ? L.upgradeDesc[locale]
+              : mode === "signin" ? t("authSignInDesc")
+              : mode === "signup" ? t("authSignUpDesc") : t("authResetDesc")}
           </p>
 
-          {mode !== "reset" && (
+          {!guest && mode !== "reset" && (
             <button
               type="button"
               onClick={google}
@@ -172,7 +188,7 @@ function AuthPage() {
             </button>
           )}
 
-          {mode !== "reset" && (
+          {!guest && mode !== "reset" && (
             <div className="my-4 flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
               <span className="h-px flex-1 bg-white/10" /> {t("or")} <span className="h-px flex-1 bg-white/10" />
             </div>
@@ -189,14 +205,14 @@ function AuthPage() {
               className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm focus:border-primary focus:outline-none"
               placeholder="you@example.com"
             />
-            {mode !== "reset" && (
+            {(guest || mode !== "reset") && (
               <>
                 <label className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{t("password")}</label>
                 <input
                   type="password"
                   required
                   minLength={6}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                  autoComplete={guest || mode === "signup" ? "new-password" : "current-password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm focus:border-primary focus:outline-none"
@@ -204,7 +220,7 @@ function AuthPage() {
                 />
               </>
             )}
-            {mode === "signin" && (
+            {!guest && mode === "signin" && (
               <label className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
                 {t("authRememberMe")}
@@ -218,10 +234,34 @@ function AuthPage() {
               disabled={busy}
               className="glow-orange mt-2 rounded-xl bg-primary px-5 py-3 font-display text-sm font-bold uppercase tracking-widest text-primary-foreground disabled:opacity-50"
             >
-              {busy ? "…" : mode === "signin" ? t("authSignIn") : mode === "signup" ? t("authCreateAccount") : t("authSendResetLink")}
+              {busy ? "…"
+                : guest ? L.upgrade[locale]
+                : mode === "signin" ? t("authSignIn")
+                : mode === "signup" ? t("authCreateAccount") : t("authSendResetLink")}
             </button>
           </form>
 
+          {!guest && (
+            <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <button
+                type="button"
+                onClick={playAsGuest}
+                disabled={busy}
+                className="w-full rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 font-display text-sm font-black uppercase tracking-widest text-accent transition-colors hover:bg-accent/20 disabled:opacity-50"
+              >
+                {L.guest[locale]}
+              </button>
+              <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{L.guestDesc[locale]}</p>
+            </div>
+          )}
+
+          {guest ? (
+            <div className="mt-5 text-center">
+              <Link to="/home" className="text-xs text-muted-foreground hover:text-foreground">
+                {L.keepPlaying[locale]}
+              </Link>
+            </div>
+          ) : (
           <div className="mt-5 flex flex-wrap justify-between gap-3 text-xs text-muted-foreground">
             {mode !== "signin" ? (
               <button type="button" onClick={() => { setMode("signin"); setMsg(null); }} className="hover:text-foreground">{t("authHaveAccount")}</button>
@@ -234,6 +274,7 @@ function AuthPage() {
               <button type="button" onClick={() => { setMode("signin"); setMsg(null); }} className="hover:text-foreground">{t("authBackToSignIn")}</button>
             )}
           </div>
+          )}
         </div>
       </main>
     </>
