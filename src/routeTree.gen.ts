@@ -14,9 +14,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthResetRouteImport } from './routes/auth.reset'
-import { Route as AuthenticatedStoreRouteImport } from './routes/_authenticated/store'
 import { Route as AuthenticatedSoulLinksRouteImport } from './routes/_authenticated/soul-links'
 import { Route as AuthenticatedSoulDuelRouteImport } from './routes/_authenticated/soul-duel'
+import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
@@ -64,11 +64,6 @@ const AuthResetRoute = AuthResetRouteImport.update({
   path: '/reset',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthenticatedStoreRoute = AuthenticatedStoreRouteImport.update({
-  id: '/store',
-  path: '/store',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedSoulLinksRoute = AuthenticatedSoulLinksRouteImport.update({
   id: '/soul-links',
   path: '/soul-links',
@@ -77,6 +72,11 @@ const AuthenticatedSoulLinksRoute = AuthenticatedSoulLinksRouteImport.update({
 const AuthenticatedSoulDuelRoute = AuthenticatedSoulDuelRouteImport.update({
   id: '/soul-duel',
   path: '/soul-duel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedShopRoute = AuthenticatedShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -218,9 +218,9 @@ export interface FileRoutesByFullPath {
   '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shop': typeof AuthenticatedShopRoute
   '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/soul-links': typeof AuthenticatedSoulLinksRoute
-  '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
@@ -249,9 +249,9 @@ export interface FileRoutesByTo {
   '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shop': typeof AuthenticatedShopRoute
   '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/soul-links': typeof AuthenticatedSoulLinksRoute
-  '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
@@ -282,9 +282,9 @@ export interface FileRoutesById {
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/_authenticated/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/_authenticated/soul-links': typeof AuthenticatedSoulLinksRoute
-  '/_authenticated/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/_authenticated/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
@@ -315,9 +315,9 @@ export interface FileRouteTypes {
     | '/rewards'
     | '/rivals'
     | '/settings'
+    | '/shop'
     | '/soul-duel'
     | '/soul-links'
-    | '/store'
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile/'
@@ -346,9 +346,9 @@ export interface FileRouteTypes {
     | '/rewards'
     | '/rivals'
     | '/settings'
+    | '/shop'
     | '/soul-duel'
     | '/soul-links'
-    | '/store'
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile'
@@ -378,9 +378,9 @@ export interface FileRouteTypes {
     | '/_authenticated/rewards'
     | '/_authenticated/rivals'
     | '/_authenticated/settings'
+    | '/_authenticated/shop'
     | '/_authenticated/soul-duel'
     | '/_authenticated/soul-links'
-    | '/_authenticated/store'
     | '/auth/reset'
     | '/_authenticated/profile/$userId'
     | '/_authenticated/profile/'
@@ -430,13 +430,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthResetRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_authenticated/store': {
-      id: '/_authenticated/store'
-      path: '/store'
-      fullPath: '/store'
-      preLoaderRoute: typeof AuthenticatedStoreRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/soul-links': {
       id: '/_authenticated/soul-links'
       path: '/soul-links'
@@ -449,6 +442,13 @@ declare module '@tanstack/react-router' {
       path: '/soul-duel'
       fullPath: '/soul-duel'
       preLoaderRoute: typeof AuthenticatedSoulDuelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/shop': {
+      id: '/_authenticated/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof AuthenticatedShopRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -629,9 +629,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedShopRoute: typeof AuthenticatedShopRoute
   AuthenticatedSoulDuelRoute: typeof AuthenticatedSoulDuelRoute
   AuthenticatedSoulLinksRoute: typeof AuthenticatedSoulLinksRoute
-  AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
   AuthenticatedProfileUserIdRoute: typeof AuthenticatedProfileUserIdRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
@@ -657,9 +657,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedShopRoute: AuthenticatedShopRoute,
   AuthenticatedSoulDuelRoute: AuthenticatedSoulDuelRoute,
   AuthenticatedSoulLinksRoute: AuthenticatedSoulLinksRoute,
-  AuthenticatedStoreRoute: AuthenticatedStoreRoute,
   AuthenticatedProfileUserIdRoute: AuthenticatedProfileUserIdRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }

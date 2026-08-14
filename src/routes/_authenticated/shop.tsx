@@ -13,7 +13,7 @@ import { useSouls } from "@/hooks/use-souls";
 import { play } from "@/lib/sound";
 import uraharaArt from "@/assets/brand/urahara_shop.jpeg.asset.json";
 
-export const Route = createFileRoute("/_authenticated/store")({
+export const Route = createFileRoute("/_authenticated/shop")({
   head: () => ({
     meta: [
       { title: "Urahara's Shop — Bleach Arena" },
