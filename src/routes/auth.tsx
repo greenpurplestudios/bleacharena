@@ -7,6 +7,7 @@ import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { BleachLogo } from "@/components/BleachLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useI18n } from "@/lib/i18n";
+import { signInAsGuest, upgradeGuest, isGuestUser } from "@/lib/guest";
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
@@ -30,6 +31,25 @@ export const Route = createFileRoute("/auth")({
 
 type Mode = "signin" | "signup" | "reset";
 
+const L = {
+  guest: { en: "Play as Guest", ar: "العب كضيف" },
+  guestDesc: {
+    en: "Jump straight in. Your progress is saved on this device and can be turned into a full account any time.",
+    ar: "ابدأ اللعب فورًا. يتم حفظ تقدمك على هذا الجهاز ويمكنك تحويله إلى حساب كامل في أي وقت.",
+  },
+  upgradeTitle: { en: "Save your guest progress", ar: "احفظ تقدّمك كضيف" },
+  upgradeDesc: {
+    en: "You're playing as a guest. Add an email and password to keep everything on any device.",
+    ar: "أنت تلعب كضيف. أضف بريدًا وكلمة مرور للاحتفاظ بكل شيء على أي جهاز.",
+  },
+  upgrade: { en: "Save account", ar: "حفظ الحساب" },
+  upgraded: {
+    en: "Almost there — check your email to confirm the address. Your progress is already linked.",
+    ar: "بقي القليل — تحقق من بريدك لتأكيد العنوان. تقدّمك مرتبط بالفعل.",
+  },
+  keepPlaying: { en: "Keep playing", ar: "متابعة اللعب" },
+} as const;
+
 function safeRedirect(raw: string | undefined): string {
   if (!raw) return "/home";
   try {
@@ -43,7 +63,7 @@ function safeRedirect(raw: string | undefined): string {
 }
 
 function AuthPage() {
-  const { t, dir } = useI18n();
+  const { t, dir, locale } = useI18n();
   const nav = useNavigate();
   const search = useSearch({ from: "/auth" });
   const [mode, setMode] = useState<Mode>(search.mode ?? "signin");
@@ -52,13 +72,16 @@ function AuthPage() {
   const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "err" | "ok"; text: string } | null>(null);
+  const [guest, setGuest] = useState(false);
 
-  // Redirect away if already signed in
+  // Redirect away if already signed in (guests stay so they can upgrade).
   useEffect(() => {
     let cancelled = false;
     supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return;
-      if (data.session) nav({ to: safeRedirect(search.redirect) as "/" });
+      if (!data.session) return;
+      if (isGuestUser(data.session.user)) { setGuest(true); return; }
+      nav({ to: safeRedirect(search.redirect) as "/" });
     });
     return () => { cancelled = true; };
   }, [nav, search.redirect]);
@@ -68,7 +91,11 @@ function AuthPage() {
     setBusy(true);
     setMsg(null);
     try {
-      if (mode === "signin") {
+      if (guest) {
+        const res = await upgradeGuest(email, password);
+        if (!res.ok) throw new Error(res.error);
+        setMsg({ kind: "ok", text: L.upgraded[locale] });
+      } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         // Remember Me: if unchecked, drop the persisted session on tab close by
