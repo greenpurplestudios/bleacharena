@@ -7,6 +7,7 @@ import {
   amIAdmin, searchPlayers, getPlayer, fetchAuditLog,
   adminGrantSouls, adminGrantXp, adminGrantPack, adminGrantCharacter,
   adminGrantItem, adminUnlockAchievement, adminSetStreak, adminTransferProgress,
+  adminSetUsername,
   type AdminPlayer, type AdminPlayerDetail, type AuditRow,
 } from "@/lib/admin";
 
@@ -35,6 +36,7 @@ const L = {
   item: { en: "Store item ID", ar: "معرّف عنصر المتجر" },
   achievement: { en: "Achievement ID", ar: "معرّف الإنجاز" },
   streak: { en: "Daily streak", ar: "سلسلة يومية" },
+  username: { en: "Change username", ar: "تغيير اسم اللاعب" },
   transfer: { en: "Transfer progress from (user id)", ar: "نقل التقدّم من (معرّف)" },
   apply: { en: "Apply", ar: "تطبيق" },
   audit: { en: "Recent admin actions", ar: "إجراءات المشرف الأخيرة" },
@@ -169,6 +171,15 @@ function AdminPage() {
                 onRun={(v) => run(() => adminGrantXp(selected.user_id, v))} />
               <NumberAction label={L.streak[locale]} placeholder="7" disabled={busy}
                 onRun={(v) => run(() => adminSetStreak(selected.user_id, v))} />
+              <TextAction label={L.username[locale]} placeholder={selected.username ?? "NewName"} disabled={busy}
+                onRun={(v) => run(async () => {
+                  const res = await adminSetUsername(selected.user_id, v);
+                  if (res.ok) {
+                    setSelected((s) => (s ? { ...s, username: v } : s));
+                    setPlayers((ps) => ps.map((p) => (p.user_id === selected.user_id ? { ...p, username: v } : p)));
+                  }
+                  return res;
+                })} />
               <TextAction label={L.pack[locale]} placeholder="bronze | silver | gold | legend" disabled={busy}
                 onRun={(v) => run(() => adminGrantPack(selected.user_id, v, 1))} />
               <TextAction label={L.character[locale]} placeholder="ichigo" disabled={busy}
