@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthResetRouteImport } from './routes/auth.reset'
+import { Route as AuthenticatedStoreRouteImport } from './routes/_authenticated/store'
 import { Route as AuthenticatedSoulLinksRouteImport } from './routes/_authenticated/soul-links'
 import { Route as AuthenticatedSoulDuelRouteImport } from './routes/_authenticated/soul-duel'
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
@@ -63,6 +64,11 @@ const AuthResetRoute = AuthResetRouteImport.update({
   id: '/reset',
   path: '/reset',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedStoreRoute = AuthenticatedStoreRouteImport.update({
+  id: '/store',
+  path: '/store',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSoulLinksRoute = AuthenticatedSoulLinksRouteImport.update({
   id: '/soul-links',
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof AuthenticatedShopRoute
   '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/soul-links': typeof AuthenticatedSoulLinksRoute
+  '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
@@ -252,6 +259,7 @@ export interface FileRoutesByTo {
   '/shop': typeof AuthenticatedShopRoute
   '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/soul-links': typeof AuthenticatedSoulLinksRoute
+  '/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/_authenticated/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/_authenticated/soul-links': typeof AuthenticatedSoulLinksRoute
+  '/_authenticated/store': typeof AuthenticatedStoreRoute
   '/auth/reset': typeof AuthResetRoute
   '/_authenticated/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
@@ -318,6 +327,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/soul-duel'
     | '/soul-links'
+    | '/store'
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile/'
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/soul-duel'
     | '/soul-links'
+    | '/store'
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/_authenticated/shop'
     | '/_authenticated/soul-duel'
     | '/_authenticated/soul-links'
+    | '/_authenticated/store'
     | '/auth/reset'
     | '/_authenticated/profile/$userId'
     | '/_authenticated/profile/'
@@ -429,6 +441,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/reset'
       preLoaderRoute: typeof AuthResetRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/store': {
+      id: '/_authenticated/store'
+      path: '/store'
+      fullPath: '/store'
+      preLoaderRoute: typeof AuthenticatedStoreRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/soul-links': {
       id: '/_authenticated/soul-links'
@@ -632,6 +651,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
   AuthenticatedSoulDuelRoute: typeof AuthenticatedSoulDuelRoute
   AuthenticatedSoulLinksRoute: typeof AuthenticatedSoulLinksRoute
+  AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
   AuthenticatedProfileUserIdRoute: typeof AuthenticatedProfileUserIdRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
 }
@@ -660,6 +680,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedShopRoute: AuthenticatedShopRoute,
   AuthenticatedSoulDuelRoute: AuthenticatedSoulDuelRoute,
   AuthenticatedSoulLinksRoute: AuthenticatedSoulLinksRoute,
+  AuthenticatedStoreRoute: AuthenticatedStoreRoute,
   AuthenticatedProfileUserIdRoute: AuthenticatedProfileUserIdRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
 }
