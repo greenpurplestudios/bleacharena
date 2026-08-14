@@ -1,11 +1,12 @@
 import { useI18n } from "@/lib/i18n";
-import { PACK_LABEL, PACK_COLOR, PACK_DESCRIPTION, type PackTier } from "@/lib/packs";
+import { PACK_LABEL, PACK_COLOR, PACK_DESCRIPTION, PACK_PRICE, type PackTier } from "@/lib/packs";
 import { play } from "@/lib/sound";
 
 const L = {
   open: { en: "Tear open", ar: "افتح" },
   openAll: { en: "Open all", ar: "افتح الكل" },
   empty: { en: "Empty", ar: "فارغة" },
+  buy: { en: "Buy", ar: "شراء" },
 };
 
 /** A rune/kanji sigil embossed on the pack foil, per tier. */
@@ -24,6 +25,8 @@ export function PackObject({
   onOpen,
   onOpenAll,
   index = 0,
+  onBuy,
+  canAfford = true,
 }: {
   tier: PackTier;
   count: number;
@@ -31,6 +34,8 @@ export function PackObject({
   onOpen: () => void;
   onOpenAll?: () => void;
   index?: number;
+  onBuy?: () => void;
+  canAfford?: boolean;
 }) {
   const { locale } = useI18n();
   const color = PACK_COLOR[tier];
