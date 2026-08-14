@@ -38,6 +38,7 @@ import { Route as AuthenticatedClansRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCharactersRouteImport } from './routes/_authenticated/characters'
 import { Route as AuthenticatedBleachdleRouteImport } from './routes/_authenticated/bleachdle'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileUserIdRouteImport } from './routes/_authenticated/profile.$userId'
@@ -187,6 +188,11 @@ const AuthenticatedBleachdleRoute = AuthenticatedBleachdleRouteImport.update({
   path: '/bleachdle',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAchievementsRoute =
   AuthenticatedAchievementsRouteImport.update({
     id: '/achievements',
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/chat': typeof AuthenticatedChatRoute
@@ -244,6 +251,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/chat': typeof AuthenticatedChatRoute
@@ -279,6 +287,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bleachdle': typeof AuthenticatedBleachdleRoute
   '/_authenticated/characters': typeof AuthenticatedCharactersRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
@@ -314,6 +323,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/achievements'
+    | '/admin'
     | '/bleachdle'
     | '/characters'
     | '/chat'
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/achievements'
+    | '/admin'
     | '/bleachdle'
     | '/characters'
     | '/chat'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/_authenticated/achievements'
+    | '/_authenticated/admin'
     | '/_authenticated/bleachdle'
     | '/_authenticated/characters'
     | '/_authenticated/chat'
@@ -622,6 +634,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBleachdleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/achievements': {
       id: '/_authenticated/achievements'
       path: '/achievements'
@@ -648,6 +667,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAchievementsRoute: typeof AuthenticatedAchievementsRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBleachdleRoute: typeof AuthenticatedBleachdleRoute
   AuthenticatedCharactersRoute: typeof AuthenticatedCharactersRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
@@ -678,6 +698,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAchievementsRoute: AuthenticatedAchievementsRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBleachdleRoute: AuthenticatedBleachdleRoute,
   AuthenticatedCharactersRoute: AuthenticatedCharactersRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
