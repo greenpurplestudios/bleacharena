@@ -219,9 +219,17 @@ export function DuelBoard({
           >
             {t("sdLeave")}
           </button>
-          <p className="font-display text-xs font-black uppercase tracking-[0.28em] rtl:tracking-normal">
-            {t("sdRound")} {Math.min(state.round, MAX_ROUNDS)} / {MAX_ROUNDS}
-          </p>
+          <div className="min-w-0 text-center">
+            <p className="font-display text-xs font-black uppercase tracking-[0.28em] rtl:tracking-normal">
+              {t("sdRound")} {Math.min(state.round, MAX_ROUNDS)} / {MAX_ROUNDS}
+            </p>
+            {online ? (
+              <p className="mt-0.5 truncate text-[10px] font-bold text-muted-foreground">
+                <span className="me-1 opacity-70">VS</span>
+                <span className="text-foreground/90">{online.opponentName ?? "…"}</span>
+              </p>
+            ) : null}
+          </div>
           <p className="flex items-baseline gap-1 font-display font-black text-accent">
             <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground rtl:tracking-normal">
               {t("sdReiatsu")}
