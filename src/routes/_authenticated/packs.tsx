@@ -56,6 +56,7 @@ function PacksPage() {
   const [bulkTearing, setBulkTearing] = useState<PackTier | null>(null);
   const [opening, setOpening] = useState<PackTier | null>(null);
   const [result, setResult] = useState<OpenPackResult | null>(null);
+  const [lastTier, setLastTier] = useState<PackTier | null>(null);
   const [bulk, setBulk] = useState<{ tier: PackTier; opened: number; souls: number; results: OpenPackResult[] } | null>(null);
   const { refresh: refreshSouls } = useSouls();
   const pendingRef = useRef<Promise<unknown> | null>(null);
@@ -105,6 +106,7 @@ function PacksPage() {
     if (countFor(tier) < 1) return;
     setOpening(tier);
     setResult(null);
+    setLastTier(tier);
     setTearing(tier);
     // Fire the RPC immediately so the tear gesture doesn't add latency.
     pendingRef.current = openPack(tier);
@@ -235,7 +237,7 @@ function PacksPage() {
           className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 px-4 backdrop-blur-md"
           onClick={result ? closeResult : () => setBulk(null)}
         >
-          {result && <PackResultCard result={result} onClose={closeResult} />}
+          {result && <PackResultCard result={result} tier={lastTier ?? "bronze"} onClose={closeResult} />}
           {bulk && <BulkResultCard bulk={bulk} onClose={() => setBulk(null)} />}
         </div>
       )}
@@ -313,9 +315,9 @@ function BulkResultCard({ bulk, onClose }: {
   );
 }
 
-function PackResultCard({ result, onClose }: { result: OpenPackResult; onClose: () => void }) {
+function PackResultCard({ result, tier, onClose }: { result: OpenPackResult; tier: PackTier; onClose: () => void }) {
   const { t } = useI18n();
-  const [revealed, setRevealed] = useState(() => loadPrefs().flipReveal === false);
+  const color = PACK_COLOR[tier];
   const char = useMemo(
     () => characters.find((c) => c.id === result.characterId) ?? null,
     [result.characterId],
@@ -337,39 +339,46 @@ function PackResultCard({ result, onClose }: { result: OpenPackResult; onClose: 
       </div>
     );
   }
+  const rc = RARITY_COLOR[result.rarity];
   return (
-    <div
-      onClick={(e) => e.stopPropagation()}
-      className="w-full max-w-xs text-center"
-      style={{ animation: "card-in 0.45s ease-out both" }}
-    >
-      <CharacterCard
-        character={char}
-        faceDown
-        onReveal={() => setRevealed(true)}
-        className="w-full"
-      />
-      {revealed ? (
-        <>
-          {result.duplicate ? (
-            <p className="mt-4 text-sm text-accent">
-              {t("duplicate")} — +{result.soulsAwarded} {t("souls")}
-            </p>
-          ) : (
-            <p className="mt-4 text-sm text-emerald-400">{t("newCharacter")}</p>
-          )}
-          <button
-            onClick={onClose}
-            className="glow-orange mt-3 w-full rounded-xl bg-primary px-5 py-3 font-display text-sm font-black uppercase tracking-widest text-primary-foreground"
-          >
-            {t("keepOpening")}
-          </button>
-        </>
-      ) : (
-        <p className="mt-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-          {t("tapToOpen")}
+    <div onClick={(e) => e.stopPropagation()} className="w-full max-w-xs text-center">
+      {/* The card physically rises out of the torn pack shell. */}
+      <div className="relative">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-4 bottom-[-6%] h-24 rounded-b-[1.1rem] border-x border-b"
+          style={{
+            borderColor: `${color}88`,
+            background: `linear-gradient(180deg, #1c1712 0%, #0d0a08 100%)`,
+            boxShadow: `0 18px 40px -14px ${color}`,
+            animation: "pack-shell-open 0.7s ease-out 0.25s both",
+          }}
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: `radial-gradient(circle at 50% 70%, ${rc}88 0%, transparent 65%)`,
+            animation: "pack-burst 0.7s ease-out both",
+          }}
+        />
+        <div style={{ animation: "pack-card-rise 0.75s cubic-bezier(0.2,0.8,0.25,1) both" }}>
+          <CharacterCard character={char} className="w-full" />
+        </div>
+      </div>
+      {result.duplicate ? (
+        <p className="mt-4 text-sm text-accent">
+          {t("duplicate")} — +{result.soulsAwarded} {t("souls")}
         </p>
+      ) : (
+        <p className="mt-4 text-sm text-emerald-400">{t("newCharacter")}</p>
       )}
+      <button
+        onClick={onClose}
+        className="glow-orange mt-3 w-full rounded-xl bg-primary px-5 py-3 font-display text-sm font-black uppercase tracking-widest text-primary-foreground"
+      >
+        {t("keepOpening")}
+      </button>
     </div>
   );
 }
