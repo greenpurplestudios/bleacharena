@@ -107,9 +107,10 @@ export function BottomNav() {
             <>
               <span
                 aria-hidden
-                className={`flex items-center justify-center rounded-2xl font-display transition-all duration-200 ${
+                key={isPlay ? `p-${clash}` : undefined}
+                className={`relative flex items-center justify-center rounded-2xl font-display transition-all duration-200 ${
                   isPlay
-                    ? "h-11 w-11 -mt-5 border border-primary/70 text-primary-foreground shadow-[0_10px_26px_-8px_oklch(0.75_0.18_55/0.85)] group-active:scale-90"
+                    ? `h-11 w-11 -mt-5 border border-primary/70 text-primary-foreground shadow-[0_10px_26px_-8px_oklch(0.75_0.18_55/0.85)] group-active:scale-90 ${clash ? "play-clash" : ""}`
                     : active
                       ? "h-8 w-12 bg-primary/15 text-primary"
                       : "h-8 w-12 text-muted-foreground"
@@ -124,7 +125,15 @@ export function BottomNav() {
                 }
               >
                 {isPlay ? (
-                  <SwordsIcon className="h-6 w-6" />
+                  <>
+                    <SwordsIcon className="h-6 w-6" />
+                    {clash ? (
+                      <span
+                        aria-hidden
+                        className="play-clash-ring pointer-events-none absolute inset-0 rounded-2xl border-2 border-primary/80"
+                      />
+                    ) : null}
+                  </>
                 ) : tab.id === "profile" ? (
                   <UserIcon className="h-[18px] w-[18px]" />
                 ) : (
