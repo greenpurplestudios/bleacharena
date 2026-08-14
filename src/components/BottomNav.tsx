@@ -57,6 +57,7 @@ export function BottomNav() {
   const { user } = useSession();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [prefs, setPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+  const [clash, setClash] = useState(0);
   const clashAt = useRef(0);
 
   useEffect(() => {
@@ -151,6 +152,7 @@ export function BottomNav() {
                         clashAt.current = now;
                         playDuelClash();
                         haptic("pack");
+                        setClash((n) => n + 1);
                       }
                     } else {
                       play("tap");
