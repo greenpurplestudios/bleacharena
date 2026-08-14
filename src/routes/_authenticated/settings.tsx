@@ -71,8 +71,6 @@ function SettingsPage() {
     },
   } as const;
 
-  const GUEST_L = {
-
   const PERF_L = {
     section: { en: "Performance", ar: "الأداء" },
     lag: { en: "Lag Reducer", ar: "تقليل التقطيع" },
@@ -86,7 +84,7 @@ function SettingsPage() {
     },
   } as const;
 
-  const GUEST_L_UNUSED = {
+  const GUEST_L = {
     section: { en: "Guest account", ar: "حساب الضيف" },
     label: { en: "You're playing as a guest", ar: "أنت تلعب كضيف" },
     desc: {
