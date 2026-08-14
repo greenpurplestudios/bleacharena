@@ -51,7 +51,9 @@ export function PackObject({
         onClick={() => { if (!empty && !disabled) { play("tap"); onOpen(); } }}
         disabled={empty || disabled}
         aria-label={`${PACK_LABEL[tier][locale]} — ${empty ? L.empty[locale] : L.open[locale]}`}
-        className="relative h-52 w-36 shrink-0 select-none rounded-[1.1rem] outline-none transition-transform duration-300 focus-visible:ring-2 focus-visible:ring-white/40 disabled:cursor-not-allowed disabled:opacity-35 sm:h-60 sm:w-40"
+        className={`relative h-52 w-36 shrink-0 select-none rounded-[1.1rem] outline-none transition-transform duration-300 focus-visible:ring-2 focus-visible:ring-white/40 disabled:cursor-not-allowed sm:h-60 sm:w-40 ${
+          empty ? "saturate-[0.55] brightness-[0.8]" : ""
+        }`}
         style={{
           animation: empty ? undefined : "pack-float 3.6s ease-in-out infinite",
           animationDelay: `${index * 0.3}s`,
@@ -64,7 +66,7 @@ export function PackObject({
           style={{
             borderColor: `${color}cc`,
             backgroundColor: "#0b0806",
-            backgroundImage: `linear-gradient(160deg, ${color}55 0%, #17110c 38%, #0f0b08 62%, ${color}33 100%)`,
+            backgroundImage: `linear-gradient(160deg, ${color} 0%, #1d150e 34%, #120d09 62%, ${color}88 100%)`,
             boxShadow: empty
               ? "inset 0 0 40px rgba(0,0,0,0.85)"
               : `0 18px 40px -14px ${color}aa, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -18px 30px -10px rgba(0,0,0,0.8)`,
@@ -133,12 +135,14 @@ export function PackObject({
           </span>
         )}
         {/* Count badge */}
+        {count > 0 && (
         <span
           className="absolute -end-2 -top-2 flex h-8 min-w-8 items-center justify-center rounded-full border px-1.5 font-display text-sm font-black shadow-lg"
           style={{ borderColor: `${color}aa`, background: `${color}dd`, color: "#0a0806" }}
         >
           ×{count}
         </span>
+        )}
       </button>
 
       <div className="mt-3 text-center">
