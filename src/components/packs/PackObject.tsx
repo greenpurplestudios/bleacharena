@@ -57,52 +57,68 @@ export function PackObject({
           animationDelay: `${index * 0.3}s`,
         }}
       >
-        {/* Foil body */}
+        {/* Solid pack body — opaque card stock, never see-through */}
         <span
           aria-hidden
-          className="absolute inset-0 rounded-[1.1rem] border transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-1"
+          className="absolute inset-0 overflow-hidden rounded-[1.1rem] border-2 transition-transform duration-300 group-hover:-translate-y-1"
           style={{
-            borderColor: `${color}88`,
-            background: `linear-gradient(155deg, ${color}33 0%, #14100c 32%, #1c1712 55%, ${color}22 78%, #0d0a08 100%)`,
+            borderColor: `${color}cc`,
+            backgroundColor: "#0b0806",
+            backgroundImage: `linear-gradient(160deg, ${color}55 0%, #17110c 38%, #0f0b08 62%, ${color}33 100%)`,
             boxShadow: empty
-              ? "inset 0 0 30px rgba(0,0,0,0.6)"
-              : `0 14px 34px -12px ${color}99, inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -12px 24px -8px rgba(0,0,0,0.55)`,
+              ? "inset 0 0 40px rgba(0,0,0,0.85)"
+              : `0 18px 40px -14px ${color}aa, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -18px 30px -10px rgba(0,0,0,0.8)`,
           }}
-        />
-        {/* Torn crimp edges */}
+        >
+          {/* top foil crimp band */}
+          <span
+            className="absolute inset-x-0 top-0 h-6"
+            style={{
+              background: `linear-gradient(180deg, ${color}dd, ${color}22)`,
+              borderBottom: `1px dashed rgba(0,0,0,0.5)`,
+            }}
+          />
+          {/* bottom foil crimp band */}
+          <span
+            className="absolute inset-x-0 bottom-0 h-6"
+            style={{
+              background: `linear-gradient(0deg, ${color}dd, ${color}22)`,
+              borderTop: `1px dashed rgba(0,0,0,0.5)`,
+            }}
+          />
+          {/* diagonal sheen band */}
+          <span
+            className="absolute -inset-x-6 top-1/2 h-16 -translate-y-1/2 -rotate-12 opacity-30"
+            style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+          />
+        </span>
+        {/* Preserved kiosk logo: reiatsu seal over the tier kanji */}
         <span
           aria-hidden
-          className="absolute inset-x-0 top-0 h-3 opacity-80"
-          style={{
-            background: `repeating-linear-gradient(110deg, ${color}aa 0 6px, transparent 6px 12px)`,
-            clipPath:
-              "polygon(0% 0%,100% 0%,100% 60%,92% 100%,84% 55%,76% 100%,68% 55%,60% 100%,52% 55%,44% 100%,36% 55%,28% 100%,20% 55%,12% 100%,4% 55%,0% 100%)",
-          }}
-        />
-        <span
-          aria-hidden
-          className="absolute inset-x-0 bottom-0 h-3 rotate-180 opacity-80"
-          style={{
-            background: `repeating-linear-gradient(110deg, ${color}aa 0 6px, transparent 6px 12px)`,
-            clipPath:
-              "polygon(0% 0%,100% 0%,100% 60%,92% 100%,84% 55%,76% 100%,68% 55%,60% 100%,52% 55%,44% 100%,36% 55%,28% 100%,20% 55%,12% 100%,4% 55%,0% 100%)",
-          }}
-        />
-        {/* Embossed sigil */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 flex items-center justify-center font-display text-6xl font-black opacity-25"
-          style={{ color, textShadow: "0 2px 0 rgba(0,0,0,0.5)" }}
+          className="pointer-events-none absolute inset-0 flex items-center justify-center font-display text-7xl font-black opacity-20"
+          style={{ color, textShadow: "0 2px 0 rgba(0,0,0,0.6)" }}
         >
           {TIER_SIGIL[tier]}
         </span>
-        {/* Center seal */}
         <span
           aria-hidden
-          className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-2xl font-black"
-          style={{ borderColor: color, background: `${color}22`, color, boxShadow: `0 0 22px -4px ${color}` }}
+          className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 font-display text-2xl font-black"
+          style={{
+            borderColor: color,
+            backgroundColor: "#0d0a07",
+            color,
+            boxShadow: `0 0 26px -4px ${color}, inset 0 0 18px -6px ${color}`,
+          }}
         >
           霊
+        </span>
+        {/* Tier wordmark on the foil */}
+        <span
+          aria-hidden
+          className="absolute inset-x-0 bottom-7 text-center font-display text-[10px] font-black uppercase tracking-[0.35em]"
+          style={{ color: `${color}` }}
+        >
+          {tier}
         </span>
         {/* Shine sweep */}
         {!empty && (
@@ -142,6 +158,16 @@ export function PackObject({
           style={{ borderColor: `${color}66`, background: `${color}1a`, color }}
         >
           {L.openAll[locale]} ×{count}
+        </button>
+      )}
+
+      {onBuy && (
+        <button
+          onClick={() => { play("tap"); onBuy(); }}
+          disabled={disabled || !canAfford}
+          className="mt-2 rounded-lg border border-primary/50 bg-primary/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {L.buy[locale]} — {PACK_PRICE[tier]} ✦
         </button>
       )}
     </div>
