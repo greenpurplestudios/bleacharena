@@ -7,6 +7,9 @@ import { useI18n } from "@/lib/i18n";
 import {
   PACK_TIERS,
   PACK_COLOR,
+  PACK_PRICE,
+  PACK_LABEL,
+  buyPack,
   fetchMyPacks,
   openPack,
   openAllPacks,
@@ -36,6 +39,13 @@ const L = {
   ready: { en: "pack(s) ready to tear open", ar: "حزمة جاهزة للتمزيق" },
 };
 
+const LB = {
+  buying: { en: "Buying…", ar: "جارٍ الشراء…" },
+  bought: { en: "Pack added to your stash!", ar: "أُضيفت الحزمة إلى مخزونك!" },
+  poor: { en: "Not enough Souls.", ar: "أرواح غير كافية." },
+  shelf: { en: "Kon's shelf — buy with Souls, tear open any time.", ar: "رف كون — اشترِ بالأرواح وافتح متى شئت." },
+};
+
 export const Route = createFileRoute("/_authenticated/packs")({
   head: () => ({
     meta: [
@@ -57,7 +67,9 @@ function PacksPage() {
   const [result, setResult] = useState<OpenPackResult | null>(null);
   const [lastTier, setLastTier] = useState<PackTier | null>(null);
   const [bulk, setBulk] = useState<{ tier: PackTier; opened: number; souls: number; results: OpenPackResult[] } | null>(null);
-  const { refresh: refreshSouls } = useSouls();
+  const { souls, refresh: refreshSouls } = useSouls();
+  const [buying, setBuying] = useState<PackTier | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const pendingRef = useRef<Promise<unknown> | null>(null);
 
   const load = async () => {
@@ -113,8 +125,7 @@ function PacksPage() {
 
   const onTornThrough = async () => {
     const tier = tearing;
-    setTearing(null);
-    if (!tier) return;
+    if (!tier) { setTearing(null); return; }
     const res = (await pendingRef.current) as OpenPackResult;
     pendingRef.current = null;
     if (res.ok) {
@@ -126,11 +137,37 @@ function PacksPage() {
     } else {
       play("skip");
     }
+    // Hand the stage over in the same frame so the card appears to rise
+    // straight out of the torn pack instead of blinking through an empty overlay.
     setResult(res);
+    setTearing(null);
     setOpening(null);
     load();
     refreshSouls();
   };
+
+  const onBuy = async (tier: PackTier) => {
+    if (buying || opening) return;
+    if ((souls ?? 0) < PACK_PRICE[tier]) { play("skip"); setToast(LB.poor[locale]); return; }
+    setBuying(tier);
+    const res = await buyPack(tier, 1);
+    setBuying(null);
+    if (res.ok) {
+      play("success");
+      haptic("pack");
+      setToast(`${PACK_LABEL[tier][locale]} — ${LB.bought[locale]}`);
+      await Promise.all([load(), refreshSouls()]);
+    } else {
+      play("skip");
+      setToast(res.error === "insufficient_souls" ? LB.poor[locale] : (res.error ?? LB.poor[locale]));
+    }
+  };
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = window.setTimeout(() => setToast(null), 2200);
+    return () => window.clearTimeout(id);
+  }, [toast]);
 
   const closeResult = () => setResult(null);
 
@@ -209,6 +246,10 @@ function PacksPage() {
           </p>
         </KonHero>
 
+        <p className="mt-6 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          {LB.shelf[locale]}
+        </p>
+
         <div className="mt-8 flex flex-wrap items-start justify-center gap-6 sm:gap-8">
           {PACK_TIERS.map((tier, i) => (
             <PackObject
@@ -216,13 +257,23 @@ function PacksPage() {
               tier={tier}
               index={i}
               count={countFor(tier)}
-              disabled={!!opening}
+              disabled={!!opening || !!buying}
+              onBuy={() => onBuy(tier)}
+              canAfford={(souls ?? 0) >= PACK_PRICE[tier]}
               onOpen={() => startOpen(tier)}
               onOpenAll={() => startOpenAll(tier)}
             />
           ))}
         </div>
       </main>
+
+      {toast && (
+        <div className="fixed inset-x-0 bottom-24 z-[90] flex justify-center px-4">
+          <div className="rounded-full border border-primary/40 bg-card/95 px-4 py-2 text-xs font-bold text-foreground shadow-xl backdrop-blur">
+            {toast}
+          </div>
+        </div>
+      )}
 
       {(tearing || bulkTearing) && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/85 px-4 backdrop-blur-md">
