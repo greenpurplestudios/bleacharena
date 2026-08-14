@@ -190,6 +190,21 @@ function SettingsPage() {
           />
         </SettingsSection>
 
+        <SettingsSection title={PERF_L.section[locale]}>
+          <SettingToggle
+            label={PERF_L.lag[locale]}
+            description={PERF_L.lagDesc[locale]}
+            value={perf.lagReducer}
+            onChange={(v) => {
+              const next = { ...perf, lagReducer: v };
+              setPerf(next);
+              savePerf(next);
+              play("tap");
+            }}
+          />
+          <p className="px-1 pb-1 text-[11px] text-accent">{PERF_L.warn[locale]}</p>
+        </SettingsSection>
+
         <SettingsSection title={NAV_L.section[locale]}>
           <SettingToggle
             label={NAV_L.bottom[locale]}
