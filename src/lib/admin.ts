@@ -64,6 +64,7 @@ export const adminGrantCharacter = (u: string, characterId: string, count: numbe
 export const adminGrantItem = (u: string, itemId: string) => call("admin_grant_item", { p_user: u, p_item: itemId });
 export const adminUnlockAchievement = (u: string, id: string) => call("admin_unlock_achievement", { p_user: u, p_achievement: id });
 export const adminSetStreak = (u: string, streak: number) => call("admin_set_streak", { p_user: u, p_streak: streak });
+export const adminSetUsername = (u: string, username: string) => call("admin_set_username", { p_user: u, p_username: username });
 export const adminTransferProgress = (from: string, to: string) => call("admin_transfer_progress", { p_from: from, p_to: to });
 
 export interface AuditRow {
