@@ -537,12 +537,13 @@ body {
 
 /* ---- New CSS/SVG character card (CardChrome / CardSigil) ---- */
 @keyframes legendary-sheen {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(340%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(340%, 0, 0); }
 }
 .legendary-sheen {
-  animation: legendary-sheen 3.4s ease-in-out infinite;
-  will-change: transform;
+  animation: legendary-sheen 3.8s ease-in-out infinite;
+  contain: strict;
+  backface-visibility: hidden;
 }
 @keyframes mythic-arc {
   to { stroke-dashoffset: -260; }
@@ -574,6 +575,33 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .legendary-sheen, .mythic-arc, .mythic-bolt, .card-back-rays { animation: none; }
 }
+
+/* ---- Lag Reducer: drop the expensive decorative effects ---- */
+.lag-reduced .legendary-sheen,
+.lag-reduced .mythic-arc,
+.lag-reduced .mythic-bolt,
+.lag-reduced .card-back-rays,
+.lag-reduced .scene-orb,
+.lag-reduced .scene-streak {
+  animation: none !important;
+}
+.lag-reduced .legendary-sheen { opacity: 0.35; }
+.lag-reduced .scene-streak { display: none; }
+
+/* ---- Bottom nav PLAY button: sword clash ---- */
+@keyframes play-clash-pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.86) rotate(-4deg); }
+  60% { transform: scale(1.1) rotate(3deg); }
+  100% { transform: scale(1); }
+}
+.play-clash { animation: play-clash-pop 0.42s cubic-bezier(0.2, 0.9, 0.25, 1); }
+@keyframes play-clash-ring {
+  0% { opacity: 0.95; transform: translate3d(0, 0, 0) scale(0.4); }
+  100% { opacity: 0; transform: translate3d(0, 0, 0) scale(2.1); }
+}
+.play-clash-ring { animation: play-clash-ring 0.45s ease-out forwards; }
+.lag-reduced .play-clash-ring { display: none; }
 
 /* ---------------------------------------- Scene backgrounds (Task A) */
 @keyframes scene-orb-drift {
