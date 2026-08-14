@@ -7,7 +7,7 @@ import { createDuel, resolveRound } from "@/lib/soul-duel/engine";
 import type { DuelState } from "@/lib/soul-duel/types";
 import {
   applyMoves, EMPTY_MOVES, extractMoves, fetchMatch, findMatch, leaveMatch, mirrorState,
-  pushInitialState, pushState, reportResult, setGuestWeapon, setHostReady, submitGuestMoves,
+  fetchOpponentName, pushInitialState, pushState, reportResult, setGuestWeapon, setHostReady, submitGuestMoves,
   subscribeMatch, type DuelMatchRow,
 } from "@/lib/soul-duel/pvp";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +32,7 @@ export function OnlineDuel({
   const [staged, setStaged] = useState<DuelState | null>(null);
   const [waiting, setWaiting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [opponentName, setOpponentName] = useState<string | null>(null);
 
   const stagedRef = useRef<DuelState | null>(null);
   const serverRef = useRef<DuelState | null>(null);
