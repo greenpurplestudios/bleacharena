@@ -17,6 +17,8 @@ import {
 } from "@/components/settings/SettingsRow";
 import { InstallAppRow } from "@/components/InstallAppRow";
 import { loadNavPrefs, saveNavPrefs, type NavPrefs } from "@/lib/nav-prefs";
+import { useSession } from "@/hooks/use-session";
+import { amIAdmin } from "@/lib/admin";
 import {
   notificationPermission, notificationsEnabled, notificationsSupported,
   setNotificationsEnabled,
@@ -50,14 +52,32 @@ function SettingsPage() {
   const [notifBlocked, setNotifBlocked] = useState(false);
   const [notifSupported, setNotifSupported] = useState(false);
   const [navPrefs, setNavPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+  const { isGuest } = useSession();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const NAV_L = {
     section: { en: "Navigation", ar: "التنقل" },
+    bottom: { en: "Bottom tab bar", ar: "شريط التبويب السفلي" },
+    bottomDesc: {
+      en: "Mobile-game style bar pinned to the bottom of the screen (Play, Store, Collection, Profile). Turn it off to use the drawer menu only.",
+      ar: "شريط بأسلوب ألعاب الجوال مثبّت أسفل الشاشة (العب، المتجر، المجموعة، الملف). أوقفه لاستخدام قائمة السحب فقط.",
+    },
     floating: { en: "Floating menu button", ar: "زر القائمة العائم" },
     floatingDesc: {
       en: "Drag it anywhere — it snaps to the nearest edge. When off, use the menu button in the header.",
       ar: "اسحبه لأي مكان — يلتصق بأقرب حافة. عند إيقافه استخدم زر القائمة في الأعلى.",
     },
+  } as const;
+
+  const GUEST_L = {
+    section: { en: "Guest account", ar: "حساب الضيف" },
+    label: { en: "You're playing as a guest", ar: "أنت تلعب كضيف" },
+    desc: {
+      en: "Progress lives on this device only. Add an email and password to keep it forever.",
+      ar: "تقدّمك محفوظ على هذا الجهاز فقط. أضف بريدًا وكلمة مرور للاحتفاظ به للأبد.",
+    },
+    cta: { en: "Save account", ar: "حفظ الحساب" },
+    admin: { en: "Admin console", ar: "لوحة المطوّر" },
   } as const;
 
   const loadProfile = async () => {
@@ -74,6 +94,7 @@ function SettingsPage() {
     setNotifSupported(notificationsSupported());
     setNotifOn(notificationsEnabled());
     setNotifBlocked(notificationPermission() === "denied");
+    amIAdmin().then(setIsAdmin);
   }, []);
 
   const update = (patch: Partial<SoundPrefs>) => {
@@ -156,6 +177,17 @@ function SettingsPage() {
 
         <SettingsSection title={NAV_L.section[locale]}>
           <SettingToggle
+            label={NAV_L.bottom[locale]}
+            description={NAV_L.bottomDesc[locale]}
+            value={navPrefs.mode === "bottom"}
+            onChange={(v) => {
+              const next: NavPrefs = { ...navPrefs, mode: v ? "bottom" : "drawer" };
+              setNavPrefs(next);
+              saveNavPrefs(next);
+              play("tap");
+            }}
+          />
+          <SettingToggle
             label={NAV_L.floating[locale]}
             description={NAV_L.floatingDesc[locale]}
             value={navPrefs.floating}
@@ -167,6 +199,37 @@ function SettingsPage() {
             }}
           />
         </SettingsSection>
+
+        {isGuest && (
+          <SettingsSection title={GUEST_L.section[locale]}>
+            <SettingRow
+              label={<span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{GUEST_L.label[locale]}</span>}
+              description={<span className="mt-0.5 block text-xs text-muted-foreground">{GUEST_L.desc[locale]}</span>}
+            >
+              <Link
+                to="/auth"
+                className="rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs font-black uppercase tracking-widest text-accent hover:bg-accent/20"
+              >
+                {GUEST_L.cta[locale]}
+              </Link>
+            </SettingRow>
+          </SettingsSection>
+        )}
+
+        {isAdmin && (
+          <SettingsSection title={GUEST_L.admin[locale]}>
+            <SettingRow
+              label={<span className="text-[10px] uppercase tracking-[0.3em] text-red-400">{GUEST_L.admin[locale]}</span>}
+            >
+              <Link
+                to="/admin"
+                className="rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-xs font-black uppercase tracking-widest text-red-300 hover:bg-red-500/20"
+              >
+                →
+              </Link>
+            </SettingRow>
+          </SettingsSection>
+        )}
 
         {notifSupported ? (
           <SettingsSection title={t("notifications")}>

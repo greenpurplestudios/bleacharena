@@ -1,5 +1,9 @@
-/** Preferences for the floating navigation button (position + on/off). */
+/** Navigation preferences: main nav style + floating button placement. */
+export type NavMode = "bottom" | "drawer";
+
 export interface NavPrefs {
+  /** Primary navigation style: fixed bottom tab bar or the drawer only. */
+  mode: NavMode;
   /** Floating menu button enabled. When off, use the header menu button. */
   floating: boolean;
   /** Edge the button snaps to. */
@@ -10,7 +14,7 @@ export interface NavPrefs {
 
 const KEY = "ba:nav:prefs";
 
-export const DEFAULT_NAV_PREFS: NavPrefs = { floating: true, side: "end", y: 0.82 };
+export const DEFAULT_NAV_PREFS: NavPrefs = { mode: "bottom", floating: false, side: "end", y: 0.7 };
 
 export function loadNavPrefs(): NavPrefs {
   if (typeof window === "undefined") return DEFAULT_NAV_PREFS;
@@ -19,7 +23,8 @@ export function loadNavPrefs(): NavPrefs {
     if (!raw) return DEFAULT_NAV_PREFS;
     const p = JSON.parse(raw) as Partial<NavPrefs>;
     return {
-      floating: p.floating !== false,
+      mode: p.mode === "drawer" ? "drawer" : "bottom",
+      floating: p.floating === true,
       side: p.side === "start" ? "start" : "end",
       y: typeof p.y === "number" ? Math.min(0.92, Math.max(0.08, p.y)) : DEFAULT_NAV_PREFS.y,
     };

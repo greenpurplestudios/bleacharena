@@ -17,11 +17,13 @@ import { Route as AuthResetRouteImport } from './routes/auth.reset'
 import { Route as AuthenticatedStoreRouteImport } from './routes/_authenticated/store'
 import { Route as AuthenticatedSoulLinksRouteImport } from './routes/_authenticated/soul-links'
 import { Route as AuthenticatedSoulDuelRouteImport } from './routes/_authenticated/soul-duel'
+import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
 import { Route as AuthenticatedRewardsRouteImport } from './routes/_authenticated/rewards'
 import { Route as AuthenticatedQuotesRouteImport } from './routes/_authenticated/quotes'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/quiz'
+import { Route as AuthenticatedPlayRouteImport } from './routes/_authenticated/play'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
 import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated/levels'
@@ -36,6 +38,7 @@ import { Route as AuthenticatedClansRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCharactersRouteImport } from './routes/_authenticated/characters'
 import { Route as AuthenticatedBleachdleRouteImport } from './routes/_authenticated/bleachdle'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileUserIdRouteImport } from './routes/_authenticated/profile.$userId'
@@ -79,6 +82,11 @@ const AuthenticatedSoulDuelRoute = AuthenticatedSoulDuelRouteImport.update({
   path: '/soul-duel',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedShopRoute = AuthenticatedShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -102,6 +110,11 @@ const AuthenticatedQuotesRoute = AuthenticatedQuotesRouteImport.update({
 const AuthenticatedQuizRoute = AuthenticatedQuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPlayRoute = AuthenticatedPlayRouteImport.update({
+  id: '/play',
+  path: '/play',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPacksRoute = AuthenticatedPacksRouteImport.update({
@@ -175,6 +188,11 @@ const AuthenticatedBleachdleRoute = AuthenticatedBleachdleRouteImport.update({
   path: '/bleachdle',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAchievementsRoute =
   AuthenticatedAchievementsRouteImport.update({
     id: '/achievements',
@@ -199,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/chat': typeof AuthenticatedChatRoute
@@ -213,11 +232,13 @@ export interface FileRoutesByFullPath {
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
+  '/play': typeof AuthenticatedPlayRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shop': typeof AuthenticatedShopRoute
   '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/soul-links': typeof AuthenticatedSoulLinksRoute
   '/store': typeof AuthenticatedStoreRoute
@@ -230,6 +251,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/achievements': typeof AuthenticatedAchievementsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/bleachdle': typeof AuthenticatedBleachdleRoute
   '/characters': typeof AuthenticatedCharactersRoute
   '/chat': typeof AuthenticatedChatRoute
@@ -244,11 +266,13 @@ export interface FileRoutesByTo {
   '/levels': typeof AuthenticatedLevelsRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
+  '/play': typeof AuthenticatedPlayRoute
   '/quiz': typeof AuthenticatedQuizRoute
   '/quotes': typeof AuthenticatedQuotesRoute
   '/rewards': typeof AuthenticatedRewardsRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/shop': typeof AuthenticatedShopRoute
   '/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/soul-links': typeof AuthenticatedSoulLinksRoute
   '/store': typeof AuthenticatedStoreRoute
@@ -263,6 +287,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/follow': typeof FollowRoute
   '/_authenticated/achievements': typeof AuthenticatedAchievementsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bleachdle': typeof AuthenticatedBleachdleRoute
   '/_authenticated/characters': typeof AuthenticatedCharactersRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
@@ -277,11 +302,13 @@ export interface FileRoutesById {
   '/_authenticated/levels': typeof AuthenticatedLevelsRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
+  '/_authenticated/play': typeof AuthenticatedPlayRoute
   '/_authenticated/quiz': typeof AuthenticatedQuizRoute
   '/_authenticated/quotes': typeof AuthenticatedQuotesRoute
   '/_authenticated/rewards': typeof AuthenticatedRewardsRoute
   '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/_authenticated/soul-duel': typeof AuthenticatedSoulDuelRoute
   '/_authenticated/soul-links': typeof AuthenticatedSoulLinksRoute
   '/_authenticated/store': typeof AuthenticatedStoreRoute
@@ -296,6 +323,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/achievements'
+    | '/admin'
     | '/bleachdle'
     | '/characters'
     | '/chat'
@@ -310,11 +338,13 @@ export interface FileRouteTypes {
     | '/levels'
     | '/missions'
     | '/packs'
+    | '/play'
     | '/quiz'
     | '/quotes'
     | '/rewards'
     | '/rivals'
     | '/settings'
+    | '/shop'
     | '/soul-duel'
     | '/soul-links'
     | '/store'
@@ -327,6 +357,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/achievements'
+    | '/admin'
     | '/bleachdle'
     | '/characters'
     | '/chat'
@@ -341,11 +372,13 @@ export interface FileRouteTypes {
     | '/levels'
     | '/missions'
     | '/packs'
+    | '/play'
     | '/quiz'
     | '/quotes'
     | '/rewards'
     | '/rivals'
     | '/settings'
+    | '/shop'
     | '/soul-duel'
     | '/soul-links'
     | '/store'
@@ -359,6 +392,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/follow'
     | '/_authenticated/achievements'
+    | '/_authenticated/admin'
     | '/_authenticated/bleachdle'
     | '/_authenticated/characters'
     | '/_authenticated/chat'
@@ -373,11 +407,13 @@ export interface FileRouteTypes {
     | '/_authenticated/levels'
     | '/_authenticated/missions'
     | '/_authenticated/packs'
+    | '/_authenticated/play'
     | '/_authenticated/quiz'
     | '/_authenticated/quotes'
     | '/_authenticated/rewards'
     | '/_authenticated/rivals'
     | '/_authenticated/settings'
+    | '/_authenticated/shop'
     | '/_authenticated/soul-duel'
     | '/_authenticated/soul-links'
     | '/_authenticated/store'
@@ -451,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSoulDuelRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/shop': {
+      id: '/_authenticated/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof AuthenticatedShopRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -484,6 +527,13 @@ declare module '@tanstack/react-router' {
       path: '/quiz'
       fullPath: '/quiz'
       preLoaderRoute: typeof AuthenticatedQuizRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/play': {
+      id: '/_authenticated/play'
+      path: '/play'
+      fullPath: '/play'
+      preLoaderRoute: typeof AuthenticatedPlayRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/packs': {
@@ -584,6 +634,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBleachdleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/achievements': {
       id: '/_authenticated/achievements'
       path: '/achievements'
@@ -610,6 +667,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAchievementsRoute: typeof AuthenticatedAchievementsRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBleachdleRoute: typeof AuthenticatedBleachdleRoute
   AuthenticatedCharactersRoute: typeof AuthenticatedCharactersRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
@@ -624,11 +682,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLevelsRoute: typeof AuthenticatedLevelsRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
+  AuthenticatedPlayRoute: typeof AuthenticatedPlayRoute
   AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
   AuthenticatedQuotesRoute: typeof AuthenticatedQuotesRoute
   AuthenticatedRewardsRoute: typeof AuthenticatedRewardsRoute
   AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedShopRoute: typeof AuthenticatedShopRoute
   AuthenticatedSoulDuelRoute: typeof AuthenticatedSoulDuelRoute
   AuthenticatedSoulLinksRoute: typeof AuthenticatedSoulLinksRoute
   AuthenticatedStoreRoute: typeof AuthenticatedStoreRoute
@@ -638,6 +698,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAchievementsRoute: AuthenticatedAchievementsRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBleachdleRoute: AuthenticatedBleachdleRoute,
   AuthenticatedCharactersRoute: AuthenticatedCharactersRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
@@ -652,11 +713,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLevelsRoute: AuthenticatedLevelsRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
+  AuthenticatedPlayRoute: AuthenticatedPlayRoute,
   AuthenticatedQuizRoute: AuthenticatedQuizRoute,
   AuthenticatedQuotesRoute: AuthenticatedQuotesRoute,
   AuthenticatedRewardsRoute: AuthenticatedRewardsRoute,
   AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedShopRoute: AuthenticatedShopRoute,
   AuthenticatedSoulDuelRoute: AuthenticatedSoulDuelRoute,
   AuthenticatedSoulLinksRoute: AuthenticatedSoulLinksRoute,
   AuthenticatedStoreRoute: AuthenticatedStoreRoute,

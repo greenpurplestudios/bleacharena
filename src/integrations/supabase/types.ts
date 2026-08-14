@@ -94,6 +94,33 @@ export type Database = {
           },
         ]
       }
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          details: Json
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       bleachdle_daily: {
         Row: {
           character_id: string
@@ -1258,6 +1285,54 @@ export type Database = {
     Functions: {
       activate_potion: { Args: { p_item_id: string }; Returns: Json }
       add_xp: { Args: { p_amount: number; p_source?: string }; Returns: Json }
+      admin_get_player: { Args: { p_user: string }; Returns: Json }
+      admin_grant_character: {
+        Args: { p_character: string; p_count?: number; p_user: string }
+        Returns: Json
+      }
+      admin_grant_item: {
+        Args: { p_item: string; p_user: string }
+        Returns: Json
+      }
+      admin_grant_pack: {
+        Args: { p_count?: number; p_tier: string; p_user: string }
+        Returns: Json
+      }
+      admin_grant_souls: {
+        Args: { p_amount: number; p_user: string }
+        Returns: Json
+      }
+      admin_grant_xp: {
+        Args: { p_amount: number; p_user: string }
+        Returns: Json
+      }
+      admin_guard: { Args: never; Returns: string }
+      admin_log: {
+        Args: {
+          _action: string
+          _admin: string
+          _details: Json
+          _target: string
+        }
+        Returns: undefined
+      }
+      admin_search_players: {
+        Args: { p_limit?: number; p_q?: string }
+        Returns: Json
+      }
+      admin_set_streak: {
+        Args: { p_streak: number; p_user: string }
+        Returns: Json
+      }
+      admin_transfer_progress: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
+      }
+      admin_unlock_achievement: {
+        Args: { p_achievement: string; p_user: string }
+        Returns: Json
+      }
+      am_i_admin: { Args: never; Returns: boolean }
       award_fragments: { Args: { p_amount: number }; Returns: Json }
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
       battle_rival: { Args: { p_opponent: string }; Returns: Json }
@@ -1696,6 +1771,10 @@ export type Database = {
         Returns: Json
       }
       transfer_clan_leadership: { Args: { p_user_id: string }; Returns: Json }
+      transfer_progress_internal: {
+        Args: { p_from: string; p_to: string }
+        Returns: undefined
+      }
       update_clan_description: {
         Args: { p_description: string }
         Returns: Json

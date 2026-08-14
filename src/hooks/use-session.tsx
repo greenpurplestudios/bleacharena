@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { isGuestUser } from "@/lib/guest";
 
 export function useSession() {
   const [session, setSession] = useState<Session | null>(null);
@@ -22,5 +23,6 @@ export function useSession() {
     };
   }, []);
 
-  return { session, user: session?.user ?? null, loading };
+  const user = session?.user ?? null;
+  return { session, user, loading, isGuest: isGuestUser(user) };
 }
