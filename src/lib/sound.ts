@@ -173,7 +173,8 @@ export function play(kind: SfxKind) {
 
 /* ---------- Rarity reveal stings ---------- */
 
-export type RarityKey = "common" | "uncommon" | "rare" | "epic" | "legendary" | "mythic";
+export type RarityKey =
+  | "common" | "uncommon" | "rare" | "epic" | "legendary" | "mythic" | "founder";
 
 /**
  * Premium reveal sting per rarity. Each tier adds layers — Mythic is the most
@@ -223,6 +224,18 @@ export function playReveal(rarity: RarityKey) {
         tone(f, 1.2, "sine", 0.07 * v, 1.06 + i * 0.07),
       );
       [2093, 2637, 3136].forEach((f, i) => tone(f, 1.0, "triangle", 0.028 * v, 1.6 + i * 0.14));
+      break;
+    case "founder":
+      // The rarest sting in the game: deep riser, gong impact, golden choir.
+      sweep(100, 1800, 1.4, "sawtooth", 0.05 * v);
+      sweep(70, 1200, 1.4, "square", 0.02 * v, 0.06);
+      noise(1.1, 0.055 * v, 1800, 0.55, 1.3);
+      tone(49, 2.2, "sine", 0.14 * v, 1.34);
+      tone(98, 1.8, "sine", 0.09 * v, 1.34);
+      [349, 440, 523, 659, 880, 1047, 1319, 1760].forEach((f, i) =>
+        tone(f, 1.6, "sine", 0.065 * v, 1.38 + i * 0.07),
+      );
+      [2349, 2794, 3520].forEach((f, i) => tone(f, 1.3, "triangle", 0.026 * v, 2.0 + i * 0.16));
       break;
   }
 }

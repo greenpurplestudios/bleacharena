@@ -1,4 +1,9 @@
-import type { Character } from "@/types/character";
+import type { Character, Rarity } from "@/types/character";
+import founderIchigoImg from "@/assets/characters/founder_ichigo_horn_of_salvation.jpeg.asset.json";
+import founderToshiroImg from "@/assets/characters/founder_adult_toshiro.jpeg.asset.json";
+import founderZarakiImg from "@/assets/characters/founder_bankai_zaraki.jpeg.asset.json";
+import founderAizenImg from "@/assets/characters/founder_muken_aizen.jpeg.asset.json";
+import founderGerardImg from "@/assets/characters/founder_gerard_ultimate_miracle.jpeg.asset.json";
 import isshinImg from "@/assets/characters/isshin.jpeg.asset.json";
 import masakiImg from "@/assets/characters/masaki.jpeg.asset.json";
 import zangetsuImg from "@/assets/characters/zangetsu.jpeg.asset.json";
@@ -75,7 +80,7 @@ import { rarityFromOverall } from "@/lib/rarity";
 // reads from this list only. Rarity is derived from `overall` at load
 // time (see rarityFromOverall). Images may be null until official art is
 // wired up (cards render a stylized fallback).
-const raw: Omit<Character, "rarity">[] = [
+const raw: (Omit<Character, "rarity"> & { rarity?: Rarity })[] = [
   {
     id: "c-001", slug: "ichigo-kurosaki",
     name: { en: "Ichigo Kurosaki", ar: "إتشيغو كوروساكي" },
@@ -638,13 +643,62 @@ const raw: Omit<Character, "rarity">[] = [
     image: yukioImg.url,
     overall: 76,
   },
+  /* ------------------------------------------------------------ founders */
+  /* Limited Founder editions. Separate cards — the base characters above are
+     untouched (art, rating, rarity, faction, element, abilities). */
+  {
+    id: "c-f01", slug: "founder-ichigo-horn",
+    name: { en: "Horn of Salvation Ichigo", ar: "إتشيغو قرن الخلاص" },
+    race: "Human / Substitute Shinigami", faction: "Allies", division: null, rank: "Substitute",
+    arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
+    image: founderIchigoImg.url,
+    rarity: "founder", overall: 99, tags: ["founder"],
+  },
+  {
+    id: "c-f02", slug: "founder-toshiro-adult",
+    name: { en: "Adult Tōshirō", ar: "توشيرو البالغ" },
+    race: "Shinigami", faction: "Gotei 13", division: "10th", rank: "Captain",
+    arc: "Thousand-Year Blood War", shikai: "Hyōrinmaru", bankai: "Daiguren Hyōrinmaru",
+    image: founderToshiroImg.url,
+    rarity: "founder", overall: 95, tags: ["founder"],
+  },
+  {
+    id: "c-f03", slug: "founder-zaraki-bankai",
+    name: { en: "Bankai Zaraki", ar: "زاراكي البانكاي" },
+    race: "Shinigami", faction: "Gotei 13", division: "11th", rank: "Captain",
+    arc: "Thousand-Year Blood War", shikai: "Nozarashi", bankai: "Unnamed",
+    image: founderZarakiImg.url,
+    rarity: "founder", overall: 97, tags: ["founder"],
+  },
+  {
+    id: "c-f04", slug: "founder-aizen-muken",
+    name: { en: "Muken Aizen", ar: "آيزن الموكين" },
+    race: "Shinigami / Hōgyoku", faction: "Antagonist", division: "5th", rank: "Former Captain",
+    arc: "Thousand-Year Blood War", shikai: "Kyōka Suigetsu", bankai: "Unnamed",
+    image: founderAizenImg.url,
+    rarity: "founder", overall: 98, tags: ["founder"],
+  },
+  {
+    id: "c-f05", slug: "founder-gerard-miracle",
+    name: { en: "Gerard — The Miracle", ar: "غيرارد — المعجزة" },
+    race: "Quincy", faction: "Wandenreich", division: null, rank: "Sternritter M",
+    arc: "Thousand-Year Blood War", shikai: null, bankai: null,
+    image: founderGerardImg.url,
+    rarity: "founder", overall: 97, tags: ["founder"],
+  },
 ];
 
 export const characters: Character[] = raw.map((c) => ({
   ...c,
-  rarity: rarityFromOverall(c.overall),
+  rarity: c.rarity ?? rarityFromOverall(c.overall),
   gender: c.gender ?? inferGender(c.id),
 }));
+
+/** Founder editions are excluded from the daily puzzle modes. */
+export const isFounder = (c: Character): boolean => c.rarity === "founder";
+
+/** Roster used by Bleachdle / Soul Links — no Founder editions. */
+export const puzzleCharacters: Character[] = characters.filter((c) => !isFounder(c));
 
 function inferGender(id: string): "male" | "female" | "other" {
   const female = new Set([

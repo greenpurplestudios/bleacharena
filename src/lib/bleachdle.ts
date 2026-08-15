@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { characters } from "@/data/characters";
+import { puzzleCharacters as characters } from "@/data/characters";
 import type { Character } from "@/types/character";
 
 export const MAX_GUESSES = 6;

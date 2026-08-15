@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
-import { loadNavPrefs, openNavDrawer, type NavPrefs } from "@/lib/nav-prefs";
+import { DEFAULT_NAV_PREFS, loadNavPrefs, openNavDrawer, type NavPrefs } from "@/lib/nav-prefs";
 import { play, playDuelClash } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
 
@@ -56,7 +56,7 @@ export function BottomNav() {
   const { locale } = useI18n();
   const { user } = useSession();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [prefs, setPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+  const [prefs, setPrefs] = useState<NavPrefs>(DEFAULT_NAV_PREFS);
   const [clash, setClash] = useState(0);
   const clashAt = useRef(0);
 

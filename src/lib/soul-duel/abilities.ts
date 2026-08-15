@@ -5,7 +5,7 @@ import type { StatusKind } from "./status";
 import {
   addBonus, applyStatus, clearNegatives, enemiesIn, alliesIn, highestOf, lowestOf,
   makeToken, setOverride, grantImmunity, baseRatingOf, laneBuff, laneLimit, stealRating,
-  protectRating, sealCard, armBounce,
+  protectRating, sealCard, armBounce, freezeBuffs,
 } from "./effects";
 
 export interface AbilityCtx {
@@ -711,6 +711,94 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
         ar: "البطاقة المعادية التالية التي تُلعب في هذه الساحة تعود إلى يد صاحبها.",
       },
       onPlay: (state, self) => armBounce(state, self.lane, other(self.side)),
+    },
+  },
+  /* ----------------------------------------------------------- founders */
+  {
+    slug: "founder-ichigo-horn",
+    cost: 8,
+    faction: { en: "Allies", ar: "الحلفاء" },
+    ability: {
+      slug: "horn-of-salvation",
+      name: { en: "Horn of Salvation", ar: "قرن الخلاص" },
+      description: {
+        en: "All allies on this battlefield gain +10 Rating; all enemies here lose 10 Rating.",
+        ar: "كل الحلفاء في هذه الساحة يكسبون +10 تقييم، وكل الأعداء يخسرون 10 تقييم.",
+      },
+      aura: (ctx, o) => {
+        if (o.lane !== ctx.self.lane) return 0;
+        return o.side === ctx.self.side ? 10 : -10;
+      },
+    },
+  },
+  {
+    slug: "founder-toshiro-adult",
+    cost: 8,
+    faction: { en: "Gotei 13", ar: "غوتي 13" },
+    ability: {
+      slug: "absolute-winter",
+      name: { en: "Absolute Winter", ar: "الشتاء المطلق" },
+      description: {
+        en: "Enemies on this battlefield lose their abilities and all buffs, and can never be buffed again.",
+        ar: "أعداء هذه الساحة يفقدون قدراتهم وكل تعزيزاتهم، ولا يمكن تعزيزهم مجدداً.",
+      },
+      onPlay: (state, self) =>
+        enemiesIn(state, self).reduce(
+          (s, e) => freezeBuffs(sealCard(s, e.uid, 99), e.uid),
+          state,
+        ),
+      onRoundEnd: (state, self) =>
+        enemiesIn(state, self).reduce(
+          (s, e) => freezeBuffs(sealCard(s, e.uid, 99), e.uid),
+          state,
+        ),
+    },
+  },
+  {
+    slug: "founder-zaraki-bankai",
+    cost: 8,
+    faction: { en: "Gotei 13", ar: "غوتي 13" },
+    ability: {
+      slug: "bankai-unbound",
+      name: { en: "Bankai Unbound", ar: "بانكاي بلا قيد" },
+      description: {
+        en: "Cannot be debuffed. Gains +15 Rating for every enemy on this battlefield with a higher current Rating.",
+        ar: "لا يمكن إضعافه. يكسب +15 تقييم عن كل عدو في ساحته بتقييم حالي أعلى.",
+      },
+      onPlay: (state, self) => protectRating(state, self.uid),
+      selfRating: (ctx) => {
+        const mine = baseRatingOf(ctx.self) + ctx.self.bonus;
+        const stronger = enemiesIn(ctx.state, ctx.self).filter(
+          (e) => baseRatingOf(e) + e.bonus > mine,
+        );
+        return stronger.length * 15;
+      },
+    },
+  },
+  {
+    slug: "founder-aizen-muken",
+    cost: 8,
+    faction: { en: "Antagonist", ar: "الخصم" },
+    ability: {
+      slug: "muken-mirage",
+      name: { en: "Muken Mirage", ar: "سراب الموكين" },
+      description: {
+        en: "Every attack or debuff aimed at Aizen is redirected onto the enemy cards of the adjacent battlefields.",
+        ar: "كل هجوم أو إضعاف يستهدف آيزن يُعاد توجيهه إلى بطاقات العدو في الساحات المجاورة.",
+      },
+    },
+  },
+  {
+    slug: "founder-gerard-miracle",
+    cost: 8,
+    faction: { en: "Wandenreich", ar: "الفاندنرايش" },
+    ability: {
+      slug: "the-miracle",
+      name: { en: "The Miracle", ar: "المعجزة" },
+      description: {
+        en: "Every attack or debuff aimed at Gerard is negated, and he gains +15 Rating for each one.",
+        ar: "كل هجوم أو إضعاف يستهدف غيرارد يُلغى، ويكسب +15 تقييم مقابل كل واحد.",
+      },
     },
   },
 ];

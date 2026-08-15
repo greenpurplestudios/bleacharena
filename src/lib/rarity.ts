@@ -17,7 +17,7 @@ export function rarityFromOverall(ovr: number): Rarity {
 }
 
 export const RARITY_ORDER: Rarity[] = [
-  "common", "uncommon", "rare", "epic", "legendary", "mythic",
+  "common", "uncommon", "rare", "epic", "legendary", "mythic", "founder",
 ];
 
 // Weighted pull chances — weaker rarities are the most common.
@@ -28,6 +28,8 @@ export const RARITY_WEIGHTS: Record<Rarity, number> = {
   epic: 7,
   legendary: 4,
   mythic: 1,
+  // Founders are effectively unpullable in Draft (~1 in 5,000 picks).
+  founder: 0.0004,
 };
 
 export const RARITY_LABEL: Record<Rarity, { en: string; ar: string }> = {
@@ -37,6 +39,7 @@ export const RARITY_LABEL: Record<Rarity, { en: string; ar: string }> = {
   epic: { en: "Epic", ar: "ملحمي" },
   legendary: { en: "Legendary", ar: "أسطوري" },
   mythic: { en: "Mythic", ar: "خرافي" },
+  founder: { en: "The Founders", ar: "المؤسسون" },
 };
 
 export const RARITY_COLOR: Record<Rarity, string> = {
@@ -46,6 +49,7 @@ export const RARITY_COLOR: Record<Rarity, string> = {
   epic: "oklch(0.7 0.22 300)",
   legendary: "oklch(0.82 0.18 80)",
   mythic: "oklch(0.72 0.24 25)",
+  founder: "oklch(0.88 0.14 95)",
 };
 
 export function pickWeighted<T extends { rarity: Rarity }>(
@@ -58,6 +62,7 @@ export function pickWeighted<T extends { rarity: Rarity }>(
   const boost: Record<Rarity, number> = {
     common: 1, uncommon: 1, rare: 1 + luck * 0.5,
     epic: 1 + luck, legendary: 1 + luck * 1.5, mythic: 1 + luck * 2,
+    founder: 1,
   };
   const weights = pool.map((c) => (RARITY_WEIGHTS[c.rarity] ?? 1) * (boost[c.rarity] ?? 1));
   const total = weights.reduce((a, b) => a + b, 0);

@@ -19,7 +19,7 @@ import {
 /* ------------------------------------------------------------------ costs */
 
 const COST_BY_RARITY: Record<Rarity, number> = {
-  common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, mythic: 6,
+  common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, mythic: 6, founder: 7,
 };
 
 export function costOf(c: Character): number {

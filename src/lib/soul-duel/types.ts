@@ -75,6 +75,8 @@ export interface Placement {
   noReduce?: boolean;
   /** Ukitake: round in which this card's reflect has already been spent. */
   reflectUsedRound?: number;
+  /** Adult Tōshirō: this card can never receive a buff again. */
+  noBuff?: boolean;
   /** Riruka's Dollhouse: sealed until this round (exclusive). */
   sealedUntilRound?: number;
 }

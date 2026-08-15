@@ -1,4 +1,4 @@
-import { characters } from "@/data/characters";
+import { puzzleCharacters as characters } from "@/data/characters";
 import { SOUL_LINK_PUZZLES, type LinkGroup, type LinkPuzzle } from "@/data/soul-links";
 import { serverDayKey } from "@/lib/server-time";
 import type { Character } from "@/types/character";

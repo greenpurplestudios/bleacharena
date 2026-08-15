@@ -4,7 +4,7 @@ import { useI18n, type TKey } from "@/lib/i18n";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { loadNavPrefs, saveNavPrefs, type NavPrefs } from "@/lib/nav-prefs";
+import { DEFAULT_NAV_PREFS, loadNavPrefs, saveNavPrefs, type NavPrefs } from "@/lib/nav-prefs";
 import { play } from "@/lib/sound";
 
 type Text = { en: string; ar: string };
@@ -140,7 +140,9 @@ export function MobileNav() {
   const nav = useNavigate();
   const qc = useQueryClient();
 
-  const [prefs, setPrefs] = useState<NavPrefs>(() => loadNavPrefs());
+  // Start from defaults so SSR and the first client render agree; stored
+  // preferences are applied after mount.
+  const [prefs, setPrefs] = useState<NavPrefs>(DEFAULT_NAV_PREFS);
   const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
   const dragging = useRef(false);
   const moved = useRef(false);
@@ -170,6 +172,7 @@ export function MobileNav() {
   useEffect(() => {
     const onPrefs = (e: Event) => setPrefs((e as CustomEvent<NavPrefs>).detail ?? loadNavPrefs());
     const onOpen = () => setOpen(true);
+    setPrefs(loadNavPrefs());
     window.addEventListener("ba:nav-prefs", onPrefs as EventListener);
     window.addEventListener("ba:open-nav", onOpen);
     return () => {
