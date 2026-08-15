@@ -205,6 +205,39 @@ export type Database = {
         }
         Relationships: []
       }
+      card_trades: {
+        Row: {
+          created_at: string
+          from_user: string
+          id: string
+          offer: Json
+          request: Json
+          status: string
+          to_user: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_user: string
+          id?: string
+          offer?: Json
+          request?: Json
+          status?: string
+          to_user: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_user?: string
+          id?: string
+          offer?: Json
+          request?: Json
+          status?: string
+          to_user?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       characters_catalog: {
         Row: {
           gender: string
@@ -712,6 +745,86 @@ export type Database = {
           name_frame_item?: string | null
           souls?: number
           title_item?: string | null
+        }
+        Relationships: []
+      }
+      market_listings: {
+        Row: {
+          buyer_id: string | null
+          character_id: string
+          created_at: string
+          id: string
+          price: number
+          seller_id: string
+          sold_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          buyer_id?: string | null
+          character_id: string
+          created_at?: string
+          id?: string
+          price: number
+          seller_id: string
+          sold_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          buyer_id?: string | null
+          character_id?: string
+          created_at?: string
+          id?: string
+          price?: number
+          seller_id?: string
+          sold_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_listings_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_sales: {
+        Row: {
+          buyer_id: string
+          character_id: string
+          created_at: string
+          id: string
+          listing_id: string
+          net: number
+          price: number
+          seller_id: string
+          tax: number
+        }
+        Insert: {
+          buyer_id: string
+          character_id: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          net: number
+          price: number
+          seller_id: string
+          tax: number
+        }
+        Update: {
+          buyer_id?: string
+          character_id?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          net?: number
+          price?: number
+          seller_id?: string
+          tax?: number
         }
         Relationships: []
       }
@@ -1708,6 +1821,10 @@ export type Database = {
         }[]
       }
       get_unread_dm_count: { Args: never; Returns: number }
+      give_copy: {
+        Args: { p_char: string; p_user: string }
+        Returns: undefined
+      }
       grant_item: {
         Args: { p_item_id: string; p_user: string }
         Returns: undefined
@@ -1735,6 +1852,56 @@ export type Database = {
         }[]
       }
       mark_conversation_read: { Args: { p_other: string }; Returns: Json }
+      market_browse: {
+        Args: {
+          p_limit?: number
+          p_max?: number
+          p_min?: number
+          p_q?: string
+          p_rarity?: string
+          p_sort?: string
+        }
+        Returns: {
+          character_id: string
+          created_at: string
+          id: string
+          mine: boolean
+          overall: number
+          price: number
+          rarity: string
+          seller_id: string
+          seller_name: string
+        }[]
+      }
+      market_buy: { Args: { p_listing: string }; Returns: Json }
+      market_cancel_listing: { Args: { p_listing: string }; Returns: Json }
+      market_list_card: {
+        Args: { p_character: string; p_price: number }
+        Returns: Json
+      }
+      market_my_history: {
+        Args: never
+        Returns: {
+          character_id: string
+          created_at: string
+          id: string
+          net: number
+          other_name: string
+          price: number
+          sold: boolean
+          tax: number
+        }[]
+      }
+      market_my_listings: {
+        Args: never
+        Returns: {
+          character_id: string
+          created_at: string
+          id: string
+          price: number
+          status: string
+        }[]
+      }
       my_clan_id: { Args: never; Returns: string }
       my_clan_role: {
         Args: never
@@ -1794,12 +1961,36 @@ export type Database = {
       submit_score:
         | { Args: { p_score: number }; Returns: Json }
         | { Args: { p_score: number; p_team?: Json }; Returns: Json }
+      take_copy: { Args: { p_char: string; p_user: string }; Returns: boolean }
       track_achievement: {
         Args: { p_absolute?: boolean; p_id: string; p_progress?: number }
         Returns: Json
       }
       track_mission: {
         Args: { p_increment?: number; p_mission_id: string }
+        Returns: Json
+      }
+      trade_create: {
+        Args: { p_offer: string[]; p_request: string[]; p_to: string }
+        Returns: Json
+      }
+      trade_my_trades: {
+        Args: never
+        Returns: {
+          created_at: string
+          from_name: string
+          from_user: string
+          id: string
+          incoming: boolean
+          offer: Json
+          request: Json
+          status: string
+          to_name: string
+          to_user: string
+        }[]
+      }
+      trade_respond: {
+        Args: { p_accept: boolean; p_trade: string }
         Returns: Json
       }
       transfer_clan_leadership: { Args: { p_user_id: string }; Returns: Json }
