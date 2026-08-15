@@ -1791,6 +1791,13 @@ export type Database = {
           title_en: string
         }[]
       }
+      get_public_collection: {
+        Args: { p_user: string }
+        Returns: {
+          character_id: string
+          count: number
+        }[]
+      }
       get_public_profile: { Args: { p_user_id: string }; Returns: Json }
       get_rival_leaderboard: {
         Args: { p_limit?: number }
