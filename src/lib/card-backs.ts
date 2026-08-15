@@ -45,6 +45,10 @@ export const RARITY_MATERIAL: Record<Rarity, RarityMaterial> = {
     base: "#9c2318", bright: "#ffb3a2", deep: "#3d0a06",
     glow: "rgba(255,70,50,0.6)", ink: "#ffe9e4", tier: 6,
   },
+  founder: {
+    base: "#0d0b09", bright: "#ffe9a8", deep: "#000000",
+    glow: "rgba(255,214,120,0.65)", ink: "#fff6de", tier: 6,
+  },
 };
 
 /** @deprecated legacy alias retained for grep-ability; use RARITY_MATERIAL. */

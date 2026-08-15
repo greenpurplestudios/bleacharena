@@ -50,6 +50,7 @@ export const DUPLICATE_SOULS: Record<Rarity, number> = {
   epic: 60,
   legendary: 150,
   mythic: 400,
+  founder: 2500,
 };
 
 export function packTierFromScore(score: number): PackTier | null {

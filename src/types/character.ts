@@ -4,7 +4,9 @@ export type Rarity =
   | "rare"
   | "epic"
   | "legendary"
-  | "mythic";
+  | "mythic"
+  /** Limited-edition Founder editions. Never derived from OVR. */
+  | "founder";
 
 export interface Character {
   id: string;

@@ -29,6 +29,7 @@ const RARITY_PATTERN: Record<Rarity, number | number[]> = {
   epic: [16, 40, 24, 40, 24],
   legendary: [20, 40, 28, 40, 36, 50, 44],
   mythic: [26, 40, 34, 40, 42, 50, 60, 60, 90],
+  founder: [30, 40, 40, 40, 50, 50, 70, 60, 110, 60, 140],
 };
 
 function fire(pattern: number | number[]) {
