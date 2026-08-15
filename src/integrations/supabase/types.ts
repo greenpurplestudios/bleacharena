@@ -559,6 +559,30 @@ export type Database = {
         }
         Relationships: []
       }
+      founder_window: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: boolean
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: boolean
+          starts_at?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: boolean
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           addressee_id: string
@@ -1405,6 +1429,7 @@ export type Database = {
       equip_weapon: { Args: { p_weapon_id: string }; Returns: Json }
       find_rival_opponent: { Args: never; Returns: Json }
       forge_weapon: { Args: { p_weapon_id: string }; Returns: Json }
+      founders_active: { Args: never; Returns: boolean }
       get_active_potion: { Args: never; Returns: Json }
       get_bleachdle_today: { Args: { p_candidates: string[] }; Returns: Json }
       get_clan_leaderboard: {
@@ -1456,6 +1481,7 @@ export type Database = {
         }[]
       }
       get_forge: { Args: never; Returns: Json }
+      get_founder_window: { Args: never; Returns: Json }
       get_friend_status: { Args: { p_other: string }; Returns: Json }
       get_global_messages: {
         Args: { p_limit?: number }
