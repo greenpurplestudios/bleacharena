@@ -74,6 +74,38 @@ export const ZANGETSU_SLUG = "zangetsu";
 export const HIERRO_SLUG = "nnoitra-gilga";
 export const REFLECT_SLUG = "jushiro-ukitake";
 
+/* ---------------------------------------------------------- founder slugs */
+/** Muken Aizen: negatives aimed at him are redirected to the next battlefield. */
+export const AIZEN_MUKEN_SLUG = "founder-aizen-muken";
+/** Gerard — The Miracle: negatives are negated and feed him +15 each time. */
+export const GERARD_MIRACLE_SLUG = "founder-gerard-miracle";
+
+/**
+ * Founder guards. Returns the new state when the effect was consumed by a
+ * Founder edition (negated, redirected or converted), otherwise null.
+ */
+function tryFounderGuard(
+  state: DuelState,
+  target: Placement,
+  apply: (s: DuelState, victim: Placement) => DuelState,
+  opts?: EffectOpts,
+): DuelState | null {
+  if (opts?.noReflect) return null;
+  const slug = target.card.character.slug;
+  if (slug === GERARD_MIRACLE_SLUG) {
+    return patch(state, target.uid, (p) => ({ ...p, bonus: p.bonus + 15 }));
+  }
+  if (slug === AIZEN_MUKEN_SLUG) {
+    const laneCount = state.lanes.length;
+    const lanes = [target.lane - 1, target.lane + 1].filter((l) => l >= 0 && l < laneCount);
+    const victims = state.placements.filter(
+      (p) => lanes.includes(p.lane) && p.side !== target.side,
+    );
+    return victims.reduce((s, v) => apply(s, v), state);
+  }
+  return null;
+}
+
 /** True when an un-frozen ally with `slug` shares the target's battlefield. */
 function allySlugIn(state: DuelState, target: Placement, slug: string): boolean {
   return state.placements.some(
@@ -184,8 +216,17 @@ export function addBonus(
   if (!target || immuneToModifiers(target) || isSealed(state, target) || !amount) return state;
   const amt = opts?.raw ? amount : scaleAmount(state, target, amount);
   if (!amt) return state;
+  // Adult Tōshirō's Absolute Winter: this card can never be buffed again.
+  if (amt > 0 && target.noBuff) return state;
   if (amt < 0) {
     if (target.noReduce) return state;
+    const guarded = tryFounderGuard(
+      state,
+      target,
+      (s, victim) => addBonus(s, victim.uid, amt, { noReflect: true, raw: true }),
+      opts,
+    );
+    if (guarded) return guarded;
     const bounced = tryReflect(
       state,
       target,
@@ -228,6 +269,13 @@ export function applyStatus(
     if (immuneToModifiers(target) || isSealed(state, target)) return state;
     // Burn eats Rating — Unbreakable Loyalty blocks it outright.
     if (target.noReduce && kind === "burn") return state;
+    const guarded = tryFounderGuard(
+      state,
+      target,
+      (s, victim) => applyStatus(s, victim.uid, kind, { noReflect: true }),
+      opts,
+    );
+    if (guarded) return guarded;
     const bounced = tryReflect(
       state,
       target,
@@ -263,6 +311,11 @@ export function grantImmunity(state: DuelState, uid: string): DuelState {
 }
 
 /** Komamura: this card's Rating can never be reduced again. */
+/** Adult Tōshirō: strip current buffs and lock the card out of future ones. */
+export function freezeBuffs(state: DuelState, uid: string): DuelState {
+  return patch(state, uid, (p) => ({ ...p, bonus: Math.min(p.bonus, 0), noBuff: true }));
+}
+
 export function protectRating(state: DuelState, uid: string): DuelState {
   return patch(state, uid, (p) => ({ ...p, noReduce: true }));
 }
