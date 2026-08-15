@@ -1633,9 +1633,10 @@ export type Database = {
       am_i_admin: { Args: never; Returns: boolean }
       award_fragments: { Args: { p_amount: number }; Returns: Json }
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
-      battle_rival:
-        | { Args: { p_opponent: string }; Returns: Json }
-        | { Args: { p_opponent: string; p_team_index?: number }; Returns: Json }
+      battle_rival: {
+        Args: { p_opponent: string; p_team_index?: number }
+        Returns: Json
+      }
       buy_pack: { Args: { p_count?: number; p_tier: string }; Returns: Json }
       cancel_join_request: { Args: { p_clan_id: string }; Returns: Json }
       claim_clan_weekly_reward: { Args: never; Returns: Json }
@@ -1700,9 +1701,7 @@ export type Database = {
       ensure_weekly_announcement: { Args: never; Returns: undefined }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       equip_weapon: { Args: { p_weapon_id: string }; Returns: Json }
-      find_rival_opponent:
-        | { Args: never; Returns: Json }
-        | { Args: { p_team_index?: number }; Returns: Json }
+      find_rival_opponent: { Args: { p_team_index?: number }; Returns: Json }
       forge_weapon: { Args: { p_weapon_id: string }; Returns: Json }
       founders_active: { Args: never; Returns: boolean }
       get_active_potion: { Args: never; Returns: Json }
@@ -2165,9 +2164,10 @@ export type Database = {
         Returns: Json
       }
       set_favorite: { Args: { p_character_id: string }; Returns: Json }
-      set_rival_team:
-        | { Args: { p_slots: Json }; Returns: Json }
-        | { Args: { p_index?: number; p_slots: Json }; Returns: Json }
+      set_rival_team: {
+        Args: { p_index?: number; p_slots: Json }
+        Returns: Json
+      }
       set_username: { Args: { p_username: string }; Returns: Json }
       submit_bleachdle: {
         Args: { p_day: string; p_guesses: number; p_won: boolean }
