@@ -205,6 +205,71 @@ export type Database = {
         }
         Relationships: []
       }
+      card_overrides: {
+        Row: {
+          character_id: string
+          created_at: string
+          element: string | null
+          faction: string | null
+          focus_x: number | null
+          focus_y: number | null
+          image_url: string | null
+          lore_ar: string | null
+          lore_en: string | null
+          name_ar: string | null
+          name_en: string | null
+          overall: number | null
+          rarity: string | null
+          updated_at: string
+          updated_by: string | null
+          zoom: number | null
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          element?: string | null
+          faction?: string | null
+          focus_x?: number | null
+          focus_y?: number | null
+          image_url?: string | null
+          lore_ar?: string | null
+          lore_en?: string | null
+          name_ar?: string | null
+          name_en?: string | null
+          overall?: number | null
+          rarity?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          zoom?: number | null
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          element?: string | null
+          faction?: string | null
+          focus_x?: number | null
+          focus_y?: number | null
+          image_url?: string | null
+          lore_ar?: string | null
+          lore_en?: string | null
+          name_ar?: string | null
+          name_en?: string | null
+          overall?: number | null
+          rarity?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          zoom?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_overrides_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_trades: {
         Row: {
           created_at: string
@@ -1422,6 +1487,22 @@ export type Database = {
     Functions: {
       activate_potion: { Args: { p_item_id: string }; Returns: Json }
       add_xp: { Args: { p_amount: number; p_source?: string }; Returns: Json }
+      admin_clear_card_override: {
+        Args: { p_character: string }
+        Returns: Json
+      }
+      admin_create_news: {
+        Args: {
+          p_body_ar: string
+          p_body_en: string
+          p_category?: string
+          p_pinned?: boolean
+          p_title_ar: string
+          p_title_en: string
+        }
+        Returns: Json
+      }
+      admin_delete_news: { Args: { p_id: string }; Returns: Json }
       admin_get_player: { Args: { p_user: string }; Returns: Json }
       admin_grant_character: {
         Args: { p_character: string; p_count?: number; p_user: string }
@@ -1444,6 +1525,19 @@ export type Database = {
         Returns: Json
       }
       admin_guard: { Args: never; Returns: string }
+      admin_list_news: {
+        Args: never
+        Returns: {
+          body_ar: string
+          body_en: string
+          category: string
+          id: string
+          pinned: boolean
+          published_at: string
+          title_ar: string
+          title_en: string
+        }[]
+      }
       admin_log: {
         Args: {
           _action: string
@@ -1455,6 +1549,10 @@ export type Database = {
       }
       admin_search_players: {
         Args: { p_limit?: number; p_q?: string }
+        Returns: Json
+      }
+      admin_set_card_override: {
+        Args: { p_character: string; p_patch: Json }
         Returns: Json
       }
       admin_set_streak: {
@@ -1471,6 +1569,17 @@ export type Database = {
       }
       admin_unlock_achievement: {
         Args: { p_achievement: string; p_user: string }
+        Returns: Json
+      }
+      admin_update_news: {
+        Args: {
+          p_body_ar: string
+          p_body_en: string
+          p_id: string
+          p_pinned: boolean
+          p_title_ar: string
+          p_title_en: string
+        }
         Returns: Json
       }
       am_i_admin: { Args: never; Returns: boolean }
@@ -1545,6 +1654,33 @@ export type Database = {
       founders_active: { Args: never; Returns: boolean }
       get_active_potion: { Args: never; Returns: Json }
       get_bleachdle_today: { Args: { p_candidates: string[] }; Returns: Json }
+      get_card_overrides: {
+        Args: never
+        Returns: {
+          character_id: string
+          created_at: string
+          element: string | null
+          faction: string | null
+          focus_x: number | null
+          focus_y: number | null
+          image_url: string | null
+          lore_ar: string | null
+          lore_en: string | null
+          name_ar: string | null
+          name_en: string | null
+          overall: number | null
+          rarity: string | null
+          updated_at: string
+          updated_by: string | null
+          zoom: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "card_overrides"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_clan_leaderboard: {
         Args: { p_limit?: number }
         Returns: {
