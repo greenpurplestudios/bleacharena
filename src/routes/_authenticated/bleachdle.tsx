@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
-import { characters } from "@/data/characters";
+import { puzzleCharacters as characters } from "@/data/characters";
 import { RARITY_LABEL } from "@/lib/rarity";
 import type { Character } from "@/types/character";
 import {
