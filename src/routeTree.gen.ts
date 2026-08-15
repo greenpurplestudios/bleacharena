@@ -43,6 +43,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileUserIdRouteImport } from './routes/_authenticated/profile.$userId'
+import { Route as ApiPublicCardArtFileRouteImport } from './routes/api/public/card-art/$file'
 
 const FollowRoute = FollowRouteImport.update({
   id: '/follow',
@@ -217,6 +218,11 @@ const AuthenticatedProfileUserIdRoute =
     path: '/profile/$userId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicCardArtFileRoute = ApiPublicCardArtFileRouteImport.update({
+  id: '/api/public/card-art/$file',
+  path: '/api/public/card-art/$file',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -252,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
+  '/api/public/card-art/$file': typeof ApiPublicCardArtFileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -287,6 +294,7 @@ export interface FileRoutesByTo {
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/api/public/card-art/$file': typeof ApiPublicCardArtFileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/auth/reset': typeof AuthResetRoute
   '/_authenticated/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/api/public/card-art/$file': typeof ApiPublicCardArtFileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -361,6 +370,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile/'
+    | '/api/public/card-art/$file'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile'
+    | '/api/public/card-art/$file'
   id:
     | '__root__'
     | '/'
@@ -432,6 +443,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/_authenticated/profile/$userId'
     | '/_authenticated/profile/'
+    | '/api/public/card-art/$file'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -439,6 +451,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   FollowRoute: typeof FollowRoute
+  ApiPublicCardArtFileRoute: typeof ApiPublicCardArtFileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -681,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileUserIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/card-art/$file': {
+      id: '/api/public/card-art/$file'
+      path: '/api/public/card-art/$file'
+      fullPath: '/api/public/card-art/$file'
+      preLoaderRoute: typeof ApiPublicCardArtFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -766,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   FollowRoute: FollowRoute,
+  ApiPublicCardArtFileRoute: ApiPublicCardArtFileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
