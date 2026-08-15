@@ -1159,8 +1159,11 @@ export type Database = {
       }
       rival_stats: {
         Row: {
+          battles: number
           battles_day: string
           battles_today: number
+          defenses_day: string | null
+          defenses_today: number
           losses: number
           rating: number
           updated_at: string
@@ -1168,8 +1171,11 @@ export type Database = {
           wins: number
         }
         Insert: {
+          battles?: number
           battles_day?: string
           battles_today?: number
+          defenses_day?: string | null
+          defenses_today?: number
           losses?: number
           rating?: number
           updated_at?: string
@@ -1177,8 +1183,11 @@ export type Database = {
           wins?: number
         }
         Update: {
+          battles?: number
           battles_day?: string
           battles_today?: number
+          defenses_day?: string | null
+          defenses_today?: number
           losses?: number
           rating?: number
           updated_at?: string
@@ -1189,19 +1198,58 @@ export type Database = {
       }
       rival_teams: {
         Row: {
+          name: string | null
           slots: Json
+          stamina_day: string | null
+          stamina_used: number
+          team_index: number
           updated_at: string
           user_id: string
         }
         Insert: {
+          name?: string | null
           slots?: Json
+          stamina_day?: string | null
+          stamina_used?: number
+          team_index?: number
           updated_at?: string
           user_id: string
         }
         Update: {
+          name?: string | null
           slots?: Json
+          stamina_day?: string | null
+          stamina_used?: number
+          team_index?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      rival_weekly: {
+        Row: {
+          losses: number
+          points: number
+          updated_at: string
+          user_id: string
+          week_start: string
+          wins: number
+        }
+        Insert: {
+          losses?: number
+          points?: number
+          updated_at?: string
+          user_id: string
+          week_start: string
+          wins?: number
+        }
+        Update: {
+          losses?: number
+          points?: number
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+          wins?: number
         }
         Relationships: []
       }
@@ -1585,7 +1633,10 @@ export type Database = {
       am_i_admin: { Args: never; Returns: boolean }
       award_fragments: { Args: { p_amount: number }; Returns: Json }
       award_pack_from_score: { Args: { p_score: number }; Returns: Json }
-      battle_rival: { Args: { p_opponent: string }; Returns: Json }
+      battle_rival: {
+        Args: { p_opponent: string; p_team_index?: number }
+        Returns: Json
+      }
       buy_pack: { Args: { p_count?: number; p_tier: string }; Returns: Json }
       cancel_join_request: { Args: { p_clan_id: string }; Returns: Json }
       claim_clan_weekly_reward: { Args: never; Returns: Json }
@@ -1601,6 +1652,7 @@ export type Database = {
       current_day_key: { Args: never; Returns: string }
       current_season_key: { Args: never; Returns: string }
       delete_global_message: { Args: { p_id: string }; Returns: Json }
+      delete_rival_team: { Args: { p_index: number }; Returns: Json }
       disband_clan: { Args: never; Returns: Json }
       duel_find_match: {
         Args: never
@@ -1649,7 +1701,7 @@ export type Database = {
       ensure_weekly_announcement: { Args: never; Returns: undefined }
       equip_item: { Args: { p_item_id: string; p_kind: string }; Returns: Json }
       equip_weapon: { Args: { p_weapon_id: string }; Returns: Json }
-      find_rival_opponent: { Args: never; Returns: Json }
+      find_rival_opponent: { Args: { p_team_index?: number }; Returns: Json }
       forge_weapon: { Args: { p_weapon_id: string }; Returns: Json }
       founders_active: { Args: never; Returns: boolean }
       get_active_potion: { Args: never; Returns: Json }
@@ -1913,6 +1965,7 @@ export type Database = {
       get_my_referral: { Args: never; Returns: Json }
       get_my_rival_stats: { Args: never; Returns: Json }
       get_my_rival_team: { Args: never; Returns: Json }
+      get_my_rival_teams: { Args: never; Returns: Json }
       get_my_weekly_reward: { Args: never; Returns: Json }
       get_news: {
         Args: { p_limit?: number }
@@ -1941,6 +1994,22 @@ export type Database = {
           avatar_character_id: string
           losses: number
           name_frame: string
+          rank: number
+          rating: number
+          title: string
+          user_id: string
+          username: string
+          username_color: string
+          wins: number
+        }[]
+      }
+      get_rival_weekly_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_character_id: string
+          losses: number
+          name_frame: string
+          points: number
           rank: number
           rating: number
           title: string
@@ -2095,7 +2164,10 @@ export type Database = {
         Returns: Json
       }
       set_favorite: { Args: { p_character_id: string }; Returns: Json }
-      set_rival_team: { Args: { p_slots: Json }; Returns: Json }
+      set_rival_team: {
+        Args: { p_index?: number; p_slots: Json }
+        Returns: Json
+      }
       set_username: { Args: { p_username: string }; Returns: Json }
       submit_bleachdle: {
         Args: { p_day: string; p_guesses: number; p_won: boolean }
