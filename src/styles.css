@@ -588,6 +588,27 @@ body {
 .lag-reduced .legendary-sheen { opacity: 0.35; }
 .lag-reduced .scene-streak { display: none; }
 
+/* ---- FOUNDER cards: golden aura + slow prestige sheen ---- */
+@keyframes founder-halo {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.015); }
+}
+.founder-halo {
+  animation: founder-halo 4.6s ease-in-out infinite;
+  backface-visibility: hidden;
+}
+.founder-sheen {
+  animation: legendary-sheen 6.2s ease-in-out infinite;
+  contain: strict;
+  backface-visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .founder-halo, .founder-sheen { animation: none; }
+}
+.lag-reduced .founder-halo,
+.lag-reduced .founder-sheen { animation: none !important; }
+.lag-reduced .founder-sheen { opacity: 0.3; }
+
 /* ---- Bottom nav PLAY button: sword clash ---- */
 @keyframes play-clash-pop {
   0% { transform: scale(1); }

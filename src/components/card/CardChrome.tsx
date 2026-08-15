@@ -83,6 +83,35 @@ export function CardChrome({ rarity, uid }: { rarity: Rarity; uid: string }) {
         </div>
       )}
 
+      {/* FOUNDER — golden prestige halo + slow sheen */}
+      {rarity === "founder" && (
+        <>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 rounded-[6.5%] founder-halo"
+            style={{
+              boxShadow:
+                "inset 0 0 3cqw rgba(255,214,120,0.5), inset 0 0 0 0.35cqw rgba(255,229,168,0.75), 0 0 4cqw rgba(255,200,90,0.35)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 overflow-hidden rounded-[6.5%]"
+          >
+            <div
+              className="absolute inset-y-0 founder-sheen"
+              style={{
+                left: "-60%",
+                width: "38%",
+                background:
+                  "linear-gradient(100deg, transparent 0%, rgba(255,236,182,0.06) 25%, rgba(255,246,214,0.9) 50%, rgba(255,236,182,0.06) 75%, transparent 100%)",
+                mixBlendMode: "screen",
+              }}
+            />
+          </div>
+        </>
+      )}
+
       {/* MYTHIC lightning is rendered outside the clipped face (MythicLightning). */}
       {gid ? null : null}
     </>
