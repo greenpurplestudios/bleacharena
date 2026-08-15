@@ -26,6 +26,7 @@ import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/q
 import { Route as AuthenticatedPlayRouteImport } from './routes/_authenticated/play'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
+import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated/levels'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
@@ -125,6 +126,11 @@ const AuthenticatedPacksRoute = AuthenticatedPacksRouteImport.update({
 const AuthenticatedMissionsRoute = AuthenticatedMissionsRouteImport.update({
   id: '/missions',
   path: '/missions',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
+  id: '/market',
+  path: '/market',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLevelsRoute = AuthenticatedLevelsRouteImport.update({
@@ -230,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
+  '/market': typeof AuthenticatedMarketRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/play': typeof AuthenticatedPlayRoute
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
+  '/market': typeof AuthenticatedMarketRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/play': typeof AuthenticatedPlayRoute
@@ -300,6 +308,7 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/levels': typeof AuthenticatedLevelsRoute
+  '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/play': typeof AuthenticatedPlayRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/leaderboard'
     | '/levels'
+    | '/market'
     | '/missions'
     | '/packs'
     | '/play'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/leaderboard'
     | '/levels'
+    | '/market'
     | '/missions'
     | '/packs'
     | '/play'
@@ -405,6 +416,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/leaderboard'
     | '/_authenticated/levels'
+    | '/_authenticated/market'
     | '/_authenticated/missions'
     | '/_authenticated/packs'
     | '/_authenticated/play'
@@ -550,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMissionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/market': {
+      id: '/_authenticated/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof AuthenticatedMarketRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/levels': {
       id: '/_authenticated/levels'
       path: '/levels'
@@ -680,6 +699,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedLevelsRoute: typeof AuthenticatedLevelsRoute
+  AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedPlayRoute: typeof AuthenticatedPlayRoute
@@ -711,6 +731,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedLevelsRoute: AuthenticatedLevelsRoute,
+  AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedPlayRoute: AuthenticatedPlayRoute,
