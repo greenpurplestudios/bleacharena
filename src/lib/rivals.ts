@@ -6,13 +6,32 @@ export interface RivalStats {
   losses: number;
   battlesToday: number;
   battlesLeft: number;
+  defensesToday: number;
+  defensesLeft: number;
+  weeklyPoints: number;
+  weeklyWins: number;
+  weeklyLosses: number;
 }
 
 export interface RivalOpponent {
   opponentId: string;
   username: string;
   team: string[];
+  rating?: number;
+  teamPower?: number;
 }
+
+/** One of up to four rival squads; stamina is per team, not per card. */
+export interface RivalTeam {
+  index: number;
+  slots: string[];
+  staminaLeft: number;
+  name: string | null;
+}
+
+export const RIVAL_MAX_TEAMS = 4;
+export const RIVAL_TEAM_STAMINA = 3;
+export const RIVAL_DAILY_ATTACKS = 12;
 
 export interface RivalBattleResult {
   ok: boolean;
@@ -25,6 +44,7 @@ export interface RivalBattleResult {
   newRating?: number;
   soulsAwarded?: number;
   battlesLeft?: number;
+  staminaLeft?: number;
 }
 
 export interface RivalLeaderRow {
@@ -52,14 +72,40 @@ export interface RecentBattle {
   i_lost: boolean;
 }
 
+export interface RivalWeeklyRow extends RivalLeaderRow {
+  points: number;
+}
+
 export async function getMyRivalTeam(): Promise<string[]> {
   const { data, error } = await supabase.rpc("get_my_rival_team");
   if (error || !data) return [];
   return (data as string[]) ?? [];
 }
 
-export async function setMyRivalTeam(slots: string[]): Promise<{ ok: boolean; error?: string }> {
-  const { data, error } = await supabase.rpc("set_rival_team", { p_slots: slots });
+export async function getMyRivalTeams(): Promise<RivalTeam[]> {
+  const { data, error } = await (supabase.rpc as unknown as (
+    n: string,
+  ) => Promise<{ data: unknown; error: unknown }>)("get_my_rival_teams");
+  if (error || !Array.isArray(data)) return [];
+  return (data as Record<string, unknown>[]).map((r) => ({
+    index: Number(r["team_index"] ?? 0),
+    slots: (r["slots"] as string[]) ?? [],
+    staminaLeft: Number(r["stamina_left"] ?? 0),
+    name: (r["name"] as string) ?? null,
+  }));
+}
+
+export async function setMyRivalTeam(slots: string[], teamIndex = 0): Promise<{ ok: boolean; error?: string }> {
+  const { data, error } = await supabase.rpc("set_rival_team", { p_slots: slots, p_index: teamIndex } as never);
+  if (error) return { ok: false, error: error.message };
+  const p = (data ?? {}) as { ok: boolean; error?: string };
+  return { ok: !!p.ok, error: p.error };
+}
+
+export async function deleteRivalTeam(teamIndex: number): Promise<{ ok: boolean; error?: string }> {
+  const { data, error } = await (supabase.rpc as unknown as (
+    n: string, a: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: { message: string } | null }>)("delete_rival_team", { p_index: teamIndex });
   if (error) return { ok: false, error: error.message };
   const p = (data ?? {}) as { ok: boolean; error?: string };
   return { ok: !!p.ok, error: p.error };
@@ -69,31 +115,46 @@ export async function getMyRivalStats(): Promise<RivalStats> {
   const { data } = await supabase.rpc("get_my_rival_stats");
   const p = (data ?? {}) as {
     rating?: number; wins?: number; losses?: number; battles_today?: number; battles_left?: number;
+    defenses_today?: number; defenses_left?: number;
+    weekly_points?: number; weekly_wins?: number; weekly_losses?: number;
   };
   return {
     rating: Number(p.rating ?? 1000),
     wins: Number(p.wins ?? 0),
     losses: Number(p.losses ?? 0),
     battlesToday: Number(p.battles_today ?? 0),
-    battlesLeft: Number(p.battles_left ?? 10),
+    battlesLeft: Number(p.battles_left ?? RIVAL_DAILY_ATTACKS),
+    defensesToday: Number(p.defenses_today ?? 0),
+    defensesLeft: Number(p.defenses_left ?? RIVAL_DAILY_ATTACKS),
+    weeklyPoints: Number(p.weekly_points ?? 0),
+    weeklyWins: Number(p.weekly_wins ?? 0),
+    weeklyLosses: Number(p.weekly_losses ?? 0),
   };
 }
 
-export async function findRivalOpponent(): Promise<RivalOpponent | { error: string }> {
-  const { data, error } = await supabase.rpc("find_rival_opponent");
+export async function findRivalOpponent(teamIndex = 0): Promise<RivalOpponent | { error: string }> {
+  const { data, error } = await supabase.rpc("find_rival_opponent", { p_team_index: teamIndex } as never);
   if (error) return { error: error.message };
-  const p = (data ?? {}) as { ok: boolean; opponent_id?: string; username?: string; team?: string[]; error?: string };
+  const p = (data ?? {}) as {
+    ok: boolean; opponent_id?: string; username?: string; team?: string[]; error?: string;
+    rating?: number; team_power?: number;
+  };
   if (!p.ok) return { error: p.error ?? "no_opponent" };
-  return { opponentId: p.opponent_id!, username: p.username ?? "", team: p.team ?? [] };
+  return {
+    opponentId: p.opponent_id!, username: p.username ?? "", team: p.team ?? [],
+    rating: p.rating != null ? Number(p.rating) : undefined,
+    teamPower: p.team_power != null ? Number(p.team_power) : undefined,
+  };
 }
 
-export async function battleRival(opponentId: string): Promise<RivalBattleResult> {
-  const { data, error } = await supabase.rpc("battle_rival", { p_opponent: opponentId });
+export async function battleRival(opponentId: string, teamIndex = 0): Promise<RivalBattleResult> {
+  const { data, error } = await supabase.rpc("battle_rival", { p_opponent: opponentId, p_team_index: teamIndex } as never);
   if (error) return { ok: false, error: error.message };
   const p = (data ?? {}) as {
     ok: boolean; error?: string; battle_id?: string;
     attacker_score?: number; defender_score?: number; winner_id?: string | null;
     attacker_delta?: number; new_rating?: number; souls_awarded?: number; battles_left?: number;
+    stamina_left?: number;
   };
   if (!p.ok) return { ok: false, error: p.error };
   return {
@@ -106,7 +167,23 @@ export async function battleRival(opponentId: string): Promise<RivalBattleResult
     newRating: Number(p.new_rating ?? 1000),
     soulsAwarded: Number(p.souls_awarded ?? 0),
     battlesLeft: Number(p.battles_left ?? 0),
+    staminaLeft: Number(p.stamina_left ?? 0),
   };
+}
+
+export async function fetchRivalWeeklyLeaderboard(limit = 100): Promise<RivalWeeklyRow[]> {
+  const { data, error } = await (supabase.rpc as unknown as (
+    n: string, a: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: unknown }>)("get_rival_weekly_leaderboard", { p_limit: limit });
+  if (error || !Array.isArray(data)) return [];
+  return (data as RivalWeeklyRow[]).map((r) => ({
+    ...r,
+    rank: Number(r.rank),
+    points: Number(r.points),
+    rating: Number(r.rating),
+    wins: Number(r.wins),
+    losses: Number(r.losses),
+  }));
 }
 
 export async function fetchRivalLeaderboard(limit = 100): Promise<RivalLeaderRow[]> {
