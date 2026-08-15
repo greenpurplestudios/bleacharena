@@ -8,7 +8,7 @@ import { haptic } from "@/lib/haptics";
 
 type Tab = {
   id: string;
-  to?: "/play" | "/store" | "/collection" | "/profile";
+  to?: "/play" | "/store" | "/market" | "/profile";
   label: { en: string; ar: string };
   glyph: string;
   /** Matches these path prefixes for the active state. */
@@ -42,7 +42,7 @@ function UserIcon({ className }: { className?: string }) {
 const TABS: Tab[] = [
   { id: "play", to: "/play", label: { en: "Play", ar: "العب" }, glyph: "▶", match: ["/play", "/soul-duel", "/draft", "/rivals", "/bleachdle", "/soul-links", "/quiz", "/quotes"] },
   { id: "store", to: "/store", label: { en: "Store", ar: "المتجر" }, glyph: "✧", match: ["/store", "/shop", "/forge", "/packs"] },
-  { id: "collection", to: "/collection", label: { en: "Collection", ar: "المجموعة" }, glyph: "▦", match: ["/collection", "/characters"] },
+  { id: "market", to: "/market", label: { en: "Market", ar: "السوق" }, glyph: "⇄", match: ["/market"] },
   { id: "profile", to: "/profile", label: { en: "Profile", ar: "الملف" }, glyph: "☯", match: ["/profile", "/levels", "/achievements", "/settings"] },
   { id: "more", label: { en: "More", ar: "المزيد" }, glyph: "≡", match: [] },
 ];

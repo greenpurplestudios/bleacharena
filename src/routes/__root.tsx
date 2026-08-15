@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProgressionProvider } from "@/hooks/use-progression";
 import { capturePendingReferral, consumePendingReferral } from "@/lib/referrals";
 import { initPerf } from "@/lib/perf";
+import { loadCardOverrides } from "@/lib/card-overrides";
 
 function NotFoundComponent() {
   return (
@@ -154,6 +155,7 @@ function RootComponent() {
   useEffect(() => {
     initPerf();
     capturePendingReferral();
+    void loadCardOverrides();
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) consumePendingReferral();
     });

@@ -79,5 +79,12 @@ const MAP: Record<string, Partial<PortraitFraming>> = {
 };
 
 export function framingOf(slug: string): PortraitFraming {
-  return { ...DEFAULT, ...(MAP[slug] ?? {}) };
+  return { ...DEFAULT, ...(MAP[slug] ?? {}), ...(OVERRIDES[slug] ?? {}) };
+}
+
+/** Admin-authored framing tweaks, applied on top of the built-in map. */
+const OVERRIDES: Record<string, Partial<PortraitFraming>> = {};
+
+export function setFramingOverride(slug: string, framing: Partial<PortraitFraming>): void {
+  OVERRIDES[slug] = { ...OVERRIDES[slug], ...framing };
 }

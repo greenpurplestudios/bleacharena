@@ -10,6 +10,8 @@ import {
   adminSetUsername,
   type AdminPlayer, type AdminPlayerDetail, type AuditRow,
 } from "@/lib/admin";
+import { CardStudio } from "@/components/admin/CardStudio";
+import { AnnouncementBoard } from "@/components/admin/AnnouncementBoard";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -42,7 +44,12 @@ const L = {
   audit: { en: "Recent admin actions", ar: "إجراءات المشرف الأخيرة" },
   loading: { en: "Loading…", ar: "جارٍ التحميل…" },
   selectPlayer: { en: "Select a player to manage.", ar: "اختر لاعبًا لإدارته." },
+  tabPlayers: { en: "Players", ar: "اللاعبون" },
+  tabCards: { en: "Cards", ar: "البطاقات" },
+  tabNews: { en: "Announcements", ar: "الإعلانات" },
 } as const;
+
+type Tab = "players" | "cards" | "news";
 
 function AdminPage() {
   const { locale, dir } = useI18n();
@@ -54,6 +61,7 @@ function AdminPage() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [flash, setFlash] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [tab, setTab] = useState<Tab>("players");
 
   useEffect(() => {
     amIAdmin().then(async (ok) => {
@@ -114,6 +122,33 @@ function AdminPage() {
         <p className="text-[10px] uppercase tracking-[0.4em] text-red-400">{L.eyebrow[locale]}</p>
         <h1 className="mt-1 font-display text-3xl font-black text-glow-orange sm:text-4xl">{L.title[locale]}</h1>
 
+        <div className="mt-5 flex gap-2">
+          {(["players", "cards", "news"] as Tab[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest transition ${
+                tab === t ? "border-primary/60 bg-primary/15 text-primary" : "border-white/10 text-muted-foreground"
+              }`}
+            >
+              {t === "players" ? L.tabPlayers[locale] : t === "cards" ? L.tabCards[locale] : L.tabNews[locale]}
+            </button>
+          ))}
+        </div>
+
+        {tab === "cards" && (
+          <section className="mt-6 rounded-2xl border border-white/10 bg-card/60 p-4">
+            <CardStudio onDone={async () => setAudit(await fetchAuditLog())} />
+          </section>
+        )}
+        {tab === "news" && (
+          <section className="mt-6">
+            <AnnouncementBoard onChanged={async () => setAudit(await fetchAuditLog())} />
+          </section>
+        )}
+
+        {tab === "players" && (
+        <>
         <div className="mt-6 flex gap-2">
           <input
             value={q}
@@ -192,6 +227,8 @@ function AdminPage() {
                 onRun={(v) => run(() => adminTransferProgress(v, selected.user_id))} />
             </div>
           </section>
+        )}
+        </>
         )}
 
         <section className="mt-8">

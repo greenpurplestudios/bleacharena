@@ -26,6 +26,7 @@ import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated/q
 import { Route as AuthenticatedPlayRouteImport } from './routes/_authenticated/play'
 import { Route as AuthenticatedPacksRouteImport } from './routes/_authenticated/packs'
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
+import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedLevelsRouteImport } from './routes/_authenticated/levels'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
@@ -42,6 +43,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAchievementsRouteImport } from './routes/_authenticated/achievements'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile.index'
 import { Route as AuthenticatedProfileUserIdRouteImport } from './routes/_authenticated/profile.$userId'
+import { Route as ApiPublicCardArtFileRouteImport } from './routes/api/public/card-art/$file'
 
 const FollowRoute = FollowRouteImport.update({
   id: '/follow',
@@ -125,6 +127,11 @@ const AuthenticatedPacksRoute = AuthenticatedPacksRouteImport.update({
 const AuthenticatedMissionsRoute = AuthenticatedMissionsRouteImport.update({
   id: '/missions',
   path: '/missions',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
+  id: '/market',
+  path: '/market',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLevelsRoute = AuthenticatedLevelsRouteImport.update({
@@ -211,6 +218,11 @@ const AuthenticatedProfileUserIdRoute =
     path: '/profile/$userId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicCardArtFileRoute = ApiPublicCardArtFileRouteImport.update({
+  id: '/api/public/card-art/$file',
+  path: '/api/public/card-art/$file',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -230,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
+  '/market': typeof AuthenticatedMarketRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/play': typeof AuthenticatedPlayRoute
@@ -245,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
+  '/api/public/card-art/$file': typeof ApiPublicCardArtFileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -264,6 +278,7 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/levels': typeof AuthenticatedLevelsRoute
+  '/market': typeof AuthenticatedMarketRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/packs': typeof AuthenticatedPacksRoute
   '/play': typeof AuthenticatedPlayRoute
@@ -279,6 +294,7 @@ export interface FileRoutesByTo {
   '/auth/reset': typeof AuthResetRoute
   '/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/api/public/card-art/$file': typeof ApiPublicCardArtFileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -300,6 +316,7 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/levels': typeof AuthenticatedLevelsRoute
+  '/_authenticated/market': typeof AuthenticatedMarketRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
   '/_authenticated/packs': typeof AuthenticatedPacksRoute
   '/_authenticated/play': typeof AuthenticatedPlayRoute
@@ -315,6 +332,7 @@ export interface FileRoutesById {
   '/auth/reset': typeof AuthResetRoute
   '/_authenticated/profile/$userId': typeof AuthenticatedProfileUserIdRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/api/public/card-art/$file': typeof ApiPublicCardArtFileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -336,6 +354,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/leaderboard'
     | '/levels'
+    | '/market'
     | '/missions'
     | '/packs'
     | '/play'
@@ -351,6 +370,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile/'
+    | '/api/public/card-art/$file'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -370,6 +390,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/leaderboard'
     | '/levels'
+    | '/market'
     | '/missions'
     | '/packs'
     | '/play'
@@ -385,6 +406,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/profile/$userId'
     | '/profile'
+    | '/api/public/card-art/$file'
   id:
     | '__root__'
     | '/'
@@ -405,6 +427,7 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/leaderboard'
     | '/_authenticated/levels'
+    | '/_authenticated/market'
     | '/_authenticated/missions'
     | '/_authenticated/packs'
     | '/_authenticated/play'
@@ -420,6 +443,7 @@ export interface FileRouteTypes {
     | '/auth/reset'
     | '/_authenticated/profile/$userId'
     | '/_authenticated/profile/'
+    | '/api/public/card-art/$file'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -427,6 +451,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   FollowRoute: typeof FollowRoute
+  ApiPublicCardArtFileRoute: typeof ApiPublicCardArtFileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -550,6 +575,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMissionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/market': {
+      id: '/_authenticated/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof AuthenticatedMarketRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/levels': {
       id: '/_authenticated/levels'
       path: '/levels'
@@ -662,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileUserIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/card-art/$file': {
+      id: '/api/public/card-art/$file'
+      path: '/api/public/card-art/$file'
+      fullPath: '/api/public/card-art/$file'
+      preLoaderRoute: typeof ApiPublicCardArtFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -680,6 +719,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedLevelsRoute: typeof AuthenticatedLevelsRoute
+  AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
   AuthenticatedPacksRoute: typeof AuthenticatedPacksRoute
   AuthenticatedPlayRoute: typeof AuthenticatedPlayRoute
@@ -711,6 +751,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedLevelsRoute: AuthenticatedLevelsRoute,
+  AuthenticatedMarketRoute: AuthenticatedMarketRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
   AuthenticatedPacksRoute: AuthenticatedPacksRoute,
   AuthenticatedPlayRoute: AuthenticatedPlayRoute,
@@ -745,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   FollowRoute: FollowRoute,
+  ApiPublicCardArtFileRoute: ApiPublicCardArtFileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
