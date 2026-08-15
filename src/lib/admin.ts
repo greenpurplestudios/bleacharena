@@ -89,3 +89,60 @@ export async function fetchAuditLog(): Promise<AuditRow[]> {
   if (error || !data) return [];
   return data;
 }
+
+/* ------------------------- card content tools ------------------------- */
+
+export interface CardOverridePatch {
+  image_url?: string;
+  focus_x?: number;
+  focus_y?: number;
+  zoom?: number;
+  name_en?: string;
+  name_ar?: string;
+  overall?: number;
+  rarity?: string;
+  faction?: string;
+  element?: string;
+  lore_en?: string;
+  lore_ar?: string;
+}
+
+export const adminSetCardOverride = (characterId: string, patch: CardOverridePatch) =>
+  call("admin_set_card_override", { p_character: characterId, p_patch: patch });
+
+export const adminClearCardOverride = (characterId: string) =>
+  call("admin_clear_card_override", { p_character: characterId });
+
+/* --------------------------- announcements --------------------------- */
+
+export interface AdminNews {
+  id: string;
+  category: string;
+  title_en: string;
+  title_ar: string;
+  body_en: string;
+  body_ar: string;
+  pinned: boolean;
+  published_at: string;
+}
+
+export async function adminListNews(): Promise<AdminNews[]> {
+  const { data, error } = await rpc("admin_list_news");
+  if (error || !Array.isArray(data)) return [];
+  return data as AdminNews[];
+}
+
+export const adminCreateNews = (n: { title_en: string; title_ar: string; body_en: string; body_ar: string; pinned: boolean; category?: string }) =>
+  call("admin_create_news", {
+    p_title_en: n.title_en, p_title_ar: n.title_ar,
+    p_body_en: n.body_en, p_body_ar: n.body_ar,
+    p_category: n.category ?? "announcement", p_pinned: n.pinned,
+  });
+
+export const adminUpdateNews = (id: string, n: { title_en: string; title_ar: string; body_en: string; body_ar: string; pinned: boolean }) =>
+  call("admin_update_news", {
+    p_id: id, p_title_en: n.title_en, p_title_ar: n.title_ar,
+    p_body_en: n.body_en, p_body_ar: n.body_ar, p_pinned: n.pinned,
+  });
+
+export const adminDeleteNews = (id: string) => call("admin_delete_news", { p_id: id });
