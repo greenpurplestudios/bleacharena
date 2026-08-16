@@ -227,8 +227,49 @@ function RivalsPage() {
           <StatCell label={t("rivalRating")} value={stats?.rating ?? "—"} accent />
           <StatCell label={t("rivalWins")} value={stats?.wins ?? 0} />
           <StatCell label={t("rivalLosses")} value={stats?.losses ?? 0} />
-          <StatCell label={t("rivalBattlesLeft")} value={`${stats?.battlesLeft ?? 10} / 10`} />
+          <StatCell label={tx("attacksLeft")} value={`${stats?.battlesLeft ?? RIVAL_DAILY_ATTACKS} / ${RIVAL_DAILY_ATTACKS}`} />
         </div>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <StatCell label={tx("defenses")} value={`${stats?.defensesToday ?? 0} / ${RIVAL_DAILY_ATTACKS}`} />
+          <StatCell label={tx("weeklyPoints")} value={stats?.weeklyPoints ?? 0} />
+        </div>
+
+        {/* Squad switcher */}
+        <section className="mt-6">
+          <p className="mb-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{tx("squads")}</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {Array.from({ length: RIVAL_MAX_TEAMS }).map((_, i) => {
+              const tm = (teams ?? []).find((x) => x.index === i);
+              const active = teamIndex === i;
+              const left = tm?.staminaLeft ?? RIVAL_TEAM_STAMINA;
+              return (
+                <button
+                  key={i}
+                  onClick={() => { setTeamIndex(i); setOpponent(null); setBattle(null); setSaveMsg(null); playSound("tap"); }}
+                  className={
+                    "min-w-[130px] shrink-0 rounded-xl border px-3 py-2 text-start transition-all " +
+                    (active ? "border-primary/70 bg-primary/10" : "border-white/10 bg-white/[0.03] hover:border-white/25")
+                  }
+                >
+                  <span className="block font-display text-sm font-black">
+                    {tm?.name ?? `${tx("squad")} ${i + 1}`}
+                  </span>
+                  <span className="mt-1 block text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {tm && tm.slots.length === 5 ? `${tx("stamina")}` : tx("empty")}
+                  </span>
+                  <span className="mt-1 flex gap-1">
+                    {Array.from({ length: RIVAL_TEAM_STAMINA }).map((__, s) => (
+                      <span
+                        key={s}
+                        className={"h-1.5 w-5 rounded-full " + (s < left ? "bg-primary" : "bg-white/15")}
+                      />
+                    ))}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Team builder */}
         <section className="mt-8 rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur-md">
@@ -244,6 +285,15 @@ function RivalsPage() {
             >
               {t("save")}
             </button>
+            </div>
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={clearTeam}
+                disabled={savedTeam.length === 0}
+                className="rounded-lg border border-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground disabled:opacity-40"
+              >
+                {tx("clear")}
+              </button>
           </div>
 
           {/* Selected slots */}
