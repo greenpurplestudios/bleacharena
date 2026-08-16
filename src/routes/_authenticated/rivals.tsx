@@ -366,7 +366,7 @@ function RivalsPage() {
             <h2 className="font-display text-xl font-black">{t("rivalBattle")}</h2>
             <button
               onClick={findOpponent}
-              disabled={!savedReady || searching || (stats?.battlesLeft ?? 0) <= 0}
+              disabled={!savedReady || searching || staminaLeft <= 0 || (stats?.battlesLeft ?? 0) <= 0}
               className="rounded-lg border border-primary/60 bg-primary/10 px-4 py-2 text-xs font-black uppercase tracking-widest text-primary disabled:opacity-40"
             >
               {searching ? t("searching") : t("findOpponent")}
@@ -375,6 +375,9 @@ function RivalsPage() {
 
           {!savedReady && (
             <p className="text-xs text-muted-foreground">{t("rivalSaveFirst")}</p>
+          )}
+          {savedReady && staminaLeft <= 0 && (
+            <p className="text-xs text-primary">{tx("noStamina")}</p>
           )}
 
           {opponent && (
@@ -471,9 +474,25 @@ function RivalsPage() {
 
         {/* Rival leaderboard */}
         <section className="mt-10">
-          <h2 className="mb-3 font-display text-lg font-black">{t("rivalTopFighters")}</h2>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-display text-lg font-black">{t("rivalTopFighters")}</h2>
+            <div className="flex gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-1">
+              {(["all", "week"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setBoardMode(m)}
+                  className={
+                    "rounded-md px-3 py-1 text-[10px] font-black uppercase tracking-widest " +
+                    (boardMode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground")
+                  }
+                >
+                  {m === "all" ? tx("allTime") : tx("weekly")}
+                </button>
+              ))}
+            </div>
+          </div>
           <ol className="space-y-2">
-            {(board ?? []).slice(0, 20).map((r) => {
+            {(boardMode === "all" ? board ?? [] : weekBoard ?? []).slice(0, 20).map((r) => {
               const isMe = myId && r.user_id === myId;
               return (
                 <li
@@ -508,11 +527,13 @@ function RivalsPage() {
                     )}
                   </span>
                   <span className="text-xs text-muted-foreground">{r.wins}W · {r.losses}L</span>
-                  <span className="font-display text-lg font-black text-glow-orange">{r.rating}</span>
+                  <span className="font-display text-lg font-black text-glow-orange">
+                    {boardMode === "week" ? (r as { points?: number }).points ?? r.rating : r.rating}
+                  </span>
                 </li>
               );
             })}
-            {(board?.length ?? 0) === 0 && (
+            {((boardMode === "all" ? board : weekBoard)?.length ?? 0) === 0 && (
               <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-10 text-center text-sm text-muted-foreground">
                 {t("rivalEmptyBoard")}
               </li>
