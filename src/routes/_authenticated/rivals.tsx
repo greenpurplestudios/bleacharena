@@ -12,12 +12,17 @@ import { trackMission } from "@/lib/missions";
 import { addXp, bumpProfileStats, ratingTierUnlocks, trackAchievement, XP } from "@/lib/progression";
 import {
   battleRival,
+  deleteRivalTeam,
   fetchMyRecentBattles,
   fetchRivalLeaderboard,
+  fetchRivalWeeklyLeaderboard,
   findRivalOpponent,
+  getMyRivalTeams,
   getMyRivalStats,
-  getMyRivalTeam,
   setMyRivalTeam,
+  RIVAL_DAILY_ATTACKS,
+  RIVAL_MAX_TEAMS,
+  RIVAL_TEAM_STAMINA,
   type RivalBattleResult,
   type RivalOpponent,
 } from "@/lib/rivals";
@@ -42,10 +47,29 @@ export const Route = createFileRoute("/_authenticated/rivals")({
 
 const characterById = new Map(characters.map((c) => [c.id, c]));
 
+const L = {
+  squads: { en: "Squads", ar: "الفرق" },
+  squad: { en: "Squad", ar: "فرقة" },
+  stamina: { en: "Stamina", ar: "الطاقة" },
+  attacksLeft: { en: "Attacks left", ar: "الهجمات المتبقية" },
+  defenses: { en: "Defenses today", ar: "الدفاعات اليوم" },
+  allTime: { en: "All-time", ar: "الكل" },
+  weekly: { en: "Weekly", ar: "أسبوعي" },
+  weeklyPoints: { en: "Weekly points", ar: "نقاط الأسبوع" },
+  clear: { en: "Clear squad", ar: "مسح الفرقة" },
+  empty: { en: "Empty", ar: "فارغة" },
+  noStamina: { en: "This squad is out of stamina today.", ar: "لا توجد طاقة لهذه الفرقة اليوم." },
+  shielded: { en: "That defender already hit the daily defense cap.", ar: "وصل المدافع إلى الحد اليومي للدفاعات." },
+  invalidTeam: { en: "Pick a valid squad.", ar: "اختر فرقة صالحة." },
+} as const;
+
 function RivalsPage() {
   const { t, locale } = useI18n();
   const qc = useQueryClient();
+  const tx = (k: keyof typeof L) => L[k][locale];
   const [myId, setMyId] = useState<string | null>(null);
+  const [teamIndex, setTeamIndex] = useState(0);
+  const [boardMode, setBoardMode] = useState<"all" | "week">("all");
   const [teamDraft, setTeamDraft] = useState<string[]>([]);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [opponent, setOpponent] = useState<RivalOpponent | null>(null);
@@ -57,13 +81,20 @@ function RivalsPage() {
 
   const { data: stats } = useQuery({ queryKey: ["rival-stats"], queryFn: getMyRivalStats });
   const { data: collection } = useQuery({ queryKey: ["collection"], queryFn: fetchMyCollection });
-  const { data: savedTeam } = useQuery({ queryKey: ["rival-team"], queryFn: getMyRivalTeam });
+  const { data: teams } = useQuery({ queryKey: ["rival-teams"], queryFn: getMyRivalTeams });
   const { data: board } = useQuery({ queryKey: ["rival-board"], queryFn: () => fetchRivalLeaderboard(50), staleTime: 30_000 });
+  const { data: weekBoard } = useQuery({ queryKey: ["rival-board-week"], queryFn: () => fetchRivalWeeklyLeaderboard(50), staleTime: 30_000 });
   const { data: recent } = useQuery({ queryKey: ["rival-recent"], queryFn: () => fetchMyRecentBattles(10) });
 
+  const activeTeam = useMemo(
+    () => (teams ?? []).find((tm) => tm.index === teamIndex) ?? null,
+    [teams, teamIndex],
+  );
+  const savedTeam = activeTeam?.slots ?? [];
+
   useEffect(() => {
-    if (savedTeam && teamDraft.length === 0) setTeamDraft(savedTeam);
-  }, [savedTeam, teamDraft.length]);
+    setTeamDraft(activeTeam?.slots ?? []);
+  }, [activeTeam]);
 
   const ownedIds = useMemo(() => new Set((collection ?? []).map((r) => r.characterId)), [collection]);
   const ownedCharacters = useMemo(
@@ -82,7 +113,7 @@ function RivalsPage() {
 
   const saveTeam = async () => {
     setSaveMsg(null);
-    const res = await setMyRivalTeam(teamDraft);
+    const res = await setMyRivalTeam(teamDraft, teamIndex);
     if (!res.ok) {
       playSound("error");
       setSaveMsg(res.error ?? "error");
@@ -90,14 +121,23 @@ function RivalsPage() {
     }
     playSound("success");
     setSaveMsg("saved");
-    await qc.invalidateQueries({ queryKey: ["rival-team"] });
+    await qc.invalidateQueries({ queryKey: ["rival-teams"] });
+  };
+
+  const clearTeam = async () => {
+    const res = await deleteRivalTeam(teamIndex);
+    if (!res.ok) { playSound("error"); setSaveMsg(res.error ?? "error"); return; }
+    playSound("tap");
+    setTeamDraft([]);
+    setOpponent(null);
+    await qc.invalidateQueries({ queryKey: ["rival-teams"] });
   };
 
   const findOpponent = async () => {
     setSearching(true);
     setBattle(null);
     playSound("tap");
-    const res = await findRivalOpponent();
+    const res = await findRivalOpponent(teamIndex);
     setSearching(false);
     if ("error" in res) {
       playSound("error");
@@ -114,7 +154,7 @@ function RivalsPage() {
     setBattling(true);
     setBattle(null);
     playSound("pick");
-    const res = await battleRival(opponent.opponentId);
+    const res = await battleRival(opponent.opponentId, teamIndex);
     setBattling(false);
     if (!res.ok) {
       playSound("error");
@@ -142,13 +182,16 @@ function RivalsPage() {
       ...tierIds.map((id) => trackAchievement(id, 1)),
     ]);
     qc.invalidateQueries({ queryKey: ["rival-stats"] });
+    qc.invalidateQueries({ queryKey: ["rival-teams"] });
     qc.invalidateQueries({ queryKey: ["rival-board"] });
+    qc.invalidateQueries({ queryKey: ["rival-board-week"] });
     qc.invalidateQueries({ queryKey: ["rival-recent"] });
     qc.invalidateQueries({ queryKey: ["souls"] });
   };
 
   const teamReady = teamDraft.length === 5;
-  const savedReady = (savedTeam?.length ?? 0) === 5;
+  const savedReady = savedTeam.length === 5;
+  const staminaLeft = activeTeam?.staminaLeft ?? RIVAL_TEAM_STAMINA;
 
   const errorLabel = (err: string): string => {
     switch (err) {
@@ -160,6 +203,9 @@ function RivalsPage() {
       case "need_five": return t("rivalNeedFive");
       case "duplicates": return t("rivalDuplicates");
       case "not_owned": return t("rivalNotOwned");
+      case "no_stamina": return tx("noStamina");
+      case "defender_shielded": return tx("shielded");
+      case "invalid_team": return tx("invalidTeam");
       case "saved": return t("saved");
       default: return err;
     }
