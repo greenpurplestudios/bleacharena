@@ -12,12 +12,17 @@ import { trackMission } from "@/lib/missions";
 import { addXp, bumpProfileStats, ratingTierUnlocks, trackAchievement, XP } from "@/lib/progression";
 import {
   battleRival,
+  deleteRivalTeam,
   fetchMyRecentBattles,
   fetchRivalLeaderboard,
+  fetchRivalWeeklyLeaderboard,
   findRivalOpponent,
+  getMyRivalTeams,
   getMyRivalStats,
-  getMyRivalTeam,
   setMyRivalTeam,
+  RIVAL_DAILY_ATTACKS,
+  RIVAL_MAX_TEAMS,
+  RIVAL_TEAM_STAMINA,
   type RivalBattleResult,
   type RivalOpponent,
 } from "@/lib/rivals";
@@ -42,10 +47,29 @@ export const Route = createFileRoute("/_authenticated/rivals")({
 
 const characterById = new Map(characters.map((c) => [c.id, c]));
 
+const L = {
+  squads: { en: "Squads", ar: "الفرق" },
+  squad: { en: "Squad", ar: "فرقة" },
+  stamina: { en: "Stamina", ar: "الطاقة" },
+  attacksLeft: { en: "Attacks left", ar: "الهجمات المتبقية" },
+  defenses: { en: "Defenses today", ar: "الدفاعات اليوم" },
+  allTime: { en: "All-time", ar: "الكل" },
+  weekly: { en: "Weekly", ar: "أسبوعي" },
+  weeklyPoints: { en: "Weekly points", ar: "نقاط الأسبوع" },
+  clear: { en: "Clear squad", ar: "مسح الفرقة" },
+  empty: { en: "Empty", ar: "فارغة" },
+  noStamina: { en: "This squad is out of stamina today.", ar: "لا توجد طاقة لهذه الفرقة اليوم." },
+  shielded: { en: "That defender already hit the daily defense cap.", ar: "وصل المدافع إلى الحد اليومي للدفاعات." },
+  invalidTeam: { en: "Pick a valid squad.", ar: "اختر فرقة صالحة." },
+} as const;
+
 function RivalsPage() {
   const { t, locale } = useI18n();
   const qc = useQueryClient();
+  const tx = (k: keyof typeof L) => L[k][locale];
   const [myId, setMyId] = useState<string | null>(null);
+  const [teamIndex, setTeamIndex] = useState(0);
+  const [boardMode, setBoardMode] = useState<"all" | "week">("all");
   const [teamDraft, setTeamDraft] = useState<string[]>([]);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [opponent, setOpponent] = useState<RivalOpponent | null>(null);
@@ -57,13 +81,20 @@ function RivalsPage() {
 
   const { data: stats } = useQuery({ queryKey: ["rival-stats"], queryFn: getMyRivalStats });
   const { data: collection } = useQuery({ queryKey: ["collection"], queryFn: fetchMyCollection });
-  const { data: savedTeam } = useQuery({ queryKey: ["rival-team"], queryFn: getMyRivalTeam });
+  const { data: teams } = useQuery({ queryKey: ["rival-teams"], queryFn: getMyRivalTeams });
   const { data: board } = useQuery({ queryKey: ["rival-board"], queryFn: () => fetchRivalLeaderboard(50), staleTime: 30_000 });
+  const { data: weekBoard } = useQuery({ queryKey: ["rival-board-week"], queryFn: () => fetchRivalWeeklyLeaderboard(50), staleTime: 30_000 });
   const { data: recent } = useQuery({ queryKey: ["rival-recent"], queryFn: () => fetchMyRecentBattles(10) });
 
+  const activeTeam = useMemo(
+    () => (teams ?? []).find((tm) => tm.index === teamIndex) ?? null,
+    [teams, teamIndex],
+  );
+  const savedTeam = activeTeam?.slots ?? [];
+
   useEffect(() => {
-    if (savedTeam && teamDraft.length === 0) setTeamDraft(savedTeam);
-  }, [savedTeam, teamDraft.length]);
+    setTeamDraft(activeTeam?.slots ?? []);
+  }, [activeTeam]);
 
   const ownedIds = useMemo(() => new Set((collection ?? []).map((r) => r.characterId)), [collection]);
   const ownedCharacters = useMemo(
@@ -82,7 +113,7 @@ function RivalsPage() {
 
   const saveTeam = async () => {
     setSaveMsg(null);
-    const res = await setMyRivalTeam(teamDraft);
+    const res = await setMyRivalTeam(teamDraft, teamIndex);
     if (!res.ok) {
       playSound("error");
       setSaveMsg(res.error ?? "error");
@@ -90,14 +121,23 @@ function RivalsPage() {
     }
     playSound("success");
     setSaveMsg("saved");
-    await qc.invalidateQueries({ queryKey: ["rival-team"] });
+    await qc.invalidateQueries({ queryKey: ["rival-teams"] });
+  };
+
+  const clearTeam = async () => {
+    const res = await deleteRivalTeam(teamIndex);
+    if (!res.ok) { playSound("error"); setSaveMsg(res.error ?? "error"); return; }
+    playSound("tap");
+    setTeamDraft([]);
+    setOpponent(null);
+    await qc.invalidateQueries({ queryKey: ["rival-teams"] });
   };
 
   const findOpponent = async () => {
     setSearching(true);
     setBattle(null);
     playSound("tap");
-    const res = await findRivalOpponent();
+    const res = await findRivalOpponent(teamIndex);
     setSearching(false);
     if ("error" in res) {
       playSound("error");
@@ -114,7 +154,7 @@ function RivalsPage() {
     setBattling(true);
     setBattle(null);
     playSound("pick");
-    const res = await battleRival(opponent.opponentId);
+    const res = await battleRival(opponent.opponentId, teamIndex);
     setBattling(false);
     if (!res.ok) {
       playSound("error");
@@ -142,13 +182,16 @@ function RivalsPage() {
       ...tierIds.map((id) => trackAchievement(id, 1)),
     ]);
     qc.invalidateQueries({ queryKey: ["rival-stats"] });
+    qc.invalidateQueries({ queryKey: ["rival-teams"] });
     qc.invalidateQueries({ queryKey: ["rival-board"] });
+    qc.invalidateQueries({ queryKey: ["rival-board-week"] });
     qc.invalidateQueries({ queryKey: ["rival-recent"] });
     qc.invalidateQueries({ queryKey: ["souls"] });
   };
 
   const teamReady = teamDraft.length === 5;
-  const savedReady = (savedTeam?.length ?? 0) === 5;
+  const savedReady = savedTeam.length === 5;
+  const staminaLeft = activeTeam?.staminaLeft ?? RIVAL_TEAM_STAMINA;
 
   const errorLabel = (err: string): string => {
     switch (err) {
@@ -160,6 +203,9 @@ function RivalsPage() {
       case "need_five": return t("rivalNeedFive");
       case "duplicates": return t("rivalDuplicates");
       case "not_owned": return t("rivalNotOwned");
+      case "no_stamina": return tx("noStamina");
+      case "defender_shielded": return tx("shielded");
+      case "invalid_team": return tx("invalidTeam");
       case "saved": return t("saved");
       default: return err;
     }
@@ -181,8 +227,49 @@ function RivalsPage() {
           <StatCell label={t("rivalRating")} value={stats?.rating ?? "—"} accent />
           <StatCell label={t("rivalWins")} value={stats?.wins ?? 0} />
           <StatCell label={t("rivalLosses")} value={stats?.losses ?? 0} />
-          <StatCell label={t("rivalBattlesLeft")} value={`${stats?.battlesLeft ?? 10} / 10`} />
+          <StatCell label={tx("attacksLeft")} value={`${stats?.battlesLeft ?? RIVAL_DAILY_ATTACKS} / ${RIVAL_DAILY_ATTACKS}`} />
         </div>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <StatCell label={tx("defenses")} value={`${stats?.defensesToday ?? 0} / ${RIVAL_DAILY_ATTACKS}`} />
+          <StatCell label={tx("weeklyPoints")} value={stats?.weeklyPoints ?? 0} />
+        </div>
+
+        {/* Squad switcher */}
+        <section className="mt-6">
+          <p className="mb-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{tx("squads")}</p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {Array.from({ length: RIVAL_MAX_TEAMS }).map((_, i) => {
+              const tm = (teams ?? []).find((x) => x.index === i);
+              const active = teamIndex === i;
+              const left = tm?.staminaLeft ?? RIVAL_TEAM_STAMINA;
+              return (
+                <button
+                  key={i}
+                  onClick={() => { setTeamIndex(i); setOpponent(null); setBattle(null); setSaveMsg(null); playSound("tap"); }}
+                  className={
+                    "min-w-[130px] shrink-0 rounded-xl border px-3 py-2 text-start transition-all " +
+                    (active ? "border-primary/70 bg-primary/10" : "border-white/10 bg-white/[0.03] hover:border-white/25")
+                  }
+                >
+                  <span className="block font-display text-sm font-black">
+                    {tm?.name ?? `${tx("squad")} ${i + 1}`}
+                  </span>
+                  <span className="mt-1 block text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {tm && tm.slots.length === 5 ? `${tx("stamina")}` : tx("empty")}
+                  </span>
+                  <span className="mt-1 flex gap-1">
+                    {Array.from({ length: RIVAL_TEAM_STAMINA }).map((__, s) => (
+                      <span
+                        key={s}
+                        className={"h-1.5 w-5 rounded-full " + (s < left ? "bg-primary" : "bg-white/15")}
+                      />
+                    ))}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Team builder */}
         <section className="mt-8 rounded-2xl border border-white/10 bg-card/50 p-5 backdrop-blur-md">
@@ -198,6 +285,15 @@ function RivalsPage() {
             >
               {t("save")}
             </button>
+            </div>
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={clearTeam}
+                disabled={savedTeam.length === 0}
+                className="rounded-lg border border-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground disabled:opacity-40"
+              >
+                {tx("clear")}
+              </button>
           </div>
 
           {/* Selected slots */}
@@ -270,7 +366,7 @@ function RivalsPage() {
             <h2 className="font-display text-xl font-black">{t("rivalBattle")}</h2>
             <button
               onClick={findOpponent}
-              disabled={!savedReady || searching || (stats?.battlesLeft ?? 0) <= 0}
+              disabled={!savedReady || searching || staminaLeft <= 0 || (stats?.battlesLeft ?? 0) <= 0}
               className="rounded-lg border border-primary/60 bg-primary/10 px-4 py-2 text-xs font-black uppercase tracking-widest text-primary disabled:opacity-40"
             >
               {searching ? t("searching") : t("findOpponent")}
@@ -279,6 +375,9 @@ function RivalsPage() {
 
           {!savedReady && (
             <p className="text-xs text-muted-foreground">{t("rivalSaveFirst")}</p>
+          )}
+          {savedReady && staminaLeft <= 0 && (
+            <p className="text-xs text-primary">{tx("noStamina")}</p>
           )}
 
           {opponent && (
@@ -375,9 +474,25 @@ function RivalsPage() {
 
         {/* Rival leaderboard */}
         <section className="mt-10">
-          <h2 className="mb-3 font-display text-lg font-black">{t("rivalTopFighters")}</h2>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-display text-lg font-black">{t("rivalTopFighters")}</h2>
+            <div className="flex gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-1">
+              {(["all", "week"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setBoardMode(m)}
+                  className={
+                    "rounded-md px-3 py-1 text-[10px] font-black uppercase tracking-widest " +
+                    (boardMode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground")
+                  }
+                >
+                  {m === "all" ? tx("allTime") : tx("weekly")}
+                </button>
+              ))}
+            </div>
+          </div>
           <ol className="space-y-2">
-            {(board ?? []).slice(0, 20).map((r) => {
+            {(boardMode === "all" ? board ?? [] : weekBoard ?? []).slice(0, 20).map((r) => {
               const isMe = myId && r.user_id === myId;
               return (
                 <li
@@ -412,11 +527,13 @@ function RivalsPage() {
                     )}
                   </span>
                   <span className="text-xs text-muted-foreground">{r.wins}W · {r.losses}L</span>
-                  <span className="font-display text-lg font-black text-glow-orange">{r.rating}</span>
+                  <span className="font-display text-lg font-black text-glow-orange">
+                    {boardMode === "week" ? (r as { points?: number }).points ?? r.rating : r.rating}
+                  </span>
                 </li>
               );
             })}
-            {(board?.length ?? 0) === 0 && (
+            {((boardMode === "all" ? board : weekBoard)?.length ?? 0) === 0 && (
               <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-10 text-center text-sm text-muted-foreground">
                 {t("rivalEmptyBoard")}
               </li>
