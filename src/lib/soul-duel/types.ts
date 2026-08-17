@@ -101,6 +101,8 @@ export interface DuelMods {
   hijack: { side: Side; slugs: string[] } | null;
   /** Ichimonji: uids permanently blackened (Rating 0) — rendered with an ink mark until the match ends. */
   inkedUids: string[];
+  /** The Almighty: this side reads the enemy hand and queue up to this round. */
+  foresight?: Partial<Record<Side, number>>;
 }
 
 export type DuelPhase = "reveal" | "play" | "resolve" | "ended";

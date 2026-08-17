@@ -21,6 +21,7 @@ import { BattlefieldCard } from "./BattlefieldCard";
 import { BattlefieldReveal } from "./BattlefieldReveal";
 import { DuelHandCard } from "./DuelHandCard";
 import { DuelLane } from "./DuelLane";
+import { DuelMiniCard } from "./DuelMiniCard";
 import { DuelResultPanel } from "./DuelResultPanel";
 import { ReiatsuGauge } from "./ReiatsuGauge";
 import { UltimateOverlay } from "./UltimateOverlay";
@@ -314,6 +315,40 @@ export function DuelBoard({
           />
         ))}
       </div>
+
+      {/* The Almighty — enemy hand and the cards queued for the next rounds */}
+      {(state.mods.foresight?.player ?? 0) >= state.round ? (
+        <div
+          className="mt-4 w-full min-w-0 rounded-2xl border border-[oklch(0.85_0.16_95_/_0.45)] bg-[oklch(0.85_0.16_95_/_0.07)] p-3"
+          style={{ animation: "card-in 0.4s ease-out both" }}
+        >
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <h2 className="font-display text-[10px] font-black uppercase tracking-[0.28em] text-[oklch(0.9_0.15_95)] rtl:tracking-normal">
+              {locale === "ar" ? "القدير — بصيرة" : "The Almighty — Foresight"}
+            </h2>
+            <span className="text-[10px] text-muted-foreground">
+              {locale === "ar" ? "حتى الجولة" : "Until round"} {state.mods.foresight?.player}
+            </span>
+          </div>
+          <div className="flex w-[calc(100vw-3rem)] max-w-full gap-2 overflow-x-auto pb-1 sm:w-full">
+            {[
+              ...state.hands.opponent.map((c) => ({ card: c, queued: false })),
+              ...state.decks.opponent.slice(0, 2).map((c) => ({ card: c, queued: true })),
+            ].map(({ card, queued }) => (
+              <span key={card.uid} className="relative block w-16 shrink-0">
+                <DuelMiniCard card={card} rating={card.character.overall} />
+                <span
+                  className="absolute inset-x-0 bottom-0 block rounded-b bg-[oklch(0.85_0.16_95_/_0.9)] py-0.5 text-center font-display text-[8px] font-black uppercase text-black"
+                >
+                  {queued
+                    ? (locale === "ar" ? "قادمة" : "Next")
+                    : (locale === "ar" ? "باليد" : "Hand")}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {/* hand */}
       <div className="mt-4 w-full min-w-0">

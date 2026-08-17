@@ -4,9 +4,11 @@ import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { useSouls } from "@/hooks/use-souls";
 import { play } from "@/lib/sound";
-import uraharaArt from "@/assets/characters/urahara.jpeg.asset.json";
-import konArt from "@/assets/characters/kon.jpeg.asset.json";
-import nimaiyaArt from "@/assets/characters/nimaya.jpeg.asset.json";
+// Store-only artwork. Collectible card art lives in @/assets/characters and is
+// intentionally not touched here.
+import uraharaArt from "@/assets/brand/urahara_store.jpeg.asset.json";
+import konArt from "@/assets/brand/kon_store.jpeg.asset.json";
+import nimaiyaArt from "@/assets/brand/nimaiya_store.jpeg.asset.json";
 
 export const Route = createFileRoute("/_authenticated/store")({
   head: () => ({

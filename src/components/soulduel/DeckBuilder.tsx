@@ -14,6 +14,15 @@ import {
 } from "@/lib/soul-duel/deck";
 import { equipWeapon, fetchForge, type ForgeState } from "@/lib/forge";
 import { ULTIMATE_EFFECT_TEXT, ultimateOf } from "@/lib/soul-duel/ultimates";
+import { fetchMyCollection } from "@/lib/packs";
+
+const OWNED_L = {
+  title: { en: "Your collection", ar: "مجموعتك" },
+  empty: {
+    en: "You don't own any duel characters yet — open packs to collect them.",
+    ar: "لا تملك أي شخصية للنزال بعد — افتح العبوات لجمعها.",
+  },
+} as const;
 
 function CostBadge({ cost }: { cost: number }) {
   return (
@@ -42,6 +51,7 @@ export function DeckBuilder({
   const [forge, setForge] = useState<ForgeState | null>(null);
   const [equipping, setEquipping] = useState<string | null>(null);
   const [weaponPicker, setWeaponPicker] = useState(false);
+  const [ownedIds, setOwnedIds] = useState<Set<string> | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -54,12 +64,37 @@ export function DeckBuilder({
   const full = chosen.length === DECK_CARDS;
   const weapon = ultimateOf(forge?.equipped);
 
+  /** Only cards actually pulled from packs may enter a deck. */
+  const ownedRoster = useMemo(
+    () => (ownedIds ? DUEL_ROSTER.filter((c) => ownedIds.has(c.id)) : []),
+    [ownedIds],
+  );
+
   const commit = (slugs: string[]) => {
     onChange(slugs);
     saveSlot(active, slugs);
     setSlots((s) => s.map((slot, i) => (i === active ? slugs.slice(0, DECK_CARDS) : slot)));
     setSaved(slugs.length === DECK_CARDS);
   };
+
+  useEffect(() => {
+    let alive = true;
+    void fetchMyCollection().then((rows) => {
+      if (alive) setOwnedIds(new Set(rows.map((r) => r.characterId)));
+    });
+    return () => { alive = false; };
+  }, []);
+
+  // Drop anything the player no longer (or never) owned from the saved deck.
+  useEffect(() => {
+    if (!ownedIds) return;
+    const legal = deck.filter((slug) => {
+      const c = DUEL_ROSTER.find((x) => x.slug === slug);
+      return !!c && ownedIds.has(c.id);
+    });
+    if (legal.length !== deck.length) commit(legal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ownedIds]);
 
   const pickSlot = (i: number) => {
     if (i === active) return;
@@ -78,6 +113,7 @@ export function DeckBuilder({
       commit(deck.filter((s) => s !== c.slug));
       return;
     }
+    if (ownedIds && !ownedIds.has(c.id)) { play("error"); return; }
     if (deck.length >= DECK_CARDS) { play("error"); return; }
     play("pick");
     commit([...deck, c.slug]);

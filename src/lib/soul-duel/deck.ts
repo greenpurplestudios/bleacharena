@@ -112,9 +112,9 @@ export function averageReiatsu(chars: Character[]): number {
 }
 
 /** A playable curve: cheap openers, mid-game bodies, two finishers. */
-export function autoDeck(): string[] {
+export function autoDeck(from: Character[] = DUEL_ROSTER): string[] {
   const curve = [1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6];
-  const pool = [...DUEL_ROSTER].sort(() => Math.random() - 0.5);
+  const pool = [...from].sort(() => Math.random() - 0.5);
   const used = new Set<string>();
   const picked: string[] = [];
   for (const cost of curve) {

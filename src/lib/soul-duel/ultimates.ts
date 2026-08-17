@@ -100,10 +100,14 @@ const EFFECTS: Record<string, (state: DuelState, side: Side) => DuelState> = {
     },
   }),
 
-  /* The Almighty — the future is laid bare for two rounds. */
+  /* The Almighty — the enemy hand and the next two rounds are laid bare. */
   "the-almighty": (state, side) => ({
     ...state,
-    mods: { ...state.mods, revealUntil: { ...state.mods.revealUntil, [side]: state.round + 1 } },
+    mods: {
+      ...state.mods,
+      revealUntil: { ...state.mods.revealUntil, [side]: state.round + 2 },
+      foresight: { ...(state.mods.foresight ?? {}), [side]: state.round + 2 },
+    },
   }),
 
   /* Kannonbiraki Benihime Aratame — Urahara rearranges the board. The wielder
@@ -291,8 +295,8 @@ export const ULTIMATE_EFFECT_TEXT: Record<string, Record<Locale, string>> = {
     ar: "الساحات الثلاث كلها تكسب +٣٠ تقييم لصالحك.",
   },
   "the-almighty": {
-    en: "Reveals every opponent card for the next 2 rounds.",
-    ar: "يكشف كل بطاقات الخصم خلال الجولتين القادمتين.",
+    en: "Reveals the opponent's hand and the cards queued for the next 2 rounds.",
+    ar: "يكشف يد الخصم والبطاقات المُجهّزة للجولتين القادمتين.",
   },
   "kannon-biraki": {
     en: "You choose 3 cards — yours, the opponent's or both — and move each to its best battlefield.",

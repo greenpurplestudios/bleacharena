@@ -289,6 +289,10 @@
 html, body {
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
+  /* Any horizontal overflow widens the layout viewport on mobile, which makes
+     fixed bars (the bottom nav) shrink when the user zooms out. */
+  overflow-x: hidden;
+  max-width: 100%;
 }
 body {
   padding-top: env(safe-area-inset-top);
