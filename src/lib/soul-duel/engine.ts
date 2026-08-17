@@ -90,6 +90,7 @@ export const emptyMods = (): DuelState["mods"] => ({
   laneBonus: {},
   hijack: null,
   inkedUids: [],
+  foresight: {},
 });
 
 export function createDuel(pool: Character[], opts: DuelOptions = {}): DuelState {
@@ -200,9 +201,9 @@ function chargeRound(state: DuelState): DuelState {
       (n, t) => n + (side === "player" ? t.player - t.opponent : t.opponent - t.player),
       0,
     );
-    // Soul Pressure grows ~18% faster than the original tuning so a committed
-    // player reaches their Ultimate by round 5 (round 4 on a dominant board).
-    const gain = Math.min(34, 20 + led * 5 + Math.max(0, Math.min(9, Math.floor(advantage / 13))));
+    // Soul Pressure charges fast: an Ultimate is live by round 3 for a
+    // committed player, round 2–3 on a dominant board.
+    const gain = Math.min(60, 34 + led * 7 + Math.max(0, Math.min(12, Math.floor(advantage / 10))));
     next = addCharge(next, side, gain);
   });
   return next;
