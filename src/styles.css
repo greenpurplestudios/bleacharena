@@ -700,3 +700,9 @@ body {
 body.has-bottom-nav {
   padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
 }
+
+/* Mobile scroll performance: heavy blurs on full-screen fixed backdrops are the
+   main repaint cost while scrolling. Soften them on small screens. */
+@media (max-width: 767px) {
+  .scene-orb { filter: blur(42px) !important; }
+}
