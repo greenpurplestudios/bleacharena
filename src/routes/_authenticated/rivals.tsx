@@ -61,6 +61,9 @@ const L = {
   noStamina: { en: "This squad is out of stamina today.", ar: "لا توجد طاقة لهذه الفرقة اليوم." },
   shielded: { en: "That defender already hit the daily defense cap.", ar: "وصل المدافع إلى الحد اليومي للدفاعات." },
   invalidTeam: { en: "Pick a valid squad.", ar: "اختر فرقة صالحة." },
+  showCharacters: { en: "Show characters", ar: "إظهار الشخصيات" },
+  hideCharacters: { en: "Hide characters", ar: "إخفاء الشخصيات" },
+  owned: { en: "owned", ar: "مملوكة" },
 } as const;
 
 function RivalsPage() {
@@ -70,6 +73,7 @@ function RivalsPage() {
   const [myId, setMyId] = useState<string | null>(null);
   const [teamIndex, setTeamIndex] = useState(0);
   const [boardMode, setBoardMode] = useState<"all" | "week">("all");
+  const [showPool, setShowPool] = useState(false);
   const [teamDraft, setTeamDraft] = useState<string[]>([]);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [opponent, setOpponent] = useState<RivalOpponent | null>(null);
