@@ -73,7 +73,12 @@ export function Atmosphere({
   }, [variant, count]);
 
   return (
-    <div ref={ref} aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div
+      ref={ref}
+      aria-hidden
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      style={{ transform: "translateZ(0)", contain: "strict" }}
+    >
       <div
         className="absolute -left-24 top-[-10%] h-[46vh] w-[46vh] rounded-full blur-[90px]"
         style={{
