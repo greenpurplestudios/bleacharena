@@ -22,7 +22,11 @@ export function ReiatsuBackground({ count = 28 }: { count?: number }) {
   );
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      style={{ transform: "translateZ(0)", contain: "strict" }}
+    >
       {particles.map((p) => (
         <span
           key={p.i}
