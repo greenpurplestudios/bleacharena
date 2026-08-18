@@ -322,9 +322,32 @@ function RivalsPage() {
             })}
           </div>
 
-          {/* Owned pool */}
-          <p className="mb-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("rivalPickFromCollection")}</p>
-          {ownedCharacters.length === 0 ? (
+          {/* Owned pool — collapsed by default so the heavy card grid is not
+              rendered at all until the player asks for it. */}
+          <button
+            type="button"
+            onClick={() => { playSound("tap"); setShowPool((v) => !v); }}
+            aria-expanded={showPool}
+            className="mb-3 flex w-full items-center justify-between gap-3 rounded-xl border border-white/12 bg-white/[0.04] px-4 py-3 text-start transition-colors hover:border-primary/40"
+          >
+            <span className="min-w-0">
+              <span className="block truncate font-display text-sm font-bold">
+                {showPool ? tx("hideCharacters") : tx("showCharacters")}
+              </span>
+              <span className="mt-0.5 block truncate text-[10px] uppercase tracking-[0.25em] text-muted-foreground rtl:tracking-normal">
+                {ownedCharacters.length} {tx("owned")}
+              </span>
+            </span>
+            <span
+              aria-hidden
+              className="shrink-0 text-lg text-primary transition-transform duration-200"
+              style={{ transform: showPool ? "rotate(180deg)" : undefined }}
+            >
+              ⌄
+            </span>
+          </button>
+
+          {!showPool ? null : ownedCharacters.length === 0 ? (
             <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center text-sm text-muted-foreground">
               {t("rivalEmptyCollection")}{" "}
               <Link to="/packs" className="text-primary underline underline-offset-4">{t("packs")}</Link>
