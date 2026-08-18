@@ -320,7 +320,11 @@ export function SceneBackground({ scene = "generic", className = "" }: { scene?:
   const cfg = SCENE_CONFIG[scene] ?? SCENE_CONFIG.generic;
   const Art = cfg.Art;
   return (
-    <div aria-hidden className={`pointer-events-none fixed inset-0 -z-10 overflow-hidden ${className}`}>
+    <div
+      aria-hidden
+      className={`pointer-events-none fixed inset-0 -z-10 overflow-hidden ${className}`}
+      style={{ transform: "translateZ(0)", contain: "strict", willChange: "transform" }}
+    >
       <div className="absolute inset-0 bg-background" />
       <LightPools pools={cfg.pools} />
       <ReiatsuStreaks hue={cfg.hue} n={3} />
