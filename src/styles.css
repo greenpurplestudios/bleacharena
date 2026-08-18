@@ -152,10 +152,15 @@
       radial-gradient(1200px 600px at 15% -10%, oklch(0.75 0.18 55 / 0.12), transparent 60%),
       radial-gradient(900px 500px at 100% 10%, oklch(0.82 0.12 220 / 0.10), transparent 60%),
       radial-gradient(700px 500px at 50% 110%, oklch(0.82 0.12 220 / 0.08), transparent 60%);
-    background-attachment: fixed;
+    /* `fixed` attachment forces a full-viewport repaint on every scroll frame
+       on mobile GPUs — the single biggest source of scroll jank here. */
+    background-attachment: scroll;
   }
   html {
     color-scheme: dark;
+    /* Let the document be the one and only scroller. */
+    height: auto;
+    -webkit-text-size-adjust: 100%;
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
@@ -289,10 +294,15 @@
 html, body {
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
-  /* Any horizontal overflow widens the layout viewport on mobile, which makes
-     fixed bars (the bottom nav) shrink when the user zooms out. */
-  overflow-x: hidden;
-  max-width: 100%;
+}
+/* Contain sideways overflow WITHOUT turning html/body into a scroll container.
+   `overflow-x: hidden` on html+body makes the body a scroll port on mobile,
+   which is what broke one-finger scrolling. `clip` has no such side effect. */
+body {
+  overflow-x: clip;
+  width: 100%;
+  /* Vertical panning + pinch zoom stay native; nothing else is captured. */
+  touch-action: pan-y pinch-zoom;
 }
 body {
   padding-top: env(safe-area-inset-top);
