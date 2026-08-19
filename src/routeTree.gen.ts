@@ -34,6 +34,7 @@ import { Route as AuthenticatedFriendsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedForgeRouteImport } from './routes/_authenticated/forge'
 import { Route as AuthenticatedDraftRouteImport } from './routes/_authenticated/draft'
 import { Route as AuthenticatedDailyRouteImport } from './routes/_authenticated/daily'
+import { Route as AuthenticatedCustomisationsRouteImport } from './routes/_authenticated/customisations'
 import { Route as AuthenticatedCollectionRouteImport } from './routes/_authenticated/collection'
 import { Route as AuthenticatedClansRouteImport } from './routes/_authenticated/clans'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
@@ -170,6 +171,12 @@ const AuthenticatedDailyRoute = AuthenticatedDailyRouteImport.update({
   path: '/daily',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCustomisationsRoute =
+  AuthenticatedCustomisationsRouteImport.update({
+    id: '/customisations',
+    path: '/customisations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCollectionRoute = AuthenticatedCollectionRouteImport.update({
   id: '/collection',
   path: '/collection',
@@ -235,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRoute
   '/clans': typeof AuthenticatedClansRoute
   '/collection': typeof AuthenticatedCollectionRoute
+  '/customisations': typeof AuthenticatedCustomisationsRoute
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/forge': typeof AuthenticatedForgeRoute
@@ -271,6 +279,7 @@ export interface FileRoutesByTo {
   '/chat': typeof AuthenticatedChatRoute
   '/clans': typeof AuthenticatedClansRoute
   '/collection': typeof AuthenticatedCollectionRoute
+  '/customisations': typeof AuthenticatedCustomisationsRoute
   '/daily': typeof AuthenticatedDailyRoute
   '/draft': typeof AuthenticatedDraftRoute
   '/forge': typeof AuthenticatedForgeRoute
@@ -309,6 +318,7 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/clans': typeof AuthenticatedClansRoute
   '/_authenticated/collection': typeof AuthenticatedCollectionRoute
+  '/_authenticated/customisations': typeof AuthenticatedCustomisationsRoute
   '/_authenticated/daily': typeof AuthenticatedDailyRoute
   '/_authenticated/draft': typeof AuthenticatedDraftRoute
   '/_authenticated/forge': typeof AuthenticatedForgeRoute
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/clans'
     | '/collection'
+    | '/customisations'
     | '/daily'
     | '/draft'
     | '/forge'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/clans'
     | '/collection'
+    | '/customisations'
     | '/daily'
     | '/draft'
     | '/forge'
@@ -420,6 +432,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/_authenticated/clans'
     | '/_authenticated/collection'
+    | '/_authenticated/customisations'
     | '/_authenticated/daily'
     | '/_authenticated/draft'
     | '/_authenticated/forge'
@@ -631,6 +644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDailyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/customisations': {
+      id: '/_authenticated/customisations'
+      path: '/customisations'
+      fullPath: '/customisations'
+      preLoaderRoute: typeof AuthenticatedCustomisationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/collection': {
       id: '/_authenticated/collection'
       path: '/collection'
@@ -712,6 +732,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedClansRoute: typeof AuthenticatedClansRoute
   AuthenticatedCollectionRoute: typeof AuthenticatedCollectionRoute
+  AuthenticatedCustomisationsRoute: typeof AuthenticatedCustomisationsRoute
   AuthenticatedDailyRoute: typeof AuthenticatedDailyRoute
   AuthenticatedDraftRoute: typeof AuthenticatedDraftRoute
   AuthenticatedForgeRoute: typeof AuthenticatedForgeRoute
@@ -744,6 +765,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedClansRoute: AuthenticatedClansRoute,
   AuthenticatedCollectionRoute: AuthenticatedCollectionRoute,
+  AuthenticatedCustomisationsRoute: AuthenticatedCustomisationsRoute,
   AuthenticatedDailyRoute: AuthenticatedDailyRoute,
   AuthenticatedDraftRoute: AuthenticatedDraftRoute,
   AuthenticatedForgeRoute: AuthenticatedForgeRoute,
