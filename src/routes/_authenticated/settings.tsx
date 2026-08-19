@@ -8,7 +8,6 @@ import { useI18n } from "@/lib/i18n";
 import { getMyProfile } from "@/lib/leaderboard";
 import { loadPrefs, savePrefs, play, syncAmbientToPrefs, type SoundPrefs } from "@/lib/sound";
 import { haptic } from "@/lib/haptics";
-import { equipItem, fetchMyInventory, type InventoryItem } from "@/lib/store";
 import {
   SettingsSection,
   SettingRow,
@@ -45,10 +44,6 @@ function SettingsPage() {
   const [prefs, setPrefs] = useState<SoundPrefs>(() => loadPrefs());
   const [username, setUsername] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
-  const [inventory, setInventory] = useState<InventoryItem[] | null>(null);
-  const [equippedTitle, setEquippedTitle] = useState<string | null>(null);
-  const [equippedColor, setEquippedColor] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
   const [notifOn, setNotifOn] = useState(false);
   const [notifBlocked, setNotifBlocked] = useState(false);
   const [notifSupported, setNotifSupported] = useState(false);
@@ -98,14 +93,10 @@ function SettingsPage() {
   const loadProfile = async () => {
     const p = (await getMyProfile()) as { username: string | null; title?: string | null; username_color?: string | null } | null;
     setUsername(p?.username ?? null);
-    setEquippedTitle(p?.title ?? null);
-    setEquippedColor(p?.username_color ?? null);
   };
-  const loadInventory = async () => setInventory(await fetchMyInventory());
 
   useEffect(() => {
     loadProfile();
-    loadInventory();
     setNotifSupported(notificationsSupported());
     setNotifOn(notificationsEnabled());
     setNotifBlocked(notificationPermission() === "denied");
@@ -120,21 +111,6 @@ function SettingsPage() {
     syncAmbientToPrefs();
   };
 
-  const doEquip = async (kind: "title" | "username_color", itemId: string | null) => {
-    if (busy) return;
-    setBusy(true);
-    const res = await equipItem(kind, itemId);
-    setBusy(false);
-    if (res.ok) {
-      play("pick");
-      await loadProfile();
-    } else {
-      play("skip");
-    }
-  };
-
-  const titles = (inventory ?? []).filter((i) => i.kind === "title");
-  const colors = (inventory ?? []).filter((i) => i.kind === "username_color");
 
   return (
     <>
@@ -299,93 +275,6 @@ function SettingsPage() {
           <InstallAppRow />
         </SettingsSection>
 
-        <SettingsSection
-          title={
-            <span className="block">
-              {t("cosmetics")}
-              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">{t("cosmeticsDesc")}</span>
-            </span>
-          }
-          action={
-            <Link
-              to="/store"
-              className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20"
-            >
-              {t("goToStore")}
-            </Link>
-          }
-        >
-          <div className="pt-3">
-            <p className="text-start text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("titles")}</p>
-            {titles.length === 0 ? (
-              <p className="mt-2 text-xs text-muted-foreground">{t("noCosmetics")}</p>
-            ) : (
-              <div className="mt-2 flex flex-wrap gap-2">
-                <button
-                  disabled={busy || !equippedTitle}
-                  onClick={() => doEquip("title", null)}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors ${
-                    !equippedTitle ? "border-primary/60 bg-primary/20 text-primary" : "border-white/15 bg-white/5 text-muted-foreground hover:bg-white/10"
-                  }`}
-                >
-                  {t("none")}
-                </button>
-                {titles.map((it) => {
-                  const eq = equippedTitle === it.itemId;
-                  return (
-                    <button
-                      key={it.itemId}
-                      disabled={busy}
-                      onClick={() => doEquip("title", eq ? null : it.itemId)}
-                      className={`rounded-lg border px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors ${
-                        eq ? "border-primary/60 bg-primary/20 text-primary" : "border-white/15 bg-white/5 hover:bg-white/10"
-                      }`}
-                    >
-                      {it.name[locale]} {eq && `· ${t("equipped")}`}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 pt-3">
-            <p className="text-start text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("usernameColors")}</p>
-            {colors.length === 0 ? (
-              <p className="mt-2 text-xs text-muted-foreground">{t("noCosmetics")}</p>
-            ) : (
-              <div className="mt-2 flex flex-wrap gap-2">
-                <button
-                  disabled={busy || !equippedColor}
-                  onClick={() => doEquip("username_color", null)}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors ${
-                    !equippedColor ? "border-primary/60 bg-primary/20 text-primary" : "border-white/15 bg-white/5 text-muted-foreground hover:bg-white/10"
-                  }`}
-                >
-                  {t("none")}
-                </button>
-                {colors.map((it) => {
-                  const hex = String(it.meta.hex ?? "#888");
-                  const eq = equippedColor === hex;
-                  return (
-                    <button
-                      key={it.itemId}
-                      disabled={busy}
-                      onClick={() => doEquip("username_color", eq ? null : it.itemId)}
-                      className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors ${
-                        eq ? "border-primary/60 bg-primary/20" : "border-white/15 bg-white/5 hover:bg-white/10"
-                      }`}
-                    >
-                      <span aria-hidden className="h-3 w-3 rounded-full border border-white/20" style={{ background: hex }} />
-                      <span style={{ color: hex }}>{it.name[locale]}</span>
-                      {eq && <span className="text-primary">· {t("equipped")}</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </SettingsSection>
         </div>
       </main>
     </>

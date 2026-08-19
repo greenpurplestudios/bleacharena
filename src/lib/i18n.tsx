@@ -446,7 +446,7 @@ export const dict = {
   locked: { en: "Locked", ar: "مغلق" },
   levels: { en: "Levels", ar: "المستويات" },
   levelsDesc: { en: "Milestone rewards unlock as you climb.", ar: "مكافآت المعالم تفتح كلما تقدمت." },
-  navProgress: { en: "Progress", ar: "التقدم" },
+  navProgress: { en: "Challenges & Rewards", ar: "التحديات والمكافآت" },
   navCommunity: { en: "Community", ar: "المجتمع" },
   statistics: { en: "Statistics", ar: "الإحصائيات" },
   milestone: { en: "Milestone", ar: "معلم" },
