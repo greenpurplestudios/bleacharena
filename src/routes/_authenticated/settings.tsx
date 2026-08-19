@@ -257,7 +257,7 @@ function SettingsPage() {
           <SettingRow
             label={<span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("username")}</span>}
             description={
-              <span className="mt-0.5 block truncate font-semibold text-foreground" style={equippedColor ? { color: equippedColor } : undefined}>
+              <span className="mt-0.5 block truncate font-semibold text-foreground">
                 {username ?? "—"}
               </span>
             }
@@ -268,6 +268,21 @@ function SettingsPage() {
             >
               {t("changeUsername")}
             </button>
+          </SettingRow>
+          <SettingRow
+            label={locale === "ar" ? "التخصيصات" : "Customisations"}
+            description={
+              locale === "ar"
+                ? "الألقاب وألوان الاسم وإطارات الاسم."
+                : "Titles, username colors and name frames."
+            }
+          >
+            <Link
+              to="/customisations"
+              className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20"
+            >
+              {locale === "ar" ? "افتح" : "Open"}
+            </Link>
           </SettingRow>
         </SettingsSection>
 
