@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { SceneBackground } from "@/components/SceneBackground";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useI18n } from "@/lib/i18n";
-import { getMyProfile } from "@/lib/leaderboard";
+import { getMyProfileFull } from "@/lib/progression";
 import { equipItem, fetchMyInventory, type InventoryItem } from "@/lib/store";
 import { NameFrame, NAME_FRAMES } from "@/components/NameFrame";
 import { play } from "@/lib/sound";
@@ -45,7 +45,7 @@ function CustomisationsPage() {
   const [p, setP] = useState<Profile | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const loadProfile = async () => setP(((await getMyProfile()) ?? null) as Profile | null);
+  const loadProfile = async () => setP(((await getMyProfileFull()) ?? null) as Profile | null);
   const loadInventory = async () => setInventory(await fetchMyInventory());
 
   useEffect(() => {
