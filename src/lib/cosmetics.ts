@@ -53,7 +53,7 @@ export const NAME_COLORS: ColorDef[] = [
   { id: "color_hueco_sand", en: "Hueco Sand", ar: "رمال هويكو", hex: "#d9c58c", cost: 750, rarity: "rare" },
   { id: "color_espada_teal", en: "Espada Teal", ar: "أزرق الإسبادا", hex: "#2dd4bf", cost: 900, rarity: "rare" },
   { id: "color_quincy_blau", en: "Quincy Blau", ar: "أزرق الكوينسي", hex: "#60a5fa", cost: 1050, rarity: "epic" },
-  { id: "color_reiatsu_cyan", en: "Reiatsu Cyan", ar: "سماوي الريatsu", hex: "#22d3ee", cost: 1050, rarity: "epic" },
+  { id: "color_reiatsu_cyan", en: "Reiatsu Cyan", ar: "سماوي الريتسو", hex: "#22d3ee", cost: 1050, rarity: "epic" },
   { id: "color_senbonzakura_pink", en: "Senbonzakura Pink", ar: "وردي سينبونزاكورا", hex: "#f472b6", cost: 1200, rarity: "epic" },
   { id: "color_ryujin_ember", en: "Ryūjin Ember", ar: "جمر ريوجين", hex: "#fb923c", cost: 1350, rarity: "epic" },
   { id: "color_dangai_violet", en: "Dangai Violet", ar: "بنفسجي الدانغاي", hex: "#a78bfa", cost: 1500, rarity: "legendary" },
@@ -84,7 +84,7 @@ interface EffectDef extends ColorDef {
 }
 
 const EFFECT_DEFS: EffectDef[] = [
-  { id: "fx_reiatsu_glow", en: "Reiatsu Glow", ar: "توهج الريatsu", hex: "#38bdf8", cost: 1500, rarity: "rare", fx: "ce-glow", animated: false },
+  { id: "fx_reiatsu_glow", en: "Reiatsu Glow", ar: "توهج الريتسو", hex: "#38bdf8", cost: 1500, rarity: "rare", fx: "ce-glow", animated: false },
   { id: "fx_hollow_glow", en: "Hollow Glow", ar: "توهج الهولو", hex: "#ef4444", cost: 1650, rarity: "rare", fx: "ce-glow", animated: false },
   { id: "fx_zanpakuto_edge", en: "Zanpakutō Edge", ar: "حد الزانباكوتو", hex: "#e5e7eb", cost: 1800, rarity: "rare", fx: "ce-outline", animated: false },
   { id: "fx_gotei_steel", en: "Gotei Steel", ar: "فولاذ الغوتي", hex: "#94a3b8", cost: 2100, rarity: "rare", fx: "ce-outline", animated: false },
@@ -144,7 +144,7 @@ const FRAME_DEFS: FrameDef[] = [
   { id: "nfx_dangai_current", en: "Dangai Current", ar: "تيار الدانغاي", cost: 4800, rarity: "epic", border: "border-violet-300/60", bg: "linear-gradient(100deg,rgba(120,60,200,0.4),rgba(10,8,25,0.8),rgba(160,120,255,0.35))", extra: "nf-flow" },
   { id: "nfx_squad13_crest", en: "Squad 13 Crest", ar: "شعار الفرقة ١٣", cost: 5400, rarity: "epic", border: "border-white/70", bg: "linear-gradient(100deg,rgba(255,255,255,0.16),rgba(0,0,0,0.72),rgba(255,255,255,0.16))", extra: "nf-shimmer", sheen: "rgba(255,255,255,0.5)" },
   { id: "nfx_hueco_night", en: "Hueco Night", ar: "ليل هويكو", cost: 6000, rarity: "legendary", border: "border-indigo-200/60", bg: "linear-gradient(100deg,rgba(190,200,255,0.16),rgba(4,4,18,0.9))", extra: "nf-petals" },
-  { id: "nfx_reiatsu_storm", en: "Reiatsu Storm", ar: "عاصفة الريatsu", cost: 6600, rarity: "legendary", border: "border-cyan-200/70", bg: "linear-gradient(100deg,rgba(34,211,238,0.32),rgba(6,20,35,0.8))", extra: "nf-flow nf-pulse", glow: "rgba(103,232,249,0.6)" },
+  { id: "nfx_reiatsu_storm", en: "Reiatsu Storm", ar: "عاصفة الريتسو", cost: 6600, rarity: "legendary", border: "border-cyan-200/70", bg: "linear-gradient(100deg,rgba(34,211,238,0.32),rgba(6,20,35,0.8))", extra: "nf-flow nf-pulse", glow: "rgba(103,232,249,0.6)" },
   { id: "nfx_bankai_seal", en: "Bankai Seal", ar: "ختم البانكاي", cost: 7000, rarity: "legendary", border: "border-orange-300/80", bg: "linear-gradient(100deg,rgba(255,140,30,0.38),rgba(25,10,0,0.8))", extra: "nf-shimmer nf-pulse", glow: "rgba(255,150,40,0.7)", sheen: "rgba(255,220,150,0.6)" },
   { id: "nfx_zero_division", en: "Zero Division", ar: "الفرقة صفر", cost: 7500, rarity: "mythic", border: "border-amber-100/80", bg: "linear-gradient(100deg,rgba(255,225,150,0.42),rgba(55,38,0,0.75),rgba(255,245,205,0.35))", extra: "nf-flow nf-shimmer nf-sparks", sheen: "rgba(255,245,200,0.8)" },
 ];
@@ -287,7 +287,7 @@ const LB_DEFS: LbDef[] = [
   { id: "lb_bankai", en: "Bankai Flame", ar: "لهب البانكاي", cost: 8000, rarity: "legendary", bg: "linear-gradient(90deg,rgba(255,140,30,0.3),transparent)", border: "border-orange-300/60" },
   { id: "lb_dangai", en: "Dangai Rift", ar: "شق الدانغاي", cost: 9000, rarity: "legendary", bg: "linear-gradient(90deg,rgba(139,92,246,0.3),transparent)", border: "border-violet-300/60" },
   /* premium animated */
-  { id: "lb_prem_reiatsu", en: "Reiatsu Surge", ar: "اندفاع الريatsu", cost: 6000, rarity: "mythic", bg: "linear-gradient(100deg,rgba(34,211,238,0.3),rgba(6,20,35,0.6),rgba(34,211,238,0.3))", border: "border-cyan-200/60", extra: "nf-flow" },
+  { id: "lb_prem_reiatsu", en: "Reiatsu Surge", ar: "اندفاع الريتسو", cost: 6000, rarity: "mythic", bg: "linear-gradient(100deg,rgba(34,211,238,0.3),rgba(6,20,35,0.6),rgba(34,211,238,0.3))", border: "border-cyan-200/60", extra: "nf-flow" },
   { id: "lb_prem_getsuga", en: "Getsuga Wave", ar: "موجة الغيتسوغا", cost: 9000, rarity: "mythic", bg: "linear-gradient(100deg,rgba(0,0,0,0.7),rgba(56,189,248,0.35),rgba(0,0,0,0.7))", border: "border-sky-200/70", extra: "nf-flow nf-shimmer" },
   { id: "lb_prem_sternritter", en: "Sternritter Judgement", ar: "حكم الشتيرنريتر", cost: 12000, rarity: "mythic", bg: "linear-gradient(100deg,rgba(230,235,245,0.22),rgba(20,25,45,0.75),rgba(150,190,255,0.28))", border: "border-blue-100/70", extra: "nf-flow nf-pulse", glow: "rgba(180,215,255,0.6)" },
   { id: "lb_prem_soul_king", en: "Soul King Throne", ar: "عرش ملك الأرواح", cost: 15000, rarity: "mythic", bg: "linear-gradient(100deg,rgba(255,225,150,0.4),rgba(55,38,0,0.7),rgba(255,245,205,0.35))", border: "border-amber-100/80", extra: "nf-flow nf-shimmer nf-sparks" },
