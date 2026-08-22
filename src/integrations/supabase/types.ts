@@ -1002,9 +1002,12 @@ export type Database = {
           email: string | null
           favorite_character_id: string | null
           highest_rival_rating: number
+          leaderboard_style: string | null
+          name_effect: string | null
           name_frame: string | null
           packs_opened: number
           play_seconds: number
+          profile_badge: string | null
           profile_border: string | null
           profile_frame: string | null
           referral_code: string | null
@@ -1025,9 +1028,12 @@ export type Database = {
           email?: string | null
           favorite_character_id?: string | null
           highest_rival_rating?: number
+          leaderboard_style?: string | null
+          name_effect?: string | null
           name_frame?: string | null
           packs_opened?: number
           play_seconds?: number
+          profile_badge?: string | null
           profile_border?: string | null
           profile_frame?: string | null
           referral_code?: string | null
@@ -1048,9 +1054,12 @@ export type Database = {
           email?: string | null
           favorite_character_id?: string | null
           highest_rival_rating?: number
+          leaderboard_style?: string | null
+          name_effect?: string | null
           name_frame?: string | null
           packs_opened?: number
           play_seconds?: number
+          profile_badge?: string | null
           profile_border?: string | null
           profile_frame?: string | null
           referral_code?: string | null
