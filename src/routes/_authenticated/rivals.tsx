@@ -375,20 +375,30 @@ function RivalsPage() {
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-8">
               {ownedCharacters.map((c) => {
                 const active = teamDraft.includes(c.id);
+                const locked = usedElsewhere.has(c.id);
                 return (
                   <button
                     key={c.id}
                     onClick={() => toggleSlot(c.id)}
+                    disabled={locked}
+                    title={locked ? tx("inOtherSquad") : undefined}
                     className={
                       "group relative block overflow-hidden rounded-lg border transition-all " +
-                      (active
-                        ? "border-primary/80 ring-2 ring-primary/40"
-                        : "border-white/10 hover:border-white/30")
+                      (locked
+                        ? "cursor-not-allowed border-white/10 opacity-40 grayscale"
+                        : active
+                          ? "border-primary/80 ring-2 ring-primary/40"
+                          : "border-white/10 hover:border-white/30")
                     }
                     style={{ boxShadow: `0 0 14px -12px ${RARITY_COLOR[c.rarity]}` }}
                   >
                     <CharacterCard character={c} interactive={false} className="w-full" />
-                    {active && (
+                    {locked && (
+                      <span className="absolute inset-x-0 bottom-0 bg-black/80 py-0.5 text-center font-display text-[9px] font-black uppercase tracking-wider text-muted-foreground">
+                        {tx("inOtherSquad")}
+                      </span>
+                    )}
+                    {active && !locked && (
                       <span className="absolute inset-x-0 bottom-0 bg-primary/80 py-0.5 text-center font-display text-[10px] font-black text-primary-foreground">
                         ✓ {t("picked")}
                       </span>
@@ -396,6 +406,7 @@ function RivalsPage() {
                   </button>
                 );
               })}
+
             </div>
           )}
 
