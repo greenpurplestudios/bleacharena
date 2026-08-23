@@ -107,7 +107,22 @@ function RivalsPage() {
     [ownedIds],
   );
 
+  /** Cards locked to another squad — a card may only live on one squad. */
+  const usedElsewhere = useMemo(() => {
+    const s = new Set<string>();
+    (teams ?? []).forEach((tm) => {
+      if (tm.index === teamIndex) return;
+      tm.slots.forEach((id) => s.add(id));
+    });
+    return s;
+  }, [teams, teamIndex]);
+
   const toggleSlot = (id: string) => {
+    if (usedElsewhere.has(id)) {
+      playSound("skip");
+      setSaveMsg("card_in_other_team");
+      return;
+    }
     playSound("tap");
     setTeamDraft((prev) => {
       if (prev.includes(id)) return prev.filter((x) => x !== id);
@@ -115,6 +130,7 @@ function RivalsPage() {
       return [...prev, id];
     });
   };
+
 
   const saveTeam = async () => {
     setSaveMsg(null);
