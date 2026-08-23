@@ -313,6 +313,12 @@ export const NAME_FRAMES: Record<string, NameFrameStyle> = {
   },
 };
 
+/** Every frame the player can own: legacy nameplates + Urahara's new boxes. */
+export const ALL_NAME_FRAMES: Record<string, NameFrameStyle> = {
+  ...NAME_FRAMES,
+  ...(EXTRA_NAME_FRAMES as unknown as Record<string, NameFrameStyle>),
+};
+
 export function NameFrame({
   frame,
   children,
@@ -322,11 +328,32 @@ export function NameFrame({
   children: ReactNode;
   className?: string;
 }) {
-  const f = frame ? NAME_FRAMES[frame] : null;
+  const f = frame ? ALL_NAME_FRAMES[frame] : null;
   if (!f) return <span className={className}>{children}</span>;
   return (
     <span className={`${f.className} ${className ?? ""}`} style={f.style}>
       <span className="relative z-[1] min-w-0 truncate">{children}</span>
+    </span>
+  );
+}
+
+/** Renders the player's name with an equipped name effect (purely cosmetic). */
+export function NameEffect({
+  effect,
+  children,
+  className,
+  style,
+}: {
+  effect?: string | null;
+  children: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const fx = effect ? NAME_EFFECTS[effect] : null;
+  if (!fx) return <span className={className} style={style}>{children}</span>;
+  return (
+    <span className={`${fx.className} ${className ?? ""}`} style={{ ...fx.style, ...style }}>
+      {children}
     </span>
   );
 }
