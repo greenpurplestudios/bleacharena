@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { EXTRA_NAME_FRAMES, NAME_EFFECTS } from "@/lib/cosmetics";
+
 
 export interface NameFrameStyle {
   /** wrapper classes */
