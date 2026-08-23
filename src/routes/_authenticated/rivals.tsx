@@ -210,6 +210,8 @@ function RivalsPage() {
       case "no_stamina": return tx("noStamina");
       case "defender_shielded": return tx("shielded");
       case "invalid_team": return tx("invalidTeam");
+      case "card_in_other_team": return tx("inOtherSquad");
+
       case "saved": return t("saved");
       default: return err;
     }
