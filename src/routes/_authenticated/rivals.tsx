@@ -64,6 +64,7 @@ const L = {
   showCharacters: { en: "Show characters", ar: "إظهار الشخصيات" },
   hideCharacters: { en: "Hide characters", ar: "إخفاء الشخصيات" },
   owned: { en: "owned", ar: "مملوكة" },
+  inOtherSquad: { en: "Already used in another squad", ar: "مستخدمة في فرقة أخرى" },
 } as const;
 
 function RivalsPage() {
