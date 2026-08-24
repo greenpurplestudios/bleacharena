@@ -243,7 +243,7 @@ const BADGE_DEFS: BadgeDef[] = [
   { id: "pb_sternritter", en: "Sternritter", ar: "شتيرنريتر", cost: 3300, rarity: "epic", glyph: "星", color: "#dbeafe" },
   { id: "pb_visored", en: "Visored", ar: "فايزورد", cost: 3600, rarity: "epic", glyph: "仮", color: "#c4b5fd" },
   { id: "pb_captain", en: "Captain", ar: "قائد", cost: 3900, rarity: "legendary", glyph: "隊", color: "#ffffff" },
-  { id: "pb_bankai", en: "Bankai", ar: "بانكاي", cost: 4200, rarity: "legendary", glyph: "卍解", color: "#fb923c" },
+  { id: "pb_bankai", en: "Bankai", ar: "بانكاي", cost: 4200, rarity: "legendary", glyph: "解", color: "#fb923c" },
   { id: "pb_zero", en: "Zero Division", ar: "الفرقة صفر", cost: 4400, rarity: "legendary", glyph: "零", color: "#fde68a" },
   { id: "pb_soul_king", en: "Soul King", ar: "ملك الأرواح", cost: 4500, rarity: "mythic", glyph: "王", color: "#fff7c2" },
 ];
