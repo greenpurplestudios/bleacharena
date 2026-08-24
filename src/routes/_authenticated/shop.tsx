@@ -4,7 +4,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SceneBackground } from "@/components/SceneBackground";
 import { useI18n } from "@/lib/i18n";
 import { fetchStore, purchaseItem, type StoreItem, type StoreKind } from "@/lib/store";
-import { NameFrame } from "@/components/NameFrame";
+import { NameFrame, NameEffect } from "@/components/NameFrame";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { LEADERBOARD_STYLES, RARITY_COLOR, RARITY_LABEL, type Rarity } from "@/lib/cosmetics";
 import {
   activatePotion, fetchActivePotion, fetchMyPotions, formatRemaining, POTION_COLOR,
   type ActivePotion, type PotionRow,
@@ -27,9 +29,31 @@ export const Route = createFileRoute("/_authenticated/shop")({
   component: StorePage,
 });
 
-const KIND_ORDER: Exclude<StoreKind, "pack">[] = ["potion", "name_frame", "title", "username_color"];
-const KIND_ICON: Record<Exclude<StoreKind, "pack">, string> = {
+type ShopKind = Exclude<StoreKind, "pack">;
+
+const KIND_ORDER: ShopKind[] = [
+  "potion",
+  "username_color",
+  "name_effect",
+  "name_frame",
+  "frame",
+  "profile_badge",
+  "leaderboard_style",
+  "title",
+];
+const KIND_ICON: Record<ShopKind, string> = {
   title: "❖", username_color: "✧", name_frame: "▩", potion: "⚗",
+  name_effect: "✺", frame: "◎", profile_badge: "刀", leaderboard_style: "▤",
+};
+const KIND_LABEL: Record<ShopKind, { en: string; ar: string }> = {
+  potion: { en: "Potions", ar: "الجرعات" },
+  username_color: { en: "Name Colors", ar: "ألوان الاسم" },
+  name_effect: { en: "Name Effects", ar: "تأثيرات الاسم" },
+  name_frame: { en: "Name Boxes", ar: "صناديق الاسم" },
+  frame: { en: "Profile Frames", ar: "إطارات الملف" },
+  profile_badge: { en: "Profile Badges", ar: "شارات الملف" },
+  leaderboard_style: { en: "Leaderboard Styles", ar: "أنماط المتصدرين" },
+  title: { en: "Titles", ar: "الألقاب" },
 };
 
 function StorePage() {
@@ -38,7 +62,7 @@ function StorePage() {
   const [items, setItems] = useState<StoreItem[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [flash, setFlash] = useState<{ id: string; kind: "ok" | "err"; msg: string } | null>(null);
-  const [active, setActive] = useState<Exclude<StoreKind, "pack"> | null>(null);
+  const [active, setActive] = useState<ShopKind | null>(null);
   const [potions, setPotions] = useState<PotionRow[]>([]);
   const [activePotion, setActivePotion] = useState<ActivePotion>({ active: false, luck: 0 });
   const [now, setNow] = useState(() => Date.now());
@@ -57,8 +81,9 @@ function StorePage() {
   }, [activePotion.active]);
 
   const grouped = useMemo(() => {
-    const g: Record<Exclude<StoreKind, "pack">, StoreItem[]> = {
+    const g: Record<ShopKind, StoreItem[]> = {
       title: [], username_color: [], name_frame: [], potion: [],
+      name_effect: [], frame: [], profile_badge: [], leaderboard_style: [],
     };
     (items ?? []).forEach((i) => {
       if (i.kind === "pack") return;
@@ -68,11 +93,7 @@ function StorePage() {
   }, [items]);
 
   const potionCount = (id: string) => potions.find((p) => p.itemId === id)?.count ?? 0;
-  const kindLabel = (k: Exclude<StoreKind, "pack">) =>
-    k === "title" ? t("titles")
-    : k === "username_color" ? t("usernameColors")
-    : k === "name_frame" ? t("nameFrames")
-    : t("potions");
+  const kindLabel = (k: ShopKind) => KIND_LABEL[k][locale];
   const remaining = activePotion.endsAt ? activePotion.endsAt - now : 0;
   const potionRunning = activePotion.active && remaining > 0;
 
@@ -174,8 +195,8 @@ function StorePage() {
         )}
 
         {items && active === null && (
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {KIND_ORDER.map((kind, i) => {
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {KIND_ORDER.filter((k) => grouped[k].length > 0).map((kind, i) => {
               const list = grouped[kind];
               const heading = kindLabel(kind);
               return (
@@ -226,7 +247,8 @@ function StorePage() {
                   const disabled = it.owned || !canAfford || busy === it.id;
                   const isFlashing = flash?.id === it.id;
                   const color = kind === "username_color" ? String(it.meta.hex ?? "#888") : undefined;
-                  const animated = kind === "name_frame" && !!(it.meta as { animated?: boolean }).animated;
+                  const animated = !!(it.meta as { animated?: boolean }).animated;
+                  const rarity = (it.meta as { rarity?: Rarity }).rarity;
                   const luck = kind === "potion" ? Number((it.meta as { luck?: number }).luck ?? 0) : 0;
                   const owned = kind === "potion" ? potionCount(it.id) : 0;
                   return (
@@ -244,16 +266,38 @@ function StorePage() {
                             {it.name[locale]}
                           </div>
                           <p className="mt-1 text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                            {kind === "title" ? t("cosmeticTitle")
-                              : kind === "username_color" ? t("cosmeticColor")
-                              : kind === "name_frame" ? `${t("cosmeticNameFrame")} · ${animated ? t("animatedLabel") : t("staticLabel")}`
-                              : `${t("cosmeticPotion")} · ${t("fiveMinutes")}`}
+                            {kind === "potion"
+                              ? `${t("cosmeticPotion")} · ${t("fiveMinutes")}`
+                              : kindLabel(kind)}
+                            {rarity ? (
+                              <span className="ms-2" style={{ color: RARITY_COLOR[rarity] }}>
+                                {RARITY_LABEL[rarity][locale]}
+                              </span>
+                            ) : null}
+                            {(kind === "name_frame" || kind === "name_effect" || kind === "leaderboard_style")
+                              ? ` · ${animated ? t("animatedLabel") : t("staticLabel")}`
+                              : ""}
                           </p>
                           {kind === "name_frame" && (
                             <div className="mt-3">
                               <NameFrame frame={it.id}>
                                 <span className="font-display text-sm font-black">{t("username")}</span>
                               </NameFrame>
+                            </div>
+                          )}
+                          {kind === "name_effect" && (
+                            <div className="mt-3">
+                              <NameEffect effect={it.id} className="font-display text-lg font-black">
+                                {t("username")}
+                              </NameEffect>
+                            </div>
+                          )}
+                          {kind === "leaderboard_style" && (
+                            <div
+                              className={`mt-3 rounded-lg border px-3 py-2 text-xs font-bold uppercase tracking-widest ${LEADERBOARD_STYLES[it.id]?.className ?? "border-white/10"}`}
+                              style={LEADERBOARD_STYLES[it.id]?.style}
+                            >
+                              #1 {t("username")}
                             </div>
                           )}
                         </div>
@@ -263,6 +307,12 @@ function StorePage() {
                             className="h-8 w-8 flex-none rounded-full border border-white/20"
                             style={{ background: color }}
                           />
+                        )}
+                        {kind === "frame" && (
+                          <PlayerAvatar frame={it.id} size={40} fallback="✦" />
+                        )}
+                        {kind === "profile_badge" && (
+                          <PlayerAvatar badge={it.id} size={40} fallback="✦" />
                         )}
                         {kind === "title" && (
                           <span

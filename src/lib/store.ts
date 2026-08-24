@@ -1,7 +1,26 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { PackTier } from "@/lib/packs";
 
-export type StoreKind = "title" | "username_color" | "pack" | "name_frame" | "potion";
+export type StoreKind =
+  | "title"
+  | "username_color"
+  | "pack"
+  | "name_frame"
+  | "potion"
+  | "name_effect"
+  | "frame"
+  | "profile_badge"
+  | "leaderboard_style";
+
+/** Cosmetic kinds that can be equipped from the Customisations hub. */
+export type EquipKind =
+  | "title"
+  | "username_color"
+  | "name_frame"
+  | "name_effect"
+  | "frame"
+  | "profile_badge"
+  | "leaderboard_style";
 
 export interface StoreItem {
   id: string;
@@ -83,7 +102,7 @@ export async function purchaseItem(itemId: string): Promise<PurchaseResult> {
 }
 
 export async function equipItem(
-  kind: "title" | "username_color" | "name_frame",
+  kind: EquipKind,
   itemId: string | null,
 ): Promise<{ ok: boolean; error?: string }> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
