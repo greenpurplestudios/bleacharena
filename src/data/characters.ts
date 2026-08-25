@@ -4,6 +4,7 @@ import founderToshiroImg from "@/assets/characters/founder_adult_toshiro.jpeg.as
 import founderZarakiImg from "@/assets/characters/founder_bankai_zaraki.jpeg.asset.json";
 import founderAizenImg from "@/assets/characters/founder_muken_aizen.jpeg.asset.json";
 import founderGerardImg from "@/assets/characters/founder_gerard_ultimate_miracle.jpeg.asset.json";
+import founderOrihimeImg from "@/assets/characters/founder_orihime_awakened.jpeg.asset.json";
 import isshinImg from "@/assets/characters/isshin.jpeg.asset.json";
 import masakiImg from "@/assets/characters/masaki.jpeg.asset.json";
 import zangetsuImg from "@/assets/characters/zangetsu.jpeg.asset.json";
@@ -685,6 +686,15 @@ const raw: (Omit<Character, "rarity"> & { rarity?: Rarity })[] = [
     arc: "Thousand-Year Blood War", shikai: null, bankai: null,
     image: founderGerardImg.url,
     rarity: "founder", overall: 97, tags: ["founder"],
+  },
+  {
+    id: "c-f06", slug: "founder-orihime-awakened",
+    name: { en: "Awakened Orihime", ar: "أوريهيمي الإطلاق الكامل" },
+    race: "Human / Fullbring", faction: "Allies", division: null, rank: null,
+    arc: "Thousand-Year Blood War", shikai: "Shun Shun Rikka", bankai: null,
+    image: founderOrihimeImg.url,
+    gender: "female",
+    rarity: "founder", overall: 99, tags: ["founder"],
   },
 ];
 

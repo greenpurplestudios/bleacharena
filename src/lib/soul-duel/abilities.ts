@@ -801,7 +801,35 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
       },
     },
   },
+  {
+    slug: "founder-orihime-awakened",
+    cost: 8,
+    faction: { en: "Allies", ar: "الحلفاء" },
+    ability: {
+      slug: "to-defend-you",
+      name: { en: "To Defend You", ar: "لأحميك" },
+      description: {
+        en: "Orihime's Rating becomes 0, and two enemy cards on the battlefield are also reduced to 0.",
+        ar: "يصبح تقييم أوريهيمي 0، ويُخفَّض تقييم بطاقتين معاديتين في الساحة إلى 0.",
+      },
+      onPlay: (state, self) => {
+        const inLane = enemiesIn(state, self);
+        const rest = state.placements.filter(
+          (p) => p.side !== self.side && p.lane !== self.lane,
+        );
+        const targets = [...highestFirst(inLane), ...highestFirst(rest)].slice(0, 2);
+        return targets.reduce(
+          (s, e) => setOverride(s, e.uid, 0),
+          setOverride(state, self.uid, 0),
+        );
+      },
+    },
+  },
 ];
+
+function highestFirst(list: Placement[]): Placement[] {
+  return list.slice().sort((a, b) => baseRatingOf(b) - baseRatingOf(a));
+}
 
 const BY_SLUG = new Map(DUEL_CHARACTERS.map((d) => [d.slug, d]));
 
