@@ -697,6 +697,15 @@ const raw: (Omit<Character, "rarity"> & { rarity?: Rarity })[] = [
     gender: "female",
     rarity: "founder", overall: 99, tags: ["founder"],
   },
+  {
+    id: "c-f07", slug: "founder-ichigo-bloodchains",
+    name: { en: "Bloodchains Ichigo", ar: "إتشيغو سلاسل الدم" },
+    race: "Human / Substitute Shinigami", faction: "Allies", division: null, rank: "Substitute",
+    arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
+    image: founderIchigoChainsImg,
+    gender: "male",
+    rarity: "founder", overall: 100, tags: ["founder"],
+  },
 ];
 
 export const characters: Character[] = raw.map((c) => ({
