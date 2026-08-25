@@ -5,6 +5,7 @@ import founderZarakiImg from "@/assets/characters/founder_bankai_zaraki.jpeg.ass
 import founderAizenImg from "@/assets/characters/founder_muken_aizen.jpeg.asset.json";
 import founderGerardImg from "@/assets/characters/founder_gerard_ultimate_miracle.jpeg.asset.json";
 import founderOrihimeImg from "@/assets/characters/founder_orihime_awakened.jpeg.asset.json";
+import founderIchigoChainsImg from "@/assets/characters/founder_ichigo_bloodchains.jpg";
 import isshinImg from "@/assets/characters/isshin.jpeg.asset.json";
 import masakiImg from "@/assets/characters/masaki.jpeg.asset.json";
 import zangetsuImg from "@/assets/characters/zangetsu.jpeg.asset.json";
@@ -695,6 +696,15 @@ const raw: (Omit<Character, "rarity"> & { rarity?: Rarity })[] = [
     image: founderOrihimeImg.url,
     gender: "female",
     rarity: "founder", overall: 99, tags: ["founder"],
+  },
+  {
+    id: "c-f07", slug: "founder-ichigo-bloodchains",
+    name: { en: "Bloodchains Ichigo", ar: "إتشيغو سلاسل الدم" },
+    race: "Human / Substitute Shinigami", faction: "Allies", division: null, rank: "Substitute",
+    arc: "Thousand-Year Blood War", shikai: "Zangetsu", bankai: "Tensa Zangetsu",
+    image: founderIchigoChainsImg,
+    gender: "male",
+    rarity: "founder", overall: 100, tags: ["founder"],
   },
 ];
 
