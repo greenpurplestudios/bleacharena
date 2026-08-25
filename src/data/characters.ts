@@ -686,6 +686,15 @@ const raw: (Omit<Character, "rarity"> & { rarity?: Rarity })[] = [
     image: founderGerardImg.url,
     rarity: "founder", overall: 97, tags: ["founder"],
   },
+  {
+    id: "c-f06", slug: "founder-orihime-awakened",
+    name: { en: "Awakened Orihime", ar: "أوريهيمي الإطلاق الكامل" },
+    race: "Human / Fullbring", faction: "Allies", division: null, rank: null,
+    arc: "Thousand-Year Blood War", shikai: "Shun Shun Rikka", bankai: null,
+    image: founderOrihimeImg.url,
+    gender: "female",
+    rarity: "founder", overall: 99, tags: ["founder"],
+  },
 ];
 
 export const characters: Character[] = raw.map((c) => ({
