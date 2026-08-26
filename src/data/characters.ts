@@ -1180,7 +1180,7 @@ const raw: (Omit<Character, "rarity"> & { rarity?: Rarity })[] = [
     arc: "Thousand-Year Blood War",
     shikai: "Zangetsu",
     bankai: "Tensa Zangetsu",
-    image: founderIchigoChainsImg,
+    image: founderIchigoChainsImg.url,
     gender: "male",
     rarity: "founder",
     overall: 100,
