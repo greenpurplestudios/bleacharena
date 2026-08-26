@@ -98,6 +98,10 @@ export interface LeaderboardRow {
   username_color: string | null;
   name_frame: string | null;
   avatar_character_id: string | null;
+  name_effect: string | null;
+  profile_frame: string | null;
+  profile_badge: string | null;
+  leaderboard_style: string | null;
 }
 
 export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
@@ -105,9 +109,12 @@ export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
     p_limit: limit,
   });
   if (error || !data) return [];
-  return (data as Array<Omit<LeaderboardRow, "team" | "title" | "username_color" | "name_frame" | "avatar_character_id"> & {
+  return (data as Array<{
+    rank: number | string; user_id: string; username: string; score: number | string;
     team: unknown; title?: string | null; username_color?: string | null;
     name_frame?: string | null; avatar_character_id?: string | null;
+    name_effect?: string | null; profile_frame?: string | null;
+    profile_badge?: string | null; leaderboard_style?: string | null;
   }>).map((r) => ({
     rank: Number(r.rank),
     user_id: r.user_id,
@@ -124,6 +131,10 @@ export async function fetchLeaderboard(limit = 100): Promise<LeaderboardRow[]> {
     username_color: r.username_color ?? null,
     name_frame: r.name_frame ?? null,
     avatar_character_id: r.avatar_character_id ?? null,
+    name_effect: r.name_effect ?? null,
+    profile_frame: r.profile_frame ?? null,
+    profile_badge: r.profile_badge ?? null,
+    leaderboard_style: r.leaderboard_style ?? null,
   }));
 }
 
