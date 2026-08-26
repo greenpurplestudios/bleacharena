@@ -1,5 +1,6 @@
 import type { Character, Locale, Rarity } from "@/types/character";
 import antArt from "@/assets/soulduel/black_ant.jpeg.asset.json";
+import bloodchainsArt from "@/assets/characters/founder_ichigo_bloodchains.jpeg.asset.json";
 import type { DuelState, Placement, Side } from "./types";
 import type { StatusKind } from "./status";
 import {
@@ -61,6 +62,18 @@ export const ANT_CHARACTER: Character = {
   rarity: "common" as Rarity,
   overall: 1,
   image: antArt.url,
+};
+
+
+/** Bloodchains Ichigo's mirrored self. Distinct slug so the copy never copies again. */
+export const BLOODCHAINS_CLONE: Character = {
+  id: "token-bloodchains",
+  slug: "bloodchains-echo",
+  name: { en: "Bloodchains Echo", ar: "صدى سلاسل الدم" },
+  faction: "Allies",
+  rarity: "founder" as Rarity,
+  overall: 100,
+  image: bloodchainsArt.url,
 };
 
 /* ------------------------------------------------------------- definitions */
@@ -714,6 +727,21 @@ export const DUEL_CHARACTERS: DuelCharacterDef[] = [
     },
   },
   /* ----------------------------------------------------------- founders */
+  {
+    slug: "founder-ichigo-bloodchains",
+    cost: 8,
+    faction: { en: "Allies", ar: "الحلفاء" },
+    ability: {
+      slug: "bloodchains",
+      name: { en: "Bloodchains", ar: "سلاسل الدم" },
+      description: {
+        en: "Creates a copy of himself on another battlefield. The copy keeps 100 Rating.",
+        ar: "ينشئ نسخة من نفسه في ساحة أخرى. النسخة تحتفظ بتقييم 100.",
+      },
+      onPlay: (state, self) =>
+        makeToken(state, BLOODCHAINS_CLONE, self.side, (self.lane + 1) % 3),
+    },
+  },
   {
     slug: "founder-ichigo-horn",
     cost: 8,
