@@ -141,6 +141,9 @@ export interface ProfileFull {
   profile_frame: string | null;
   profile_border: string | null;
   name_frame: string | null;
+  name_effect: string | null;
+  profile_badge: string | null;
+  leaderboard_style: string | null;
   souls: number;
   total_souls_earned: number;
   packs_opened: number;

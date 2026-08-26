@@ -7,7 +7,8 @@ import { UsernamePrompt } from "@/components/UsernamePrompt";
 import { useI18n } from "@/lib/i18n";
 import { currentWeekLabel, fetchLeaderboard, getCurrentUserId, getMyProfile } from "@/lib/leaderboard";
 import { fetchStore } from "@/lib/store";
-import { NameFrame } from "@/components/NameFrame";
+import { NameFrame, NameEffect } from "@/components/NameFrame";
+import { LEADERBOARD_STYLES } from "@/lib/cosmetics";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
@@ -94,13 +95,21 @@ function LeaderboardPage() {
             const isMe = myId && r.user_id === myId;
             const titleLabel = r.title ? titleMap[r.title]?.[locale] : null;
             const nameColor = r.username_color ?? undefined;
+            const lbStyle = r.leaderboard_style ? LEADERBOARD_STYLES[r.leaderboard_style] : null;
             return (
               <li
                 key={r.user_id}
                 className={`flex items-center gap-3 rounded-xl border px-4 py-3 backdrop-blur-md transition-colors ${
-                  isMe ? "border-primary/50 bg-primary/10" : "border-white/10 bg-white/[0.03]"
+                  lbStyle
+                    ? lbStyle.className
+                    : isMe
+                      ? "border-primary/50 bg-primary/10"
+                      : "border-white/10 bg-white/[0.03]"
                 }`}
-                style={{ animation: `card-in 0.4s ${Math.min(i, 10) * 0.03}s ease-out both` }}
+                style={{
+                  ...(lbStyle?.style ?? {}),
+                  animation: `card-in 0.4s ${Math.min(i, 10) * 0.03}s ease-out both`,
+                }}
               >
                 <span
                   className={`flex h-9 w-9 items-center justify-center rounded-lg font-display text-sm font-black ${
@@ -114,6 +123,8 @@ function LeaderboardPage() {
                 </span>
                 <PlayerAvatar
                   characterId={r.avatar_character_id}
+                  frame={r.profile_frame}
+                  badge={r.profile_badge}
                   size={34}
                   fallback={(r.username ?? "?")[0]?.toUpperCase()}
                 />
@@ -124,9 +135,13 @@ function LeaderboardPage() {
                     className="inline-flex max-w-full items-center hover:opacity-90"
                   >
                     <NameFrame frame={r.name_frame}>
-                      <span className="truncate" style={nameColor ? { color: nameColor } : undefined}>
+                      <NameEffect
+                        effect={r.name_effect}
+                        className="truncate"
+                        style={nameColor ? { color: nameColor } : undefined}
+                      >
                         {r.username}
-                      </span>
+                      </NameEffect>
                     </NameFrame>
                   </Link>
                   {titleLabel && (
