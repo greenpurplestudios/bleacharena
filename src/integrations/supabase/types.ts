@@ -1811,7 +1811,11 @@ export type Database = {
         Args: { p_limit?: number; p_season?: string }
         Returns: {
           avatar_character_id: string
+          leaderboard_style: string
+          name_effect: string
           name_frame: string
+          profile_badge: string
+          profile_frame: string
           rank: number
           score: number
           team: Json
