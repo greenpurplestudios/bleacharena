@@ -9,7 +9,7 @@ import { characters } from "@/data/characters";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { XPBar } from "@/components/XPBar";
 import { AvatarPicker } from "@/components/AvatarPicker";
-import { NameFrame } from "@/components/NameFrame";
+import { NameFrame, NameEffect } from "@/components/NameFrame";
 import { getMyReferral, referralLink, type ReferralState } from "@/lib/referrals";
 
 export const Route = createFileRoute("/_authenticated/profile/")({
@@ -77,16 +77,20 @@ function MyProfilePage() {
         <header className="rounded-3xl border border-white/10 bg-card/60 p-6 backdrop-blur-xl" style={{ animation: "card-in 0.4s ease-out both" }}>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
             <button onClick={() => setPickerMode("avatar")} className="group relative">
-              <PlayerAvatar characterId={p.avatar_character_id} frame={p.profile_frame} size={96} fallback={(p.username ?? "?")[0]?.toUpperCase()} />
+              <PlayerAvatar characterId={p.avatar_character_id} frame={p.profile_frame} badge={p.profile_badge} size={96} fallback={(p.username ?? "?")[0]?.toUpperCase()} />
               <span className="absolute inset-x-0 -bottom-1 rounded-md bg-black/70 py-0.5 text-center text-[9px] uppercase tracking-widest text-white opacity-0 transition-opacity group-hover:opacity-100">
                 {t("changeAvatar")}
               </span>
             </button>
             <div className="min-w-0 flex-1 text-center sm:text-start">
               <NameFrame frame={p.name_frame}>
-                <span className="font-display text-3xl font-black" style={p.username_color ? { color: p.username_color } : undefined}>
+                <NameEffect
+                  effect={p.name_effect}
+                  className="font-display text-3xl font-black"
+                  style={p.username_color ? { color: p.username_color } : undefined}
+                >
                   {p.username ?? "—"}
-                </span>
+                </NameEffect>
               </NameFrame>
               {p.title && (
                 <div className="mt-1 text-xs uppercase tracking-widest text-accent">{p.title}</div>
