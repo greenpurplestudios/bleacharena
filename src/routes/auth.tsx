@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { ReiatsuBackground } from "@/components/ReiatsuBackground";
 import { BleachLogo } from "@/components/BleachLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -135,7 +134,7 @@ function AuthPage() {
     setMsg(null);
     try {
       const redirect = `${window.location.origin}/auth`;
-      const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirect });
+      const res = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: redirect } });
       if (res.error) throw res.error;
     } catch (e: unknown) {
       setMsg({ kind: "err", text: e instanceof Error ? e.message : "Google sign-in failed" });
