@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { characters } from "@/data/characters";
 import { setFramingOverride } from "@/lib/portrait";
-import type { Rarity } from "@/types/character";
+import type { Character, Rarity } from "@/types/character";
 
 /**
  * Admin card overrides (artwork, framing, ratings, text). Loaded once at app
