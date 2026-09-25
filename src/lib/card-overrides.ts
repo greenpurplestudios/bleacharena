@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { characters } from "@/data/characters";
 import { setFramingOverride } from "@/lib/portrait";
-import type { Rarity } from "@/types/character";
+import type { Character, Rarity } from "@/types/character";
 
 /**
  * Admin card overrides (artwork, framing, ratings, text). Loaded once at app
@@ -41,8 +41,31 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
+/**
+ * Cards created through the admin tools exist only in the database. When an
+ * override arrives for an id the static roster doesn't know, we materialise a
+ * full character for it so every surface (collection, packs, duels, market)
+ * treats it exactly like a built-in card.
+ */
+function materialise(row: CardOverride) {
+  const slug = row.character_id.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const created: Character = {
+    id: row.character_id,
+    slug,
+    name: { en: row.name_en ?? row.character_id, ar: row.name_ar ?? row.name_en ?? row.character_id },
+    image: row.image_url ?? null,
+    faction: row.faction ?? "Unknown",
+    rarity: (row.rarity ?? "rare") as Rarity,
+    overall: row.overall ?? 80,
+    gender: "other",
+    tags: ["custom"],
+  };
+  characters.push(created);
+  return created;
+}
+
 function apply(row: CardOverride) {
-  const c = characters.find((ch) => ch.id === row.character_id);
+  const c = characters.find((ch) => ch.id === row.character_id) ?? materialise(row);
   if (!c) return;
   if (row.image_url) c.image = row.image_url;
   if (row.name_en) c.name = { ...c.name, en: row.name_en };

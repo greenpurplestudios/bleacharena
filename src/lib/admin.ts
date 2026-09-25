@@ -113,6 +113,17 @@ export const adminSetCardOverride = (characterId: string, patch: CardOverridePat
 export const adminClearCardOverride = (characterId: string) =>
   call("admin_clear_card_override", { p_character: characterId });
 
+export interface NewCardPatch extends CardOverridePatch {
+  gender?: string;
+}
+
+/** Creates a brand-new card in the live catalogue — no code deploy needed. */
+export const adminCreateCard = (id: string, patch: NewCardPatch) =>
+  call("admin_create_custom_card", { p_id: id, p_patch: patch });
+
+export const adminDeleteCard = (id: string) =>
+  call("admin_delete_custom_card", { p_id: id });
+
 /* --------------------------- announcements --------------------------- */
 
 export interface AdminNews {

@@ -1548,6 +1548,10 @@ export type Database = {
         Args: { p_character: string }
         Returns: Json
       }
+      admin_create_custom_card: {
+        Args: { p_id: string; p_patch: Json }
+        Returns: Json
+      }
       admin_create_news: {
         Args: {
           p_body_ar: string
@@ -1559,6 +1563,7 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_delete_custom_card: { Args: { p_id: string }; Returns: Json }
       admin_delete_news: { Args: { p_id: string }; Returns: Json }
       admin_get_player: { Args: { p_user: string }; Returns: Json }
       admin_grant_character: {
@@ -1776,6 +1781,12 @@ export type Database = {
           scoring_members: number
           tag: string
           total_score: number
+        }[]
+      }
+      get_custom_card_ids: {
+        Args: never
+        Returns: {
+          character_id: string
         }[]
       }
       get_daily_login_state: { Args: never; Returns: Json }
