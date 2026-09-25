@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { adminClearCardOverride, adminSetCardOverride, type CardOverridePatch } from "@/lib/admin";
 import { getCardExtras, getCardOverride, loadCardOverrides, useCardOverridesVersion } from "@/lib/card-overrides";
 import { uploadCardArt } from "@/lib/card-art.functions";
+import { CardCreator } from "@/components/admin/CardCreator";
 import type { Rarity } from "@/types/character";
 
 const RARITIES: Rarity[] = ["common", "uncommon", "rare", "epic", "legendary", "mythic", "founder"];
@@ -120,6 +121,7 @@ export function CardStudio({ onDone }: { onDone?: () => void }) {
 
   return (
     <div className="space-y-4">
+      <CardCreator onCreated={() => setQ("")} />
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
